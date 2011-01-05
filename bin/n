@@ -3,6 +3,11 @@
 # Library version
 
 VERSION="0.0.1"
+PREFIX=/usr/local/n
+
+# setup
+
+test -d $PREFIX || mkdir -p $PREFIX
 
 # curl / wget support
 
@@ -42,6 +47,11 @@ display_help() {
   cat <<-help
 
   Usage: n [options] <version>
+
+  Commands:
+
+    n               Output versions installed
+    n <version>     Install node <version>
 
   Options:
 
@@ -94,15 +104,36 @@ install_node() {
     version=${version:1:${#version}}
   fi 
 
-  log "installing $version"
-  cd /tmp \
+  # install
+  local dir="node-v$version"
+  cd $PREFIX \
     && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
-    > "node-v$version.tar.gz" \
-    && tar -zxf "node-v$version.tar.gz" \
-    && cd "node-v$version" \
-    && ./configure \
+    > "$dir.tar.gz" \
+    && tar -zxf "$dir.tar.gz" \
+    && cd $dir \
+    && ./configure --prefix $PREFIX\
     && make install \
-    && log "installation complete"
+    && cd .. \
+    && cleanup $version
+}
+
+#
+# Cleanup after the given <version>
+#
+
+cleanup() {
+  local version=$1
+  local dir="node-v$version"
+
+  if test -d $dir; then
+    log "removing source"
+    rm -fr $dir
+  fi
+  
+  if test -d "$dir.tar.gz"; then
+    log "removing tarball"
+    rm -fr "$dir.tar.gz"
+  fi
 }
 
 # Handle arguments
