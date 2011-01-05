@@ -52,10 +52,11 @@ display_help() {
 
   Commands:
 
-    n                   Output versions installed
-    n bin <version>     Output bin path for <version>
-    n rm <version ...>  Remove the given version(s)
-    n <version>         Install and/or use node <version>
+    n                           Output versions installed
+    n use <version> [args ...]  Execute node <version> with [args ...]
+    n bin <version>             Output bin path for <version>
+    n rm <version ...>          Remove the given version(s)
+    n <version>                 Install and/or use node <version>
 
   Options:
 
@@ -66,6 +67,7 @@ display_help() {
 
     -       rm
     which   bin
+    use     as
 
 help
   exit 0
@@ -191,6 +193,17 @@ display_bin_path_for_version() {
   fi
 }
 
+#
+# Execute the given <version> of node
+# with [args ...]
+#
+
+execute_with_version() {
+  test -z $1 && abort "version required"
+  local bin=`n which $1`; shift
+  $bin $@
+}
+
 # Handle arguments
 
 if test $# -eq 0; then
@@ -201,6 +214,7 @@ else
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
       bin|which) display_bin_path_for_version $2; exit ;;
+      as|use) shift; version=$1; shift; execute_with_version $version $@; exit ;;
       rm|-) shift; remove_version $@; exit ;;
       *) install_node $@; exit ;;
     esac

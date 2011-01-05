@@ -44,30 +44,40 @@ them directly by asking `n` for the binary path:
     $ n bin 0.3.3
     /usr/local/n/versions/0.3.3/bin/node
 
+Execute a script with 0.3.3 regardless of the active version:
+
+    $ n use 0.3.3 some.js
+
+with flags:
+
+    $ n as 0.3.3 --debug some.js
+
 ## Usage
 
  Output from `n --help`:
 
-
      Usage: n [options] [COMMAND] [config] 
-
+    
      Commands:
-
-       n                   Output versions installed
-       n bin <version>     Output bin path for <version>
-       n rm <version ...>  Remove the given version(s)
-       n <version>         Install and/or use node <version>
-
+    
+       n                           Output versions installed
+       n use <version> [args ...]  Execute node <version> with [args ...]
+       n bin <version>             Output bin path for <version>
+       n rm <version ...>          Remove the given version(s)
+       n <version>                 Install and/or use node <version>
+    
      Options:
-
+    
        -V, --version   Output current version of n
        -h, --help      Display help information
-
-    Aliases:
     
-      -      rm
-      which  bin
-
+     Aliases:
+    
+       -       rm
+       which   bin
+       use     as
+    
+    
 ## Details
 
  `n` by default installs node to _/usr/local/n/versions_, from
