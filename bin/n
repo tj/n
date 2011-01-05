@@ -200,8 +200,8 @@ display_bin_path_for_version() {
 
 execute_with_version() {
   test -z $1 && abort "version required"
-  local bin=`n which $1`; shift
-  $bin $@
+  local bin=`n which $1`
+  $bin ${@:2}
 }
 
 # Handle arguments
