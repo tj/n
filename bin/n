@@ -60,6 +60,29 @@ display_n_version() {
   echo $VERSION && exit 0
 }
 
+#
+# Install node <version>
+#
+
+install_node() {
+  local version=$1
+
+  # remove "v"
+  if test "${version:0:1}" = "v"; then
+    version=${version:1:${#version}}
+  fi 
+
+  log "installing $version"
+  cd /tmp \
+    && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
+    > "node-v$version.tar.gz" \
+    && tar -zxf "node-v$version.tar.gz" \
+    && cd "node-v$version" \
+    && ./configure
+    && make install
+    && log "installation complete"
+}
+
 # Handle arguments
 
 if test $# -eq 0; then
@@ -69,6 +92,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
+      *) install_node $1 ;;
     esac
     shift
   done
