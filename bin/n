@@ -101,11 +101,12 @@ display_versions() {
 }
 
 #
-# Install node <version>
+# Install node <version> <config ...>
 #
 
 install_node() {
-  local version=$1
+  local version=$1; shift
+  local config=$@
   check_current_version
 
   # remove "v"
@@ -130,7 +131,7 @@ install_node() {
       > "$dir.tar.gz" \
       && tar -zxf "$dir.tar.gz" \
       && cd $dir \
-      && ./configure --prefix $VERSIONS_DIR/$version\
+      && ./configure --prefix $VERSIONS_DIR/$version $config\
       && make install \
       && cd .. \
       && cleanup $version \
@@ -166,7 +167,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
-      *) install_node $1 ;;
+      *) install_node $@; exit ;;
     esac
     shift
   done
