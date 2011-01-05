@@ -62,6 +62,11 @@ display_help() {
     -V, --version   Output current version of n
     -h, --help      Display help information
 
+  Aliases:
+
+    -       rm
+    which   bin
+
 help
   exit 0
 }
@@ -195,7 +200,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
-      bin) display_bin_path_for_version $2; exit ;;
+      bin|which) display_bin_path_for_version $2; exit ;;
       rm|-) shift; remove_version $@; exit ;;
       *) install_node $@; exit ;;
     esac

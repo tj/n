@@ -63,6 +63,11 @@ them directly by asking `n` for the binary path:
        -V, --version   Output current version of n
        -h, --help      Display help information
 
+    Aliases:
+    
+      -      rm
+      which  bin
+
 ## Details
 
  `n` by default installs node to _/usr/local/n/versions_, from
