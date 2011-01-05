@@ -78,8 +78,8 @@ install_node() {
     > "node-v$version.tar.gz" \
     && tar -zxf "node-v$version.tar.gz" \
     && cd "node-v$version" \
-    && ./configure
-    && make install
+    && ./configure \
+    && make install \
     && log "installation complete"
 }
 
