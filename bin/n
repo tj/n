@@ -30,7 +30,7 @@ test -z "$GET" && abort "curl or wget required"
 #
 
 log() {
-  echo "... $@"
+  echo "\033[90m...\033[0m $@"
 }
 
 #
@@ -48,7 +48,7 @@ abort() {
 display_help() {
   cat <<-help
 
-  Usage: n [options] <version> [config ...]
+  Usage: n [options] <version> [config]
 
   Commands:
 

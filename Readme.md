@@ -34,7 +34,7 @@ Pass some config flags to _./configure_:
 
  Output from `n --help`:
 
-     Usage: n [options] <version>
+     Usage: n [options] <version> [config]
 
      Commands:
 
