@@ -30,16 +30,22 @@ Pass some config flags to _./configure_:
 
     $ n 0.2.6 --debug --oprofile
 
+Remove some versions:
+
+    $ n rm 0.2.4 0.3.0
+
 ## Usage
 
  Output from `n --help`:
 
-     Usage: n [options] <version> [config]
+
+     Usage: n [options] [COMMAND] [config] 
 
      Commands:
 
-       n               Output versions installed
-       n <version>     Install and/or use node <version>
+       n                   Output versions installed
+       n rm <version ...>  Remove the given version(s)
+       n <version>         Install and/or use node <version>
 
      Options:
 

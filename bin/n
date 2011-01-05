@@ -48,12 +48,13 @@ abort() {
 display_help() {
   cat <<-help
 
-  Usage: n [options] <version> [config]
+  Usage: n [options] [COMMAND] [config] 
 
   Commands:
 
-    n               Output versions installed
-    n <version>     Install and/or use node <version>
+    n                   Output versions installed
+    n rm <version ...>  Remove the given version(s)
+    n <version>         Install and/or use node <version>
 
   Options:
 
@@ -73,13 +74,13 @@ display_n_version() {
 }
 
 #
-# Check for installed version, and populate $version
+# Check for installed version, and populate $active
 #
 
 check_current_version() {
   if test `which node`; then
-    installed=`node --version`
-    installed=${installed##*v}
+    active=`node --version`
+    active=${active##*v}
   fi  
 }
 
@@ -92,7 +93,7 @@ display_versions() {
   check_current_version
   for file in $VERSIONS_DIR/*; do
     local version=${file##*/}
-    if test "$version" = "$installed"; then
+    if test "$version" = "$active"; then
       echo "  \033[32m*\033[0m $version"
     else
       echo "    $version"
@@ -111,11 +112,11 @@ install_node() {
 
   # remove "v"
   if test "${version:0:1}" = "v"; then
-    version=${installed##*v}
+    version=${active##*v}
   fi 
 
   # already active
-  test "$version" = "$installed" && return
+  test "$version" = "$active" && return
 
   # installed
   local dir=$VERSIONS_DIR/$version
@@ -158,6 +159,18 @@ cleanup() {
   fi
 }
 
+#
+# Remove <version ...>
+#
+
+remove_version() {
+  test $# -eq 0 && abort "version(s) required"
+  while test $# -ne 0; do
+    rm -rf $VERSIONS_DIR/${1##*v}
+    shift
+  done
+}
+
 # Handle arguments
 
 if test $# -eq 0; then
@@ -167,6 +180,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
+      rm) shift; remove_version $@; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
