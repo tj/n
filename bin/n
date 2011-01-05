@@ -61,6 +61,28 @@ display_n_version() {
 }
 
 #
+# Display current node --version
+#
+
+display_current_version() {
+  if test `which node`; then
+    local version=`node --version`
+    echo "  current: $version"
+  else
+    echo "  current: none"
+  fi
+}
+
+#
+# Display current node --version
+# and others installed.
+#
+
+display_versions() {
+  display_current_version
+}
+
+#
 # Install node <version>
 #
 
