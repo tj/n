@@ -11,6 +11,21 @@ or
 
     $ make install
 
+## Examples
+
+Install a few nodes:
+
+    $ n 0.2.6
+    $ n 0.3.3
+
+List installed nodes:
+
+    $ n
+    
+      0.2.5
+    * 0.2.6
+      0.3.3
+
 ## Usage
 
  Output from `n --help`:
