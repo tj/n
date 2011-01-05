@@ -105,11 +105,15 @@ display_versions() {
 
 install_node() {
   local version=$1
+  check_current_version
 
   # remove "v"
   if test "${version:0:1}" = "v"; then
     version=${version:1:${#version}}
   fi 
+
+  # already active
+  test "$version" = "$installed" && return
 
   # install
   local dir="node-v$version"
