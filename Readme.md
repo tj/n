@@ -1,5 +1,31 @@
 
-# Chrono
+# n
+
+ My own flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
+
+## Installation
+
+    $ npm install n
+
+or
+
+    $ make install
+
+## Usage
+
+ Output from `n --help`:
+
+     Usage: n [options] <version>
+
+     Commands:
+
+       n               Output versions installed
+       n <version>     Install node <version>
+
+     Options:
+
+       -V, --version   Output current version of n
+       -h, --help      Display help information
 
 ## License 
 
