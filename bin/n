@@ -111,7 +111,7 @@ install_node() {
     > "$dir.tar.gz" \
     && tar -zxf "$dir.tar.gz" \
     && cd $dir \
-    && ./configure --prefix $PREFIX\
+    && ./configure --prefix $PREFIX/$version\
     && make install \
     && cd .. \
     && cleanup $version
