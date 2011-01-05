@@ -38,7 +38,7 @@ log() {
 #
 
 abort() {
-  echo "Error: $@" && exit 1
+  echo "\033[31mError: $@\033[0m" && exit 1
 }
 
 #
