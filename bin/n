@@ -48,7 +48,7 @@ abort() {
 display_help() {
   cat <<-help
 
-  Usage: n [options] <version>
+  Usage: n [options] <version> [config ...]
 
   Commands:
 
@@ -101,7 +101,7 @@ display_versions() {
 }
 
 #
-# Install node <version> <config ...>
+# Install node <version> [config ...]
 #
 
 install_node() {

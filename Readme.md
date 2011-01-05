@@ -26,6 +26,10 @@ List installed nodes:
     * 0.2.6
       0.3.3
 
+Pass some config flags to _./configure_:
+
+    $ n 0.2.6 --debug --oprofile
+
 ## Usage
 
  Output from `n --help`:
