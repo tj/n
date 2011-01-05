@@ -38,6 +38,12 @@ Instead of using `rm` we can simply use `-`:
 
     $ n - 0.2.4
 
+When running multiple versions of node, we can target
+them directly by asking `n` for the binary path:
+
+    $ n bin 0.3.3
+    /usr/local/n/versions/0.3.3/bin/node
+
 ## Usage
 
  Output from `n --help`:
@@ -48,6 +54,7 @@ Instead of using `rm` we can simply use `-`:
      Commands:
 
        n                   Output versions installed
+       n bin <version>     Output bin path for <version>
        n rm <version ...>  Remove the given version(s)
        n <version>         Install and/or use node <version>
 

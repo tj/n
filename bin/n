@@ -53,6 +53,7 @@ display_help() {
   Commands:
 
     n                   Output versions installed
+    n bin <version>     Output bin path for <version>
     n rm <version ...>  Remove the given version(s)
     n <version>         Install and/or use node <version>
 
@@ -171,6 +172,20 @@ remove_version() {
   done
 }
 
+#
+# Output bin path for <version>
+#
+
+display_bin_path_for_version() {
+  test -z $1 && abort "version required"
+  local file=$VERSIONS_DIR/${1##*v}/bin/node
+  if test -f $file; then
+    printf $file
+  else 
+    abort "$1 is not installed"
+  fi
+}
+
 # Handle arguments
 
 if test $# -eq 0; then
@@ -180,6 +195,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
+      bin) display_bin_path_for_version $2; exit ;;
       rm|-) shift; remove_version $@; exit ;;
       *) install_node $@; exit ;;
     esac
