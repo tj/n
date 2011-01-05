@@ -1,3 +1,63 @@
 #!/usr/bin/env sh
 
+# Library version
+
 VERSION="0.0.1"
+
+# curl / wget support
+
+GET=
+
+# wget support
+which wget > /dev/null && GET="wget -q -O-"
+
+# curl support
+which curl > /dev/null && GET="curl -# -L"
+
+#
+# Log the given <msg ...>
+#
+
+log() {
+  echo "... $@"
+}
+
+#
+# Output usage information.
+#
+
+display_help() {
+  cat <<-help
+
+  Usage: n [options] <version>
+
+  Options:
+
+    -V, --version   Output current version of n
+    -h, --help      Display help information
+
+help
+  exit 0
+}
+
+#
+# Output n version.
+#
+
+display_n_version() {
+  echo $VERSION && exit 0
+}
+
+# Handle arguments
+
+if test $# -eq 0; then
+  display_versions
+else
+  while test $# -ne 0; do
+    case $1 in
+      -V|--version) display_n_version ;;
+      -h|--help) display_help ;;
+    esac
+    shift
+  done
+fi
