@@ -3,8 +3,8 @@
 # Library version
 
 VERSION="0.0.1"
-PREFIX=${N_PREFIX-/usr/local}
-VERSIONS_DIR=$PREFIX/n/versions
+N_PREFIX=${N_PREFIX-/usr/local}
+VERSIONS_DIR=$N_PREFIX/n/versions
 
 # setup
 
@@ -125,7 +125,7 @@ install_node() {
   # install
   else
     local dir="node-v$version"
-    cd $PREFIX/n \
+    cd $N_PREFIX/n \
       && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
       > "$dir.tar.gz" \
       && tar -zxf "$dir.tar.gz" \
