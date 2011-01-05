@@ -3,6 +3,7 @@
 # Library version
 
 VERSION="0.0.1"
+PREFIX=${PREFIX-/usr/local}
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
@@ -78,7 +79,7 @@ display_n_version() {
 check_current_version() {
   if test `which node`; then
     installed=`node --version`
-    installed=${installed:1:${#installed}}
+    installed=${installed##*v}
   fi  
 }
 
@@ -109,7 +110,7 @@ install_node() {
 
   # remove "v"
   if test "${version:0:1}" = "v"; then
-    version=${version:1:${#version}}
+    version=${installed##*v}
   fi 
 
   # already active
@@ -117,11 +118,10 @@ install_node() {
 
   # installed
   local dir=$VERSIONS_DIR/$version
-  local prefix=/usr/local
   if test -d $dir; then
     cd $dir \
-      && cp -fr $dir/include/node $prefix/include \
-      && cp -f $dir/bin/node $prefix/bin/node
+      && cp -fr $dir/include/node $PREFIX/include \
+      && cp -f $dir/bin/node $PREFIX/bin/node
   # install
   else
     local dir="node-v$version"
