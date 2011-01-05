@@ -72,22 +72,26 @@ display_n_version() {
 }
 
 #
+# Check for installed version, and populate $version
+#
+
+check_current_version() {
+  if test `which node`; then
+    installed=`node --version`
+    installed=${installed:1:${#installed}}
+  fi  
+}
+
+#
 # Display current node --version
 # and others installed.
 #
 
 display_versions() {
-  # Active version
-  local installed
-  if test `which node`; then
-    local installed=`node --version`
-    installed=${installed:1:${#installed}}
-  fi
-
-  # Installed versions
+  check_current_version
   for file in $VERSIONS_DIR/*; do
     local version=${file##*/}
-    if test $version = $installed; then
+    if test "$version" = "$installed"; then
       echo "  \033[32m*\033[0m $version"
     else
       echo "    $version"
