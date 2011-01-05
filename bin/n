@@ -14,12 +14,24 @@ which wget > /dev/null && GET="wget -q -O-"
 # curl support
 which curl > /dev/null && GET="curl -# -L"
 
+# Ensure we have curl or wget
+
+test -z "$GET" && abort "curl or wget required"
+
 #
 # Log the given <msg ...>
 #
 
 log() {
   echo "... $@"
+}
+
+#
+# Exit with the given <msg ...>
+#
+
+abort() {
+  echo "Error: $@" && exit 1
 }
 
 #
