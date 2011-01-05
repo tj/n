@@ -20,12 +20,19 @@ or
      Commands:
 
        n               Output versions installed
-       n <version>     Install node <version>
+       n <version>     Install and/or use node <version>
 
      Options:
 
        -V, --version   Output current version of n
        -h, --help      Display help information
+
+## Details
+
+ `n` by default installs node to _/usr/local/n/versions_, from
+ which it can see what you have currently installed, and activate previously installed versions of node when `n <version>` is invoked again.
+
+ To alter where `n` operates simply export __N_PREFIX__ to whatever you prefer.
 
 ## License 
 

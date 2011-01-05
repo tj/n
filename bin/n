@@ -3,11 +3,12 @@
 # Library version
 
 VERSION="0.0.1"
-PREFIX=/usr/local/n
+PREFIX=${N_PREFIX-/usr/local}
+VERSIONS_DIR=$PREFIX/n/versions
 
 # setup
 
-test -d $PREFIX/versions || mkdir -p $PREFIX/versions
+test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
 # curl / wget support
 
@@ -51,7 +52,7 @@ display_help() {
   Commands:
 
     n               Output versions installed
-    n <version>     Install node <version>
+    n <version>     Install and/or use node <version>
 
   Options:
 
@@ -106,12 +107,12 @@ install_node() {
 
   # install
   local dir="node-v$version"
-  cd $PREFIX \
+  cd $PREFIX/n \
     && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
     > "$dir.tar.gz" \
     && tar -zxf "$dir.tar.gz" \
     && cd $dir \
-    && ./configure --prefix $PREFIX/versions/$version\
+    && ./configure --prefix $VERSIONS_DIR/$version\
     && make install \
     && cd .. \
     && cleanup $version
