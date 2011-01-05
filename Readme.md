@@ -34,6 +34,10 @@ Remove some versions:
 
     $ n rm 0.2.4 0.3.0
 
+Instead of using `rm` we can simply use `-`:
+
+    $ n - 0.2.4
+
 ## Usage
 
  Output from `n --help`:

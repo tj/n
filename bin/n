@@ -180,7 +180,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help) display_help ;;
-      rm) shift; remove_version $@; exit ;;
+      rm|-) shift; remove_version $@; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
