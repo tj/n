@@ -13,10 +13,10 @@ or
 
 ## Examples
 
-Install a few nodes:
+Install a few nodes ("v" is optional):
 
     $ n 0.2.6
-    $ n 0.3.3
+    $ n v0.3.3
 
 List installed nodes:
 
@@ -32,7 +32,7 @@ Pass some config flags to _./configure_:
 
 Remove some versions:
 
-    $ n rm 0.2.4 0.3.0
+    $ n rm 0.2.4 v0.3.0
 
 Instead of using `rm` we can simply use `-`:
 
