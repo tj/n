@@ -78,10 +78,19 @@ display_n_version() {
 display_current_version() {
   if test `which node`; then
     local version=`node --version`
-    echo "  current: $version"
-  else
-    echo "  current: none"
+    echo "  * ${version:1:${#version}}"
   fi
+}
+
+#
+# Display installed versions
+#
+
+display_installed_versions() {
+  for file in $VERSIONS_DIR/*; do
+    local version=${file##*/}
+    echo "  - $version"
+  done
 }
 
 #
@@ -91,6 +100,7 @@ display_current_version() {
 
 display_versions() {
   display_current_version
+  display_installed_versions
 }
 
 #
