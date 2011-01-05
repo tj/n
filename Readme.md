@@ -32,6 +32,8 @@ or
  `n` by default installs node to _/usr/local/n/versions_, from
  which it can see what you have currently installed, and activate previously installed versions of node when `n <version>` is invoked again.
 
+ Activated nodes are then installed to the prefix _/usr/local_.
+
  To alter where `n` operates simply export __N_PREFIX__ to whatever you prefer.
 
 ## License 

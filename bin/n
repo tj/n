@@ -115,17 +115,27 @@ install_node() {
   # already active
   test "$version" = "$installed" && return
 
+  # installed
+  local dir=$VERSIONS_DIR/$version
+  local prefix=/usr/local
+  if test -d $dir; then
+    cd $dir \
+      && cp -fr $dir/include/node $prefix/include \
+      && cp -f $dir/bin/node $prefix/bin/node
   # install
-  local dir="node-v$version"
-  cd $PREFIX/n \
-    && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
-    > "$dir.tar.gz" \
-    && tar -zxf "$dir.tar.gz" \
-    && cd $dir \
-    && ./configure --prefix $VERSIONS_DIR/$version\
-    && make install \
-    && cd .. \
-    && cleanup $version
+  else
+    local dir="node-v$version"
+    cd $PREFIX/n \
+      && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
+      > "$dir.tar.gz" \
+      && tar -zxf "$dir.tar.gz" \
+      && cd $dir \
+      && ./configure --prefix $VERSIONS_DIR/$version\
+      && make install \
+      && cd .. \
+      && cleanup $version \
+      && n $version
+  fi
 }
 
 #
