@@ -88,7 +88,7 @@ display_n_version() {
 check_current_version() {
   if test `which node`; then
     active=`node --version`
-    active=${active##*v}
+    active=${active/v/}
   fi  
 }
 
@@ -119,9 +119,7 @@ install_node() {
   check_current_version
 
   # remove "v"
-  if test "${version:0:1}" = "v"; then
-    version=${active##*v}
-  fi 
+  version=${version/v/}
 
   # already active
   test "$version" = "$active" && return
@@ -172,9 +170,10 @@ cleanup() {
 #
 
 remove_version() {
+  local version=${1/v/}
   test $# -eq 0 && abort "version(s) required"
   while test $# -ne 0; do
-    rm -rf $VERSIONS_DIR/${1##*v}
+    rm -rf $VERSIONS_DIR/$version
     shift
   done
 }
@@ -184,8 +183,9 @@ remove_version() {
 #
 
 display_bin_path_for_version() {
+  local version=${1/v/}
   test -z $1 && abort "version required"
-  local file=$VERSIONS_DIR/${1##*v}/bin/node
+  local file=$VERSIONS_DIR/$version/bin/node
   if test -f $file; then
     printf $file
   else 
