@@ -185,9 +185,9 @@ remove_version() {
 display_bin_path_for_version() {
   local version=${1/v/}
   test -z $1 && abort "version required"
-  local file=$VERSIONS_DIR/$version/bin/node
-  if test -f $file; then
-    printf $file
+  local bin=$VERSIONS_DIR/$version/bin/node
+  if test -f $bin; then
+    printf $bin
   else 
     abort "$1 is not installed"
   fi
@@ -199,9 +199,14 @@ display_bin_path_for_version() {
 #
 
 execute_with_version() {
+  local version=${1/v/}
   test -z $1 && abort "version required"
-  local bin=`n which $1`
-  $bin ${@:2}
+  local bin=$VERSIONS_DIR/$version/bin/node
+  if test -f $bin; then
+    $bin ${@:2}
+  else 
+    abort "$1 is not installed"
+  fi
 }
 
 # Handle arguments
