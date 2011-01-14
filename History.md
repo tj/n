@@ -1,4 +1,9 @@
 
+0.1.1 / 2011-01-13 
+==================
+
+  * Fixed `use` with invalid version, added "is not installed"
+
 0.1.0 / 2011-01-05 
 ==================
 
