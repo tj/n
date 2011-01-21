@@ -15,8 +15,8 @@ test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
 GET=
 
-# wget support
-which wget > /dev/null && GET="wget -q -O-"
+# wget support (Added --no-check-certificate for Github downloads)
+which wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
 # curl support
 which curl > /dev/null && GET="curl -# -L"
@@ -114,6 +114,20 @@ display_versions() {
   done
 }
 
+
+install_source() {
+  local version=$1; shift
+  local config=$@
+  
+  if test "$version" = ""; then
+    version="master"
+  fi
+
+  SOURCE_URL=https://github.com/ry/node/tarball/$version
+  install_node $version $config
+
+}
+
 #
 # Install node <version> [config ...]
 #
@@ -126,6 +140,10 @@ install_node() {
   # remove "v"
   version=${version#v}
 
+  if test "$SOURCE_URL" = ""; then
+    SOURCE_URL=http://nodejs.org/dist/node-v$version.tar.gz
+  fi
+
   # installed
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
@@ -134,18 +152,49 @@ install_node() {
       && cp -f $dir/bin/node $PREFIX/bin/node
   # install
   else
-    cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
-      > "node-v$version.tar.gz" \
-      && tar -zxf "node-v$version.tar.gz" \
-      && cd "node-v$version" \
+    cd $N_PREFIX/n
+    echo "Downloading: $SOURCE_URL"
+    $GET "$SOURCE_URL" > "node-v$version.tar.gz"
+    fileName="node-v$version.tar.gz"
+    wait
+    tar -zxf $fileName > /dev/null 2>&1
+    coderr=$?
+    if test $coderr -gt 0; then
+        rm $fileName
+        abort "Tar command failed. Did you give a valid node version number?"
+    fi
+    wait
+
+    #Handle Github sub folders.. and fail silently
+    local sdir=`mv ry-node* node-v$version 2> /dev/null`
+
+    cd "node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
-      && make install \
-      && cd .. \
+      && make install
+      local sversion=`$VERSIONS_DIR/$version/bin/node --version`
+      #Grab the version from the just compiled node
+      sversion=${sversion#v}
+
+      if test -z "$sversion"; then
+        abort "Something went really wrong"
+        return #failure
+      fi
+      cd .. \
       && cleanup $version \
-      && mkdir -p $dir \
-      && echo $config > "$dir/.config" \
-      && n $version
+      && echo $config > "$dir/.config"
+
+      #If the version passed in doesn't match the version just compiled move it around
+      if test -n $sversion; then
+          if test "$sversion" != "$version"; then
+            if test -d "$VERSIONS_DIR/$sversion"; then
+                #We have a previous version here, remove it
+                rm -rRf "$VERSIONS_DIR/$sversion"
+            fi
+            mv "$VERSIONS_DIR/$version" "$VERSIONS_DIR/$sversion"
+            version=$sversion
+          fi
+      fi
+      n $version
   fi
 }
 
@@ -190,7 +239,7 @@ display_bin_path_for_version() {
   test -z $1 && abort "version required"
   local bin=$VERSIONS_DIR/$version/bin/node
   if test -f $bin; then
-    printf $bin
+    echo $bin
   else 
     abort "$1 is not installed"
   fi
@@ -224,6 +273,7 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) execute_with_version ${@:2}; exit ;;
       rm|-) remove_version ${@:2}; exit ;;
+      source|latest) install_source ${@:2}; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
