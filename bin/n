@@ -56,7 +56,7 @@ display_help() {
     n use <version> [args ...]  Execute node <version> with [args ...]
     n bin <version>             Output bin path for <version>
     n rm <version ...>          Remove the given version(s)
-    n <version>                 Install and/or use node <version>
+    n <version> [config ...]    Install and/or use node <version>
 
   Options:
 

@@ -11,24 +11,33 @@ or
 
     $ make install
 
-## Examples
+### Installing Binaries
 
-Install a few nodes ("v" is optional):
+Install a few nodes ("v" is optional), the version given becomes the active node binary once installation is complete.
 
     $ n 0.2.6
     $ n v0.3.3
 
-List installed nodes:
+List installed binaries:
 
     $ n
     
       0.2.5
-    * 0.2.6
+    ο 0.2.6
       0.3.3
 
 Pass some config flags to _./configure_:
 
-    $ n 0.2.6 --debug --oprofile
+    $ n 0.2.6 --debug
+
+List installed binaries, config flags are shown:
+
+      0.2.3 
+    ο 0.2.6 --debug
+      0.3.4 
+      0.3.5
+
+### Removing Binaries
 
 Remove some versions:
 
@@ -37,6 +46,8 @@ Remove some versions:
 Instead of using `rm` we can simply use `-`:
 
     $ n - 0.2.4
+
+### Binary Usage
 
 When running multiple versions of node, we can target
 them directly by asking `n` for the binary path:
@@ -64,7 +75,7 @@ with flags:
        n use <version> [args ...]  Execute node <version> with [args ...]
        n bin <version>             Output bin path for <version>
        n rm <version ...>          Remove the given version(s)
-       n <version>                 Install and/or use node <version>
+       n <version> [config ...]    Install and/or use node <version>
     
      Options:
     
