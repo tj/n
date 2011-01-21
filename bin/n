@@ -121,9 +121,9 @@ install_node() {
 
   # remove "v"
   version=${version#v}
+  local dir=$VERSIONS_DIR/$version
 
   # installed
-  local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
     cd $dir \
       && cp -fr $dir/include/node $PREFIX/include \
