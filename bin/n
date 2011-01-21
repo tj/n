@@ -127,7 +127,7 @@ install_node() {
   if test -d $dir; then
     cd $dir \
       && cp -fr $dir/include/node $PREFIX/include \
-      && cp -f $dir/bin/node $PREFIX/bin/node
+      && cp -f $dir/bin/node $PREFIX/bin/node \
       && cp -f $dir/bin/node-waf $PREFIX/bin/node-waf
   # install
   else
