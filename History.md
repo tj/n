@@ -1,4 +1,13 @@
 
+0.2.0 / 2011-01-20 
+==================
+
+  * Added; display config options when using `n`.
+    For example if you install via `n 0.3.5 --debug`,
+    then `n` will display `0.3.5 --debug`.
+
+  * Changed; `n <version>` ignores non-n installations
+
 0.1.2 / 2011-01-20 
 ==================
 
