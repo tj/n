@@ -104,7 +104,11 @@ display_versions() {
     if test "$version" = "$active"; then
       echo "  \033[32mο\033[0m $version"
     else
-      echo "    $version"
+      if test "$version" = "*"; then
+        log "No node version installed, install with: n <version>"
+      else
+        echo "    $version"
+      fi
     fi
   done
 }
