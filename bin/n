@@ -122,12 +122,13 @@ install_node() {
   # remove "v"
   version=${version#v}
 
-  # installed
+  # activate
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
     cd $dir \
       && cp -fr $dir/include/node $PREFIX/include \
       && cp -f $dir/bin/node $PREFIX/bin/node
+      && cp -f $dir/bin/node-waf $PREFIX/bin/node-waf
   # install
   else
     cd $N_PREFIX/n \
