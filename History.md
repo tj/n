@@ -1,4 +1,10 @@
 
+0.1.2 / 2011-01-20 
+==================
+
+  * Added `help` alias of `--help`
+  * Fixed bash specific substitutions. Closes #1
+
 0.1.1 / 2011-01-13 
 ==================
 
