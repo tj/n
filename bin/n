@@ -169,8 +169,8 @@ cleanup() {
 #
 
 remove_version() {
+  test -z $1 && abort "version(s) required"
   local version=${1#v}
-  test $# -eq 0 && abort "version(s) required"
   while test $# -ne 0; do
     rm -rf $VERSIONS_DIR/$version
     shift
@@ -182,8 +182,8 @@ remove_version() {
 #
 
 display_bin_path_for_version() {
-  local version=${1#v}
   test -z $1 && abort "version required"
+  local version=${1#v}
   local bin=$VERSIONS_DIR/$version/bin/node
   if test -f $bin; then
     printf $bin
@@ -198,8 +198,8 @@ display_bin_path_for_version() {
 #
 
 execute_with_version() {
-  local version=${1#v}
   test -z $1 && abort "version required"
+  local version=${1#v}
   local bin=$VERSIONS_DIR/$version/bin/node
   if test -f $bin; then
     $bin ${@:2}
