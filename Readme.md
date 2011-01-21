@@ -37,6 +37,10 @@ List installed binaries, config flags are shown:
       0.3.4 
       0.3.5
 
+Use or install the latest official release:
+
+   $ n latest
+
 ### Removing Binaries
 
 Remove some versions:
@@ -68,27 +72,28 @@ with flags:
  Output from `n --help`:
 
      Usage: n [options] [COMMAND] [config] 
-    
+
      Commands:
-    
+
        n                           Output versions installed
+       n latest [config ...]       Install or activate the latest node release
+       n <version> [config ...]    Install and/or use node <version>
        n use <version> [args ...]  Execute node <version> with [args ...]
        n bin <version>             Output bin path for <version>
        n rm <version ...>          Remove the given version(s)
-       n <version> [config ...]    Install and/or use node <version>
-    
+       n --latest                  Output the latest node version available
+
      Options:
-    
+
        -V, --version   Output current version of n
        -h, --help      Display help information
-    
+
      Aliases:
-    
+
        -       rm
        which   bin
        use     as
-    
-    
+
 ## Details
 
  `n` by default installs node to _/usr/local/n/versions_, from

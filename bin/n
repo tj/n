@@ -53,6 +53,7 @@ display_help() {
   Commands:
 
     n                           Output versions installed
+    n latest [config ...]       Install or activate the latest node release
     n <version> [config ...]    Install and/or use node <version>
     n use <version> [args ...]  Execute node <version> with [args ...]
     n bin <version>             Output bin path for <version>
@@ -234,6 +235,7 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) execute_with_version ${@:2}; exit ;;
       rm|-) remove_version ${@:2}; exit ;;
+      latest) install_node `n --latest`; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
