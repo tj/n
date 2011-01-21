@@ -129,16 +129,17 @@ install_node() {
       && cp -f $dir/bin/node $PREFIX/bin/node
   # install
   else
-    local dir="node-v$version"
     cd $N_PREFIX/n \
       && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
-      > "$dir.tar.gz" \
-      && tar -zxf "$dir.tar.gz" \
-      && cd $dir \
+      > "node-v$version.tar.gz" \
+      && tar -zxf "node-v$version.tar.gz" \
+      && cd "node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
       && make install \
       && cd .. \
       && cleanup $version \
+      && mkdir -p $dir \
+      && echo $config > "$dir/.config" \
       && n $version
   fi
 }
