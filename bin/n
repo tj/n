@@ -120,12 +120,19 @@ install_node() {
 
   # remove "v"
   version=${version#v}
+  local dir=$VERSIONS_DIR/$version
 
   # already active
+  if ! test -d "$dir"; then
+    # This catches that we have a version of Node installed
+    # that just happens to be the same version that we are asking to install
+    # but it's not an n version, so we reset $active to ""
+    # so it passes the next test and installs the version
+    active=""
+  fi
   test "$version" = "$active" && return
 
   # installed
-  local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
     cd $dir \
       && cp -fr $dir/include/node $PREFIX/include \
