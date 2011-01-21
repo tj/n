@@ -217,7 +217,7 @@ else
   while test $# -ne 0; do
     case $1 in
       -V|--version) display_n_version ;;
-      -h|--help) display_help ;;
+      -h|--help|help) display_help ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) execute_with_version ${@:2}; exit ;;
       rm|-) remove_version ${@:2}; exit ;;
