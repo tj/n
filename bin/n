@@ -142,6 +142,7 @@ install_node() {
   # remove "v"
   version=${version#v}
 
+  # activate
   if test "$SOURCE_URL" = ""; then
     SOURCE_URL=http://nodejs.org/dist/node-v$version.tar.gz
   fi
