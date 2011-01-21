@@ -121,9 +121,6 @@ install_node() {
   # remove "v"
   version=${version#v}
 
-  # already active
-  test "$version" = "$active" && return
-
   # installed
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
