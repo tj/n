@@ -127,10 +127,12 @@ install_node() {
   # activate
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
+    # TODO: refactor, this is lame
     cd $dir \
       && cp -fr $dir/include/node $PREFIX/include \
       && cp -f $dir/bin/node $PREFIX/bin/node \
-      && cp -f $dir/bin/node-waf $PREFIX/bin/node-waf
+      && cp -f $dir/bin/node-waf $PREFIX/bin/node-waf \
+      && cp -fr $dir/lib/node/* $PREFIX/lib/node
   # install
   else
     cd $N_PREFIX/n \
