@@ -1,4 +1,11 @@
 
+0.3.0 / 2011-01-21 
+==================
+
+  * Added `n latest` to install (or activate) latest node version released
+  * Added `n --latest` to output latest node version released
+  * Fixed wafadmin issue, installing lib/node/*. Closes #7
+
 0.2.2 / 2011-01-21 
 ==================
 
