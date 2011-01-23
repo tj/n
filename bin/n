@@ -135,11 +135,28 @@ install_node() {
       && cp -fr $dir/lib/node/* $PREFIX/lib/node
   # install
   else
+    local tarball="node-v$version.tar.gz"
+    local logpath="/tmp/n.log"
+
+    # fetch and unpack
     cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/node-v$version.tar.gz" \
-      > "node-v$version.tar.gz" \
-      && tar -zxf "node-v$version.tar.gz" \
-      && cd "node-v$version" \
+      && $GET "http://nodejs.org/dist/$tarball" \
+      > $tarball \
+      && tar -zxf $tarball &> $logpath
+
+    # see if things are alright
+    if test $? -gt 0; then
+      rm $tarball
+      echo "\033[31mError: installation failed\033[0m"
+      echo "  node version $version does not exist,"
+      echo "  n failed to fetch the tarball,"
+      echo "  or tar failed. Try a different"
+      echo "  version or view $logpath to view"
+      echo "  error details."
+      exit 1
+    fi
+
+    cd "node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
       && make install \
       && cd .. \
