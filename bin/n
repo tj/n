@@ -11,6 +11,10 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
+if ! test -d $VERSIONS_DIR; then
+    abort "Failed to create versions directory ($VERSIONS_DIR), do you have permissions to do this?"
+fi
+
 # curl / wget support
 
 GET=
