@@ -7,6 +7,22 @@ PREFIX=${PREFIX-/usr/local}
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
+#
+# Log the given <msg ...>
+#
+
+log() {
+  echo "\033[90m...\033[0m $@"
+}
+
+#
+# Exit with the given <msg ...>
+#
+
+abort() {
+  echo "\033[31mError: $@\033[0m" && exit 1
+}
+
 # setup
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
@@ -29,21 +45,6 @@ which curl > /dev/null && GET="curl -# -L"
 
 test -z "$GET" && abort "curl or wget required"
 
-#
-# Log the given <msg ...>
-#
-
-log() {
-  echo "\033[90m...\033[0m $@"
-}
-
-#
-# Exit with the given <msg ...>
-#
-
-abort() {
-  echo "\033[31mError: $@\033[0m" && exit 1
-}
 
 #
 # Output usage information.
