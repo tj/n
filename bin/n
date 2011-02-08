@@ -19,8 +19,8 @@ fi
 
 GET=
 
-# wget support
-which wget > /dev/null && GET="wget -q -O-"
+# wget support (Added --no-check-certificate for Github downloads)
+which wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
 # curl support
 which curl > /dev/null && GET="curl -# -L"
