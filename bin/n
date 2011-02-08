@@ -368,11 +368,11 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
-      as|use) execute_with_version ${@:2}; exit ;;
-      rm|-) remove_version ${@:2}; exit ;;
+      as|use) execute_with_version $2; exit ;;
+      rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
-      source) install_source ${@:2}; exit ;;
-      ls|list) list_versions ${@:2}; exit ;;
+      source) install_source $2; exit ;;
+      ls|list) list_versions $2; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
