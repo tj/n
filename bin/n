@@ -120,6 +120,23 @@ display_versions() {
 }
 
 #
+# Install node <branch (master)> [config ...]
+#
+
+install_source() {
+  local version=$1; shift
+  local config=$@
+  
+  if test "$version" = ""; then
+    version="master"
+  fi
+
+  SOURCE_URL=https://github.com/ry/node/tarball/$version
+  install_node $version $config
+
+}
+
+#
 # Install node <version> [config ...]
 #
 
@@ -142,12 +159,16 @@ install_node() {
       && cp -fr $dir/lib/node/* $PREFIX/lib/node
   # install
   else
+    
     local tarball="node-v$version.tar.gz"
     local logpath="/tmp/n.log"
+    if test "$SOURCE_URL" = ""; then
+      SOURCE_URL=http://nodejs.org/dist/$tarball
+    fi
 
     # fetch and unpack
     cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/$tarball" \
+      && $GET "$SOURCE_URL" \
       > $tarball \
       && tar -zxf $tarball &> $logpath
 
@@ -163,14 +184,41 @@ install_node() {
       exit 1
     fi
 
+    #Handle Github sub folders.. and fail silently
+    mv ry-node* node-v$version 2> /dev/null
+
     cd "node-v$version" \
-      && ./configure --prefix $VERSIONS_DIR/$version $config\
-      && make install \
-      && cd .. \
+      && ./configure --prefix $VERSIONS_DIR/$version $config \
+      && make install
+      if ! test -n "$VERSIONS_DIR/$version/bin/"; then
+        abort "Compile Failed"
+      fi
+
+      local sversion=`$VERSIONS_DIR/$version/bin/node --version`
+      #Grab the version from the just compiled node
+      sversion=${sversion#v}
+
+      if test -z "$sversion"; then
+        abort "Something went really wrong"
+        return #failure
+      fi
+      cd .. \
       && cleanup $version \
-      && mkdir -p $dir \
-      && echo $config > "$dir/.config" \
-      && n $version
+      && echo $config > "$dir/.config"
+
+      #If the version passed in doesn't match the version just compiled move it around
+      if test -n $sversion; then
+          if test "$sversion" != "$version"; then
+            if test -d "$VERSIONS_DIR/$sversion"; then
+                #We have a previous version here, remove it
+                rm -rRf "$VERSIONS_DIR/$sversion"
+            fi
+            mv "$VERSIONS_DIR/$version" "$VERSIONS_DIR/$sversion"
+            version=$sversion
+          fi
+      fi
+      n $version
+
   fi
 }
 
@@ -287,6 +335,7 @@ else
       as|use) execute_with_version ${@:2}; exit ;;
       rm|-) remove_version ${@:2}; exit ;;
       latest) install_node `n --latest`; exit ;;
+      source) install_source ${@:2}; exit ;;
       ls|list) list_versions ${@:2}; exit ;;
       *) install_node $@; exit ;;
     esac
