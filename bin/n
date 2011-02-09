@@ -160,9 +160,14 @@ display_versions() {
 #
 
 install_source() {
-  local version=$1; shift
-  local config=$@
-  
+  shift;
+  local version=$1;
+  local config="";
+  if ! test -z "$2"; then
+    shift;
+    config=$@
+  fi
+
   if test "$version" = ""; then
     version="master"
   fi
@@ -201,12 +206,9 @@ install_node() {
     if test "$SOURCE_URL" = ""; then
       SOURCE_URL=http://nodejs.org/dist/$tarball
     fi
-
     # fetch and unpack
-    cd $N_PREFIX/n \
-      && $GET "$SOURCE_URL" \
-      > $tarball \
-      && tar -zxf $tarball &> $logpath
+    cd $N_PREFIX/n && $GET "$SOURCE_URL" > $tarball && tar -zxf $tarball &> $logpath
+    wait ##This was needed for /bin/dash on Ubuntu
 
     # see if things are alright
     if test $? -gt 0; then
@@ -222,13 +224,14 @@ install_node() {
 
     #Handle Github sub folders.. and fail silently
     mv ry-node* node-v$version 2> /dev/null
+    wait
 
-    cd "node-v$version" \
-      && ./configure --prefix $VERSIONS_DIR/$version $config \
-      && make install
-      if ! test -n "$VERSIONS_DIR/$version/bin/"; then
-        abort "Compile Failed"
-      fi
+    cd "$N_PREFIX/n/node-v$version" && ./configure --prefix $VERSIONS_DIR/$version $config && make install
+    wait ##This was needed for /bin/dash on Ubuntu
+
+    if ! test -n "$VERSIONS_DIR/$version/bin/"; then
+      abort "Compile Failed"
+    fi
 
       local sversion=`$VERSIONS_DIR/$version/bin/node --version`
       #Grab the version from the just compiled node
@@ -312,10 +315,11 @@ display_bin_path_for_version() {
 
 execute_with_version() {
   test -z $1 && abort "version required"
-  local version=${1#v}
+  local version=${2#v};
+  shift;shift;
   local bin=$VERSIONS_DIR/$version/bin/node
   if test -f $bin; then
-    $bin ${@:2}
+    $bin $@
   else 
     abort "$1 is not installed"
   fi
@@ -354,11 +358,11 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
-      as|use) execute_with_version $2; exit ;;
+      as|use) execute_with_version $@; exit ;;
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
-      source) install_source $2; exit ;;
-      ls|list) list_versions $2; exit ;;
+      source) install_source $@; exit ;;
+      ls|list) list_versions; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
