@@ -252,10 +252,25 @@ display_latest_version() {
 #
 
 list_versions() {
-  $GET 2> /dev/null http://nodejs.org/dist/ \
+  check_current_version
+  local versions=""
+  versions=`$GET 2> /dev/null http://nodejs.org/dist/ \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | awk '{ print "  " $1 }'
+    | awk '{ print "  " $1 }'`
+
+  for v in $versions;
+  do
+    if test "$active" = "$v"; then
+        echo " \033[32mο\033[0m *$v \033[0m"
+    else
+      if test -d $VERSIONS_DIR/$v; then
+        echo "  \033[32m\033[0m *$v \033[0m"
+      else
+        echo "    $v"
+      fi
+    fi
+  done
 }
 
 # Handle arguments
