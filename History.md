@@ -1,4 +1,13 @@
 
+0.4.0 / 2011-02-14 
+==================
+
+  * Added `n ls|list` to show versions available
+  * Added markers to installed and current versions for `n ls` [davglass]
+  * Added `--no-check-certificate` for Github Downloads [davglass]
+  * Fixed; moved abort and log up, so they are defined before calling [davglass]
+  * Improved error message when tar fails (usually due to invalid version number) [davglass]
+
 0.3.0 / 2011-01-21 
 ==================
 

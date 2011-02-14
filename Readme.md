@@ -82,6 +82,7 @@ with flags:
        n bin <version>             Output bin path for <version>
        n rm <version ...>          Remove the given version(s)
        n --latest                  Output the latest node version available
+       n ls                        Output the versions of node available
 
      Options:
 
