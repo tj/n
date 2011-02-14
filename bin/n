@@ -259,13 +259,12 @@ list_versions() {
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }'`
 
-  for v in $versions;
-  do
+  for v in $versions; do
     if test "$active" = "$v"; then
-        echo " \033[32mο\033[0m *$v \033[0m"
+      echo "  \033[32mο\033[0m $v \033[0m"
     else
       if test -d $VERSIONS_DIR/$v; then
-        echo "  \033[32m\033[0m *$v \033[0m"
+        echo "  * $v \033[0m"
       else
         echo "    $v"
       fi
