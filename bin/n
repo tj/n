@@ -172,7 +172,7 @@ install_source() {
     version="master"
   fi
 
-  SOURCE_URL=https://github.com/ry/node/tarball/$version
+  SOURCE_URL=https://github.com/joyent/node/tarball/$version
   install_node $version $config
 
 }
@@ -223,7 +223,7 @@ install_node() {
     fi
 
     #Handle Github sub folders.. and fail silently
-    mv ry-node* node-v$version 2> /dev/null
+    mv joyent-node* node-v$version 2> /dev/null
     wait
 
     cd "$N_PREFIX/n/node-v$version" && ./configure --prefix $VERSIONS_DIR/$version $config && make install
@@ -348,12 +348,13 @@ list_versions() {
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }'`
 
-  for v in $versions; do
+  for v in $versions;
+  do
     if test "$active" = "$v"; then
-      echo "  \033[32mο\033[0m $v \033[0m"
+        echo " \033[32mο\033[0m *$v \033[0m"
     else
       if test -d $VERSIONS_DIR/$v; then
-        echo "  * $v \033[0m"
+        echo "  \033[32m\033[0m *$v \033[0m"
       else
         echo "    $v"
       fi
