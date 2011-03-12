@@ -149,6 +149,7 @@ install_node() {
     cd $N_PREFIX/n
     $GET "http://nodejs.org/dist/$tarball" > $tarball
     tar -zxf $tarball &> $logpath
+    wait
 
     # see if things are alright
     if test $? -gt 0; then
