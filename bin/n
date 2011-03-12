@@ -146,10 +146,9 @@ install_node() {
     local logpath="/tmp/n.log"
 
     # fetch and unpack
-    cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/$tarball" \
-      > $tarball \
-      && tar -zxf $tarball &> $logpath
+    cd $N_PREFIX/n
+    $GET "http://nodejs.org/dist/$tarball" > $tarball
+    tar -zxf $tarball &> $logpath
 
     # see if things are alright
     if test $? -gt 0; then
