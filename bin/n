@@ -230,8 +230,11 @@ execute_with_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
   local bin=$VERSIONS_DIR/$version/bin/node
+
+  shift # remove version
+
   if test -f $bin; then
-    $bin ${@:2}
+    $bin $@
   else 
     abort "$1 is not installed"
   fi
@@ -284,10 +287,10 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
-      as|use) execute_with_version ${@:2}; exit ;;
-      rm|-) remove_version ${@:2}; exit ;;
+      as|use) shift; execute_with_version $@; exit ;;
+      rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
-      ls|list) list_versions ${@:2}; exit ;;
+      ls|list) list_versions $2; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
