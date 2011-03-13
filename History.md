@@ -1,4 +1,9 @@
 
+0.4.1 / 2011-03-13 
+==================
+
+  * Fixed bad substitution errors on ubuntu [Alexander Simmerl]
+
 0.4.0 / 2011-02-14 
 ==================
 
