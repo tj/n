@@ -12,7 +12,7 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 #
 
 log() {
-  echo "\033[90m...\033[0m $@"
+  echo -e "\033[90m...\033[0m $@"
 }
 
 #
@@ -20,7 +20,7 @@ log() {
 #
 
 abort() {
-  echo "\033[31mError: $@\033[0m" && exit 1
+  echo -e "\033[31mError: $@\033[0m" && exit 1
 }
 
 # setup
@@ -87,7 +87,7 @@ help
 #
 
 display_n_version() {
-  echo $VERSION && exit 0
+  echo -e $VERSION && exit 0
 }
 
 #
@@ -112,9 +112,9 @@ display_versions() {
     local version=${dir##*/}
     local config=`test -f $dir/.config && cat $dir/.config`
     if test "$version" = "$active"; then
-      echo "  \033[32mο\033[0m $version \033[90m$config\033[0m"
+      echo -e "  \033[32mο\033[0m $version \033[90m$config\033[0m"
     else
-      echo "    $version \033[90m$config\033[0m"
+      echo -e "    $version \033[90m$config\033[0m"
     fi
   done
 }
@@ -154,12 +154,12 @@ install_node() {
     # see if things are alright
     if test $? -gt 0; then
       rm $tarball
-      echo "\033[31mError: installation failed\033[0m"
-      echo "  node version $version does not exist,"
-      echo "  n failed to fetch the tarball,"
-      echo "  or tar failed. Try a different"
-      echo "  version or view $logpath to view"
-      echo "  error details."
+      echo -e "\033[31mError: installation failed\033[0m"
+      echo -e "  node version $version does not exist,"
+      echo -e "  n failed to fetch the tarball,"
+      echo -e "  or tar failed. Try a different"
+      echo -e "  version or view $logpath to view"
+      echo -e "  error details."
       exit 1
     fi
 
@@ -169,7 +169,7 @@ install_node() {
       && cd .. \
       && cleanup $version \
       && mkdir -p $dir \
-      && echo $config > "$dir/.config" \
+      && echo -e $config > "$dir/.config" \
       && n $version
   fi
 }
@@ -265,12 +265,12 @@ list_versions() {
 
   for v in $versions; do
     if test "$active" = "$v"; then
-      echo "  \033[32mο\033[0m $v \033[0m"
+      echo -e "  \033[32mο\033[0m $v \033[0m"
     else
       if test -d $VERSIONS_DIR/$v; then
-        echo "  * $v \033[0m"
+        echo -e "  * $v \033[0m"
       else
-        echo "    $v"
+        echo -e "    $v"
       fi
     fi
   done
