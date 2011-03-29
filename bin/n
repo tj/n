@@ -8,11 +8,35 @@ N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
 #
+# Parses the $colors variable passed from config, 
+#
+
+parseColors() {
+	#note that e and the colors MUST be global variables
+	if [[ $1 == "colors" ]] || [[ $1 == "colors+" ]]; then
+		if [[ $1 == "colors" ]]; then e=""; else e="-e" ; fi;
+		BLACK="\033[0m";
+		RED="\033[31m";
+		GREEN="\033[32m"
+		SPECIAL="\033[90m";
+	elif $1 == "nocolors"; then
+		e=""
+		BLACK="";
+		RED="";
+		GREEN="";
+		SPECIAL="";
+	else
+		echo '$colors is incorrectly set in the config file. choices are: colors, colors+, nocolors'
+		exit
+	fi
+}
+
+#
 # Log the given <msg ...>
 #
 
 log() {
-  echo -e "\033[90m...\033[0m $@"
+  echo $e $SPECIAL"..."$BLACK $@
 }
 
 #
@@ -20,7 +44,7 @@ log() {
 #
 
 abort() {
-  echo -e "\033[31mError: $@\033[0m" && exit 1
+  echo $e $RED"Error: "$@$Black && exit 1
 }
 
 # setup
@@ -87,7 +111,7 @@ help
 #
 
 display_n_version() {
-  echo -e $VERSION && exit 0
+  echo $e $VERSION && exit 0
 }
 
 #
@@ -112,9 +136,9 @@ display_versions() {
     local version=${dir##*/}
     local config=`test -f $dir/.config && cat $dir/.config`
     if test "$version" = "$active"; then
-      echo -e "  \033[32mο\033[0m $version \033[90m$config\033[0m"
+      echo $e "  "$GREEN"ο"$BLACK $version $SPECIAL$config$BLACK
     else
-      echo -e "    $version \033[90m$config\033[0m"
+      echo $e "    $version $SPECIAL$config$BLACK"
     fi
   done
 }
@@ -154,12 +178,12 @@ install_node() {
     # see if things are alright
     if test $? -gt 0; then
       rm $tarball
-      echo -e "\033[31mError: installation failed\033[0m"
-      echo -e "  node version $version does not exist,"
-      echo -e "  n failed to fetch the tarball,"
-      echo -e "  or tar failed. Try a different"
-      echo -e "  version or view $logpath to view"
-      echo -e "  error details."
+      echo $e $RED"mError: installation failed"$BLACK
+      echo $e "  node version $version does not exist,"
+      echo $e "  n failed to fetch the tarball,"
+      echo $e "  or tar failed. Try a different"
+      echo $e "  version or view $logpath to view"
+      echo $e "  error details."
       exit 1
     fi
 
@@ -169,7 +193,7 @@ install_node() {
       && cd .. \
       && cleanup $version \
       && mkdir -p $dir \
-      && echo -e $config > "$dir/.config" \
+      && echo $e $config > "$dir/.config" \
       && n $version
   fi
 }
@@ -192,10 +216,6 @@ cleanup() {
     rm -fr "$dir.tar.gz"
   fi
 }
-
-#
-# Remove <version ...>
-#
 
 remove_version() {
   test -z $1 && abort "version(s) required"
@@ -265,16 +285,25 @@ list_versions() {
 
   for v in $versions; do
     if test "$active" = "$v"; then
-      echo -e "  \033[32mο\033[0m $v \033[0m"
+      echo $e "  $GREENο$BLACK $v "
     else
       if test -d $VERSIONS_DIR/$v; then
-        echo -e "  * $v \033[0m"
+        echo -e "  * $v "$BLACK
       else
         echo -e "    $v"
       fi
     fi
   done
 }
+
+
+#
+# loads the $colors setting from the ocnfig file
+#
+
+source config
+
+parseColors $colors
 
 # Handle arguments
 

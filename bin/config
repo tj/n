@@ -1,0 +1,3 @@
+colors="colors+"
+	# or colors+ (chose this, if ascii escape codes are displayed with "colors")
+	# or nocolors (chose this, if colors+ does not work either)
