@@ -216,6 +216,10 @@ cleanup() {
   fi
 }
 
+#
+# Remove <version ...>
+#
+
 remove_version() {
   test -z $1 && abort "version(s) required"
   local version=${1#v}
