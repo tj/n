@@ -236,7 +236,7 @@ execute_with_version() {
   if test -f $bin; then
     $bin $@
   else 
-    abort "$1 is not installed"
+    abort "$version is not installed"
   fi
 }
 
