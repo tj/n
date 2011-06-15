@@ -1,74 +1,97 @@
-
 # n
 
  My own flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
 ## Installation
 
+```bash
     $ npm install n
+```
 
 or
 
+```bash
     $ make install
+```
 
 ### Installing Binaries
 
 Install a few nodes ("v" is optional), the version given becomes the active node binary once installation is complete.
 
+```bash
     $ n 0.2.6
     $ n v0.3.3
-
+```
 List installed binaries:
 
+```bash
     $ n
     
       0.2.5
     ο 0.2.6
       0.3.3
+```
 
 Pass some config flags to _./configure_:
 
+```bash
     $ n 0.2.6 --debug
+```
 
 List installed binaries, config flags are shown:
 
+```bash
       0.2.3 
     ο 0.2.6 --debug
       0.3.4 
       0.3.5
+```
 
 Use or install the latest official release:
 
+```bash
    $ n latest
+```
 
 ### Removing Binaries
 
 Remove some versions:
 
+```bash
     $ n rm 0.2.4 v0.3.0
+```
 
 Instead of using `rm` we can simply use `-`:
 
+```bash
     $ n - 0.2.4
+```
 
 ### Binary Usage
 
 When running multiple versions of node, we can target
 them directly by asking `n` for the binary path:
 
+```bash
     $ n bin 0.3.3
     /usr/local/n/versions/0.3.3/bin/node
+```
 
 Execute a script with 0.3.3 regardless of the active version:
 
+```bash
     $ n use 0.3.3 some.js
+```
 
 with flags:
 
+```bash
     $ n as 0.3.3 --debug some.js
+```
 
 ## Usage
 
+```bash
  Output from `n --help`:
 
      Usage: n [options] [COMMAND] [config] 
@@ -94,6 +117,7 @@ with flags:
        -       rm
        which   bin
        use     as
+```
 
 ## Details
 
