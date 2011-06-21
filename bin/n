@@ -3,8 +3,12 @@
 # Library version
 
 VERSION="0.4.1"
-PREFIX=${PREFIX-/usr/local}
-N_PREFIX=${N_PREFIX-/usr/local}
+#PREFIX=${PREFIX-/usr/local}
+PREFIX=${PREFIX-`which node|sed 's/\/bin\/node$//'`}
+#N_PREFIX=${N_PREFIX-/usr/local}
+ABSPATH=$(readlink -f $0)
+ABSDIR=$(dirname $ABSPATH)
+N_PREFIX=${N_PREFIX-`echo $ABSDIR | sed 's/\/n\/bin$//'`}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
 #
@@ -149,7 +153,7 @@ install_node() {
     cd $N_PREFIX/n \
       && $GET "http://nodejs.org/dist/$tarball" \
       > $tarball \
-      && tar -zxf $tarball &> $logpath
+      && tar -zxf $tarball > $logpath 2>&1
 
     # see if things are alright
     if test $? -gt 0; then
@@ -163,7 +167,7 @@ install_node() {
       exit 1
     fi
 
-    cd "node-v$version" \
+    cd "$N_PREFIX/n/node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
       && make install \
       && cd .. \
