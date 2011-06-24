@@ -3,12 +3,12 @@
 # Library version
 
 VERSION="0.4.1"
-#PREFIX=${PREFIX-/usr/local}
 PREFIX=${PREFIX-`which node|sed 's/\/bin\/node$//'`}
-#N_PREFIX=${N_PREFIX-/usr/local}
+PREFIX=${PREFIX-/usr/local}
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
 N_PREFIX=${N_PREFIX-`echo $ABSDIR | sed 's/\/n\/bin$//'`}
+N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
 #
