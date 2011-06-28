@@ -149,7 +149,7 @@ install_node() {
     cd $N_PREFIX/n \
       && $GET "http://nodejs.org/dist/$tarball" \
       > $tarball \
-      && tar -zxf $tarball &> $logpath
+      && tar -zxf $tarball > $logpath 2>&1
 
     # see if things are alright
     if test $? -gt 0; then
@@ -163,7 +163,7 @@ install_node() {
       exit 1
     fi
 
-    cd "node-v$version" \
+    cd "$N_PREFIX/n/node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
       && make install \
       && cd .. \
