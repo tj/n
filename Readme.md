@@ -5,7 +5,7 @@
 
 ## Installation
 
-    $ npm install n
+    $ npm install -g n
 
 or
 
