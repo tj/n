@@ -145,9 +145,16 @@ install_node() {
     local tarball="node-v$version.tar.gz"
     local logpath="/tmp/n.log"
 
+    local url="http://nodejs.org/dist"
+    local vtail="${version#*.}"
+
+    if test "${vtail%.*}" -gt 4 && test "${vtail#*.}" -gt 0; then
+      url=$url"/v$version"
+    fi
+
     # fetch and unpack
     cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/$tarball" \
+      && $GET "$url/$tarball" \
       > $tarball \
       && tar -zxf $tarball > $logpath 2>&1
 
