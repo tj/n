@@ -144,10 +144,15 @@ install_node() {
   else
     local tarball="node-v$version.tar.gz"
     local logpath="/tmp/n.log"
+    local url="http://nodejs.org/dist/$tarball"
+
+    # >= 0.5.x
+    local minor=$(echo $version | cut -d '.' -f 2)
+    test $minor = "5" && url="http://nodejs.org/dist/v$version/$tarball"
 
     # fetch and unpack
     cd $N_PREFIX/n \
-      && $GET "http://nodejs.org/dist/$tarball" \
+      && $GET $url \
       > $tarball \
       && tar -zxf $tarball > $logpath 2>&1
 
