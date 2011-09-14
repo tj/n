@@ -39,7 +39,7 @@ GET=
 which wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
 # curl support
-which curl > /dev/null && GET="curl -# -L"
+which curl > /dev/null && GET="curl -# -L --fail "
 
 # Ensure we have curl or wget
 
@@ -206,8 +206,19 @@ install_node() {
     if test "$SOURCE_URL" = ""; then
       SOURCE_URL=http://nodejs.org/dist/$tarball
     fi
+
     # fetch and unpack
-    cd $N_PREFIX/n && $GET "$SOURCE_URL" > $tarball && tar -zxf $tarball &> $logpath
+    echo "Fetching: $SOURCE_URL"
+    cd $N_PREFIX/n
+    $GET "$SOURCE_URL" > $tarball
+    if test $? -gt 0; then
+        echo "Failed to download tarball, trying a different url"
+        SOURCE_URL=http://nodejs.org/dist/v$version/$tarball
+        echo "Fetching: $SOURCE_URL"
+        $GET "$SOURCE_URL" > $tarball
+    fi
+    wait
+    tar -zxf $tarball &> $logpath
     wait ##This was needed for /bin/dash on Ubuntu
 
     # see if things are alright
