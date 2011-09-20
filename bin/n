@@ -148,7 +148,8 @@ install_node() {
 
     # >= 0.5.x
     local minor=$(echo $version | cut -d '.' -f 2)
-    test $minor = "5" && url="http://nodejs.org/dist/v$version/$tarball"
+    local patch=$(echo $version | cut -d '.' -f 3)
+    test $minor = "5" && $patch != 0 && url="http://nodejs.org/dist/v$version/$tarball"
 
     # fetch and unpack
     cd $N_PREFIX/n \
