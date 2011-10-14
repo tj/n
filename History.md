@@ -1,4 +1,9 @@
 
+0.5.2 / 2011-10-14 
+==================
+
+  * Fixed check_current_version() when node is not present
+
 0.5.1 / 2011-10-11 
 ==================
 

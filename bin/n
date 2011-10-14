@@ -2,7 +2,7 @@
 
 # Library version
 
-VERSION="0.5.1"
+VERSION="0.5.2"
 PREFIX=${PREFIX-/usr/local}
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
