@@ -1,4 +1,3 @@
-
 # n
 
  My own flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
@@ -100,9 +99,7 @@ with flags:
  `n` by default installs node to _/usr/local/n/versions_, from
  which it can see what you have currently installed, and activate previously installed versions of node when `n <version>` is invoked again.
 
- Activated nodes are then installed to the prefix _/usr/local_, which of course may be altered via the __PREFIX__ environment variable.
-
- To alter where `n` operates simply export __N_PREFIX__ to whatever you prefer.
+ Activated nodes are then installed to the prefix _/usr/local_. To alter where nodes are stored simply export __N_PREFIX__ to whatever you prefer.
 
 ## License 
 
