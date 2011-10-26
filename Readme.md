@@ -21,7 +21,7 @@ Install a few nodes ("v" is optional), the version given becomes the active node
 List installed binaries:
 
     $ n
-    
+
       0.2.5
     ο 0.2.6
       0.3.3
@@ -32,9 +32,9 @@ Pass some config flags to _./configure_:
 
 List installed binaries, config flags are shown:
 
-      0.2.3 
+      0.2.3
     ο 0.2.6 --debug
-      0.3.4 
+      0.3.4
       0.3.5
 
 Use or install the latest official release:
@@ -71,7 +71,7 @@ with flags:
 
  Output from `n --help`:
 
-     Usage: n [options] [COMMAND] [config] 
+     Usage: n [options] [COMMAND] [config]
 
      Commands:
 
@@ -100,11 +100,11 @@ with flags:
  `n` by default installs node to _/usr/local/n/versions_, from
  which it can see what you have currently installed, and activate previously installed versions of node when `n <version>` is invoked again.
 
- Activated nodes are then installed to the prefix _/usr/local_, which of course may be altered via the __PREFIX__ environment variable.
+ Activated nodes are then installed to the prefix _/usr/local_, which of course may be altered via the __N_PREFIX__ environment variable.
 
  To alter where `n` operates simply export __N_PREFIX__ to whatever you prefer.
 
-## License 
+## License
 
 (The MIT License)
 
