@@ -1,4 +1,15 @@
 
+0.5.2 / 2011-10-14 
+==================
+
+  * Fixed check_current_version() when node is not present
+
+0.5.1 / 2011-10-11 
+==================
+
+  * Fixed newer 0.5.x versions
+  * Fixed node-waf [guybrush]
+
 0.4.2 / 2011-06-28 
 ==================
 

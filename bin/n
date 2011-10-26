@@ -2,7 +2,7 @@
 
 # Library version
 
-VERSION="0.4.2"
+VERSION="0.5.2"
 PREFIX=${PREFIX-/usr/local}
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
@@ -95,7 +95,8 @@ display_n_version() {
 #
 
 check_current_version() {
-  if test `which node`; then
+  which node &> /dev/null
+  if test $? -eq 0; then
     active=`node --version`
     active=${active#v}
   fi  
@@ -139,22 +140,20 @@ install_node() {
       && cp -fr $dir/include/node $N_PREFIX/include \
       && cp -f $dir/bin/node $N_PREFIX/bin/node \
       && cp -f $dir/bin/node-waf $N_PREFIX/bin/node-waf \
-      && cp -fr $dir/lib/node/* $N_PREFIX/lib/node
+      && cp -fr $dir/lib/node/* $N_PREFIX/lib/node/.
   # install
   else
     local tarball="node-v$version.tar.gz"
     local logpath="/tmp/n.log"
+    local url="http://nodejs.org/dist/$tarball"
 
-    local url="http://nodejs.org/dist"
-    local vtail="${version#*.}"
-
-    if test "${vtail%.*}" -gt 4 && test "${vtail#*.}" -gt 0; then
-      url=$url"/v$version"
-    fi
+    # >= 0.5.x
+    local minor=$(echo $version | cut -d '.' -f 2)
+    test $minor = "5" && url="http://nodejs.org/dist/v$version/$tarball"
 
     # fetch and unpack
     cd $N_PREFIX/n \
-      && $GET "$url/$tarball" \
+      && $GET $url \
       > $tarball \
       && tar -zxf $tarball > $logpath 2>&1
 

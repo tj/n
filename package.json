@@ -1,6 +1,6 @@
 {   "name": "n"
   , "description": "node version manager"
-  , "version": "0.4.2"
+  , "version": "0.5.2"
   , "author": "TJ Holowaychuk <tj@vision-media.ca>"
   , "keywords": ["node", "binary", "version", "env"]
   , "bin": { "n": "./bin/n" }
