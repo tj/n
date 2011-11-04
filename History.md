@@ -1,4 +1,9 @@
 
+0.5.3 / 2011-11-04 
+==================
+
+  * Fixed issue when prefix/lib/node dir is not present. Closes #37
+
 0.5.2 / 2011-10-14 
 ==================
 
