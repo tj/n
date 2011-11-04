@@ -3,7 +3,6 @@
 # Library version
 
 VERSION="0.5.2"
-PREFIX=${PREFIX-/usr/local}
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
@@ -44,7 +43,6 @@ which curl > /dev/null && GET="curl -# -L"
 # Ensure we have curl or wget
 
 test -z "$GET" && abort "curl or wget required"
-
 
 #
 # Output usage information.
