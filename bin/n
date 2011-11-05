@@ -170,7 +170,7 @@ install_node() {
 
     cd "$N_PREFIX/n/node-v$version" \
       && ./configure --prefix $VERSIONS_DIR/$version $config\
-      && make install \
+      && JOBS=4 make install \
       && cd .. \
       && cleanup $version \
       && mkdir -p $dir \
