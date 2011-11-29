@@ -67,6 +67,11 @@ with flags:
 
     $ n as 0.3.3 --debug some.js
 
+Execute npm with 0.6.3 regardless of the active version:
+
+    $ n npm 0.6.3 install coffee-script
+    $ n npm 0.6.3 list
+
 ## Usage
 
  Output from `n --help`:
@@ -79,6 +84,7 @@ with flags:
        n latest [config ...]       Install or activate the latest node release
        n <version> [config ...]    Install and/or use node <version>
        n use <version> [args ...]  Execute node <version> with [args ...]
+       n npm <version> [args ...]  Execute npm <version> with [args ...]
        n bin <version>             Output bin path for <version>
        n rm <version ...>          Remove the given version(s)
        n --latest                  Output the latest node version available
