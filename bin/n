@@ -59,6 +59,7 @@ display_help() {
     n latest [config ...]       Install or activate the latest node release
     n <version> [config ...]    Install and/or use node <version>
     n use <version> [args ...]  Execute node <version> with [args ...]
+    n npm <version> [args ...]  Execute npm <version> with [args ...]
     n bin <version>             Output bin path for <version>
     n rm <version ...>          Remove the given version(s)
     n --latest                  Output the latest node version available
@@ -246,6 +247,25 @@ execute_with_version() {
 }
 
 #
+# Execute the given <version> of npm
+# with [args ...]
+#
+
+execute_with_npm_version() {
+  test -z $1 && abort "version required"
+  local version=${1#v}
+  local bin=$VERSIONS_DIR/$version/bin/npm
+
+  shift # remove version
+
+  if test -f $bin; then
+    $bin $@
+  else
+    abort "npm is not installed, node.js version must be greater than or equal 0.6.3"
+  fi
+}
+
+#
 # Display the latest node release version.
 #
 
@@ -293,6 +313,7 @@ else
       --latest) display_latest_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
+      npm) shift; execute_with_npm_version $@; exit ;;
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
       ls|list) list_versions $2; exit ;;
