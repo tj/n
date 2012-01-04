@@ -254,12 +254,12 @@ execute_with_version() {
 execute_with_npm_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
-  local bin=$VERSIONS_DIR/$version/bin/npm
+  local bin=$VERSIONS_DIR/$version/bin
 
   shift # remove version
 
-  if test -f $bin; then
-    $bin $@
+  if test -f $bin/npm; then
+    $bin/node $bin/npm $@
   else
     abort "npm is not installed, node.js version must be greater than or equal 0.6.3"
   fi
