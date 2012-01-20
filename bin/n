@@ -51,7 +51,7 @@ test -z "$GET" && abort "curl or wget required"
 display_help() {
   cat <<-help
 
-  Usage: n [options] [COMMAND] [config] 
+  Usage: n [options] [COMMAND] [config]
 
   Commands:
 
@@ -98,7 +98,7 @@ check_current_version() {
   if test $? -eq 0; then
     active=`node --version`
     active=${active#v}
-  fi  
+  fi
 }
 
 #
@@ -140,7 +140,7 @@ install_node() {
       && cp -fr $dir/include/node $N_PREFIX/include \
       && cp -f $dir/bin/node $N_PREFIX/bin/node \
       && cp -f $dir/bin/node-waf $N_PREFIX/bin/node-waf \
-      && cp -fr $dir/lib/node/* $N_PREFIX/lib/node/.
+      && cp -fr $dir/lib/node/* $N_PREFIX/lib/node/ .
   # install
   else
     local tarball="node-v$version.tar.gz"
@@ -176,7 +176,8 @@ install_node() {
       && cleanup $version \
       && mkdir -p $dir \
       && echo $config > "$dir/.config" \
-      && n $version
+      && n $version \
+			&& ln -s "$N_PREFIX/n/versions/$version" "$N_PREFIX/n/current"
   fi
 }
 
@@ -192,7 +193,7 @@ cleanup() {
     log "removing source"
     rm -fr $dir
   fi
-  
+
   if test -f "$dir.tar.gz"; then
     log "removing tarball"
     rm -fr "$dir.tar.gz"
@@ -222,7 +223,7 @@ display_bin_path_for_version() {
   local bin=$VERSIONS_DIR/$version/bin/node
   if test -f $bin; then
     printf $bin
-  else 
+  else
     abort "$1 is not installed"
   fi
 }
@@ -241,7 +242,7 @@ execute_with_version() {
 
   if test -f $bin; then
     $bin $@
-  else 
+  else
     abort "$1 is not installed"
   fi
 }
