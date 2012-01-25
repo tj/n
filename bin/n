@@ -58,7 +58,7 @@ display_help() {
     n                           Output versions installed
     n latest [config ...]       Install or activate the latest node release
     n <version> [config ...]    Install and/or use node <version>
-    n custom <version> [config ...]    Install custom node <version> <tarball> with [args ...]
+    n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
     n use <version> [args ...]  Execute node <version> with [args ...]
     n npm <version> [args ...]  Execute npm <version> with [args ...]
     n bin <version>             Output bin path for <version>
