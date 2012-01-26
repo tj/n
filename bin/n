@@ -146,102 +146,59 @@ install_node() {
   # install
   else
     local tarball="node-v$version.tar.gz"
-    local logpath="/tmp/n.log"
     local url="http://nodejs.org/dist/$tarball"
 
     # >= 0.5.x
     local minor=$(echo $version | cut -d '.' -f 2)
     test $minor -ge "5" && url="http://nodejs.org/dist/v$version/$tarball"
 
-    # fetch and unpack
-    cd $N_PREFIX/n \
-      && $GET $url \
-      > $tarball \
-      && tar -zxf $tarball > $logpath 2>&1
-
-    # see if things are alright
-    if test $? -gt 0; then
-      rm $tarball
-      echo "\033[31mError: installation failed\033[0m"
-      echo "  node version $version does not exist,"
-      echo "  n failed to fetch the tarball,"
-      echo "  or tar failed. Try a different"
-      echo "  version or view $logpath to view"
-      echo "  error details."
-      exit 1
-    fi
-
-    cd "$N_PREFIX/n/node-v$version" \
-      && ./configure --prefix $VERSIONS_DIR/$version $config\
-      && JOBS=4 make install \
-      && cd .. \
-      && cleanup $version \
-      && mkdir -p $dir \
-      && echo $config > "$dir/.config" \
-      && n $version
+    install_tarball $version $url $config
   fi
 }
 
 #
-# Install custom node <version> tarball [config ...]
+# Install node <version> <tarball> [config ...]
 #
 
-install_custom_node() {
+install_tarball() {
   local version=$1
   local url=$2; shift 2
   local config=$@
-  check_current_version
 
   # remove "v"
   version=${version#v}
 
-  echo "attempting to install $version |  $url | $config"
-
-  # activate
   local dir=$VERSIONS_DIR/$version
-  if test -d $dir; then
-    # TODO: refactor, this is lame
-    cd $dir \
-      && mkdir -p $N_PREFIX/lib/node \
-      && cp -fr $dir/include/node $N_PREFIX/include \
-      && cp -f $dir/bin/node $N_PREFIX/bin/node \
-      && cp -f $dir/bin/node-waf $N_PREFIX/bin/node-waf \
-      && cp -fr $dir/lib/node/* $N_PREFIX/lib/node/.
-  # install
-  else
-    local tarball="node-v$version.tar.gz"
-    local logpath="/tmp/n.log"
+  local tarball="node-v$version.tar.gz"
+  local logpath="/tmp/n.log"
 
-    echo "tarball $tarball"
+  # create build directory
+  mkdir -p $N_PREFIX/n/node-v$version
 
-    # create build directory
-    mkdir -p $N_PREFIX/n/node-v$version
+  # fetch and unpack
+  cd $N_PREFIX/n/node-v$version \
+    && $GET $url | tar xz --strip-components=1 > $logpath 2>&1
 
-    # fetch and unpack
-    cd $N_PREFIX/n/node-v$version \
-      && $GET $url | tar xz --strip-components=1 > $logpath 2>&1
-
-    # see if things are alright
-    if test $? -gt 0; then
-      rm $tarball
-      echo "\033[31mError: installation failed\033[0m"
-      echo "  node version $version does not exist,"
-      echo "  n failed to fetch the tarball,"
-      echo "  or tar failed. Try a different"
-      echo "  version or view $logpath to view"
-      echo "  error details."
-      exit 1
-    fi
-
-    cd "$N_PREFIX/n/node-v$version" \
-      && ./configure --prefix $VERSIONS_DIR/$version $config\
-      && JOBS=4 make install \
-      && cd .. \
-      && cleanup $version \
-      && mkdir -p $dir \
-      && echo $config > "$dir/.config" \
-      && n $version
+  # see if things are alright
+  if test $? -gt 0; then
+    rm $tarball
+    echo "\033[31mError: installation failed\033[0m"
+    echo "  node version $version does not exist,"
+    echo "  n failed to fetch the tarball,"
+    echo "  or tar failed. Try a different"
+    echo "  version or view $logpath to view"
+    echo "  error details."
+    exit 1
   fi
+
+  cd "$N_PREFIX/n/node-v$version" \
+    && ./configure --prefix $VERSIONS_DIR/$version $config\
+    && JOBS=4 make install \
+    && cd .. \
+    && cleanup $version \
+    && mkdir -p $dir \
+    && echo $config > "$dir/.config" \
+    && n $version
 }
 
 #
@@ -381,7 +338,7 @@ else
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
       ls|list) list_versions $2; exit ;;
-      c|custom) shift; install_custom_node $@; exit ;;
+      c|custom) shift; install_tarball $@; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
