@@ -4,6 +4,7 @@
 
   * Added support for installing node with a tarball [dshaw]
   * Fixed: swap echo for printf. closes #44
+  * Fixed log colors
 
 0.5.4 / 2011-11-05 
 ==================
