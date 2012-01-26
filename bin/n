@@ -11,7 +11,7 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 #
 
 log() {
-  printf "\e[90m...\e[0m $@\n"
+  printf "\033[90m...\033[0m $@\n"
 }
 
 #
@@ -19,7 +19,7 @@ log() {
 #
 
 abort() {
-  printf "\e[31mError: $@\e[0m\n" && exit 1
+  printf "\033[31mError: $@\033[0m\n" && exit 1
 }
 
 # setup
@@ -88,7 +88,7 @@ help
 #
 
 display_n_version() {
-  echo $VERSION && exit 0
+  printf $VERSION && exit 0
 }
 
 #
@@ -114,9 +114,9 @@ display_versions() {
     local version=${dir##*/}
     local config=`test -f $dir/.config && cat $dir/.config`
     if test "$version" = "$active"; then
-      printf "  \e[32mο\e[0m $version \e[90m$config\e[0m\n"
+      printf "  \033[32mο\033[0m $version \033[90m$config\033[0m\n"
     else
-      printf "    $version \e[90m$config\e[0m\n"
+      printf "    $version \033[90m$config\033[0m\n"
     fi
   done
 }
@@ -149,7 +149,7 @@ install_node() {
     local url="http://nodejs.org/dist/$tarball"
 
     # >= 0.5.x
-    local minor=$(echo $version | cut -d '.' -f 2)
+    local minor=$(printf $version | cut -d '.' -f 2)
     test $minor -ge "5" && url="http://nodejs.org/dist/v$version/$tarball"
 
     install_tarball $version $url $config
@@ -182,12 +182,12 @@ install_tarball() {
   # see if things are alright
   if test $? -gt 0; then
     rm $tarball
-    echo "\033[31mError: installation failed\033[0m"
-    echo "  node version $version does not exist,"
-    echo "  n failed to fetch the tarball,"
-    echo "  or tar failed. Try a different"
-    echo "  version or view $logpath to view"
-    echo "  error details."
+    printf "\033[31mError: installation failed\033[0m"
+    printf "  node version $version does not exist,"
+    printf "  n failed to fetch the tarball,"
+    printf "  or tar failed. Try a different"
+    printf "  version or view $logpath to view"
+    printf "  error details."
     exit 1
   fi
 
@@ -197,7 +197,7 @@ install_tarball() {
     && cd .. \
     && cleanup $version \
     && mkdir -p $dir \
-    && echo $config > "$dir/.config" \
+    && printf $config > "$dir/.config" \
     && n $version \
     && ln -s "$N_PREFIX/n/versions/$version" "$N_PREFIX/n/current"
 }
@@ -312,10 +312,10 @@ list_versions() {
 
   for v in $versions; do
     if test "$active" = "$v"; then
-      printf "  \e[32mο\e[0m $v \e[0m\n"
+      printf "  \033[32mο\033[0m $v \033[0m\n"
     else
       if test -d $VERSIONS_DIR/$v; then
-        printf "  * $v \e[0m\n"
+        printf "  * $v \033[0m\n"
       else
         printf "    $v\n"
       fi
