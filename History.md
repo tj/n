@@ -1,4 +1,9 @@
 
+0.6.1 / 2012-01-26 
+==================
+
+  * Fixed control character sequence for Linux compatibility [darrenderidder] 
+
 0.6.0 / 2012-01-26 
 ==================
 
