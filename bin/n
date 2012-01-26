@@ -11,7 +11,7 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 #
 
 log() {
-  echo "\e[90m...\e[0m $@\n"
+  printf "\e[90m...\e[0m $@\n"
 }
 
 #
