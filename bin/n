@@ -55,16 +55,16 @@ display_help() {
 
   Commands:
 
-    n                           Output versions installed
-    n latest [config ...]       Install or activate the latest node release
-    n <version> [config ...]    Install and/or use node <version>
+    n                            Output versions installed
+    n latest [config ...]        Install or activate the latest node release
+    n <version> [config ...]     Install and/or use node <version>
     n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
-    n use <version> [args ...]  Execute node <version> with [args ...]
-    n npm <version> [args ...]  Execute npm <version> with [args ...]
-    n bin <version>             Output bin path for <version>
-    n rm <version ...>          Remove the given version(s)
-    n --latest                  Output the latest node version available
-    n ls                        Output the versions of node available
+    n use <version> [args ...]   Execute node <version> with [args ...]
+    n npm <version> [args ...]   Execute npm <version> with [args ...]
+    n bin <version>              Output bin path for <version>
+    n rm <version ...>           Remove the given version(s)
+    n --latest                   Output the latest node version available
+    n ls                         Output the versions of node available
 
   Options:
 
