@@ -1,4 +1,3 @@
-
 # n
 
  My own flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
@@ -39,7 +38,11 @@ List installed binaries, config flags are shown:
 
 Use or install the latest official release:
 
-   $ n latest
+    $ n latest
+
+Install a custom or patched version of node from a tarball:
+
+    $ n custom 0.6.5 https://github.com/dshaw/node/tarball/patch/v0.6.5status
 
 ### Removing Binaries
 
@@ -83,6 +86,7 @@ Execute npm with 0.6.3 regardless of the active version:
        n                           Output versions installed
        n latest [config ...]       Install or activate the latest node release
        n <version> [config ...]    Install and/or use node <version>
+       n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
        n use <version> [args ...]  Execute node <version> with [args ...]
        n npm <version> [args ...]  Execute npm <version> with [args ...]
        n bin <version>             Output bin path for <version>
@@ -100,6 +104,7 @@ Execute npm with 0.6.3 regardless of the active version:
        -       rm
        which   bin
        use     as
+       custom  c
 
 ## Details
 
