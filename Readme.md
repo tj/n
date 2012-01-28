@@ -40,6 +40,10 @@ Use or install the latest official release:
 
     $ n latest
 
+Use or install the stable official release:
+
+    $ n stable
+
 Install a custom or patched version of node from a tarball:
 
     $ n custom 0.6.5 https://github.com/dshaw/node/tarball/patch/v0.6.5status
@@ -85,6 +89,7 @@ Execute npm with 0.6.3 regardless of the active version:
 
        n                           Output versions installed
        n latest [config ...]       Install or activate the latest node release
+       n stable [config ...]       Install or activate the latest stable node release
        n <version> [config ...]    Install and/or use node <version>
        n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
        n use <version> [args ...]  Execute node <version> with [args ...]
@@ -92,6 +97,7 @@ Execute npm with 0.6.3 regardless of the active version:
        n bin <version>             Output bin path for <version>
        n rm <version ...>          Remove the given version(s)
        n --latest                  Output the latest node version available
+       n --stable                  Output the latest stable node version available
        n ls                        Output the versions of node available
 
      Options:
