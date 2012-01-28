@@ -57,6 +57,7 @@ display_help() {
 
     n                            Output versions installed
     n latest [config ...]        Install or activate the latest node release
+    n stable [config ...]        Install or activate the latest stable node release
     n <version> [config ...]     Install and/or use node <version>
     n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
     n use <version> [args ...]   Execute node <version> with [args ...]
@@ -64,6 +65,7 @@ display_help() {
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
     n --latest                   Output the latest node version available
+    n --stable                   Output the latest stable node version available
     n ls                         Output the versions of node available
 
   Options:
@@ -299,6 +301,17 @@ display_latest_version() {
 }
 
 #
+# Display the latest stable node release version.
+#
+
+display_latest_stable_version() {
+  $GET 2> /dev/null http://nodejs.org/dist/ \
+    | egrep -o '[0-9]+\.\d*[02468]\.[0-9]+' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | tail -n1
+}
+
+#
 # Display the versions of node available.
 #
 
@@ -333,11 +346,13 @@ else
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
       --latest) display_latest_version $2; exit ;;
+      --stable) display_latest_stable_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       npm) shift; execute_with_npm_version $@; exit ;;
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
+      stable) install_node `n --stable`; exit ;;
       ls|list) list_versions $2; exit ;;
       c|custom) shift; install_tarball $@; exit ;;
       *) install_node $@; exit ;;
