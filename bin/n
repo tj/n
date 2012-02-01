@@ -197,6 +197,7 @@ install_node() {
       && cp -fr $dir/include/node $PREFIX/include \
       && cp -f $dir/bin/node $PREFIX/bin/node \
       && cp -f $dir/bin/node-waf $PREFIX/bin/node-waf \
+      && cp -fr $dir/lib/node_modules/* $PREFIX/lib/node_modules \
       && cp -fr $dir/lib/node/* $PREFIX/lib/node
   # install
   else
