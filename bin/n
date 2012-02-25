@@ -285,7 +285,7 @@ execute_with_npm_version() {
   if test -f $bin/npm; then
     $bin/node $bin/npm $@
   else
-    abort "npm is not installed, node.js version must be greater than or equal 0.6.3"
+    abort "npm is not installed, node.js version must be greater than or equal to 0.6.3"
   fi
 }
 
