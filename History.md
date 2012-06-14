@@ -1,4 +1,10 @@
 
+0.7.2 / 2012-06-14 
+==================
+
+  * removed trailing dot on cp command. fixes #48 [sreuter]
+  * add 'homepage' and 'bugs' sections to package.json [TooTallNate]
+
 0.7.1 / 2012-03-14 
 ==================
 
