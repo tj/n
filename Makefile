@@ -1,10 +1,9 @@
-
-PREFIX ?= /usr/local
+N_PREFIX ?= /usr/local
 
 install: bin/n
-	cp $< $(PREFIX)/$<
+	cp $< $(N_PREFIX)/$<
 
 uninstall:
-	rm -f $(PREFIX)/bin/n
+	rm -f $(N_PREFIX)/bin/n
 
 .PHONY: install uninstall
