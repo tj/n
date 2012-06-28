@@ -169,9 +169,16 @@ install_tarball() {
   # remove "v"
   version=${version#v}
 
+  local minor=$(echo $version | cut -d '.' -f 2)
+  local patch=$(echo $version | cut -d '.' -f 3)
   local dir=$VERSIONS_DIR/$version
   local tarball="node-v$version.tar.gz"
   local logpath="/tmp/n.log"
+  local defaultconfig="--prefix $VERSIONS_DIR/$version"
+
+  # in 0.6.4 the without-npm-flag has been added
+  test $minor -ge "6" && test $patch -ge "4" \
+    && defaultconfig="$defaultconfig --without-npm"
 
   # create build directory
   mkdir -p $N_PREFIX/n/node-v$version
@@ -193,7 +200,7 @@ install_tarball() {
   fi
 
   cd "$N_PREFIX/n/node-v$version" \
-    && ./configure --prefix $VERSIONS_DIR/$version $config\
+    && ./configure $defaultconfig $config \
     && JOBS=4 make install \
     && cd .. \
     && cleanup $version \
