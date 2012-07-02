@@ -139,10 +139,10 @@ install_node() {
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
     # TODO: refactor, this is lame
-    cd $dir \
+    cd $N_PREFIX/bin \
+      && cp -fs $dir/bin/* .\
       && mkdir -p $N_PREFIX/lib/node \
       && cp -fr $dir/include/node $N_PREFIX/include \
-      && cp -f $dir/bin/* $N_PREFIX/bin \
       && cp -fr $dir/lib/node/* $N_PREFIX/lib/node/
   # install
   else
