@@ -66,6 +66,7 @@ display_help() {
     n rm <version ...>           Remove the given version(s)
     n --latest                   Output the latest node version available
     n --stable                   Output the latest stable node version available
+    n --active                   Output the active version of node
     n ls                         Output the versions of node available
 
   Options:
@@ -289,6 +290,15 @@ execute_with_npm_version() {
 }
 
 #
+# Display the currently active node version
+#
+
+display_active_version() {
+    check_current_version
+    printf "$active\n"
+}
+
+#
 # Display the latest node release version.
 #
 
@@ -346,6 +356,7 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version $2; exit ;;
       --stable) display_latest_stable_version $2; exit ;;
+      --active) display_active_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       npm) shift; execute_with_npm_version $@; exit ;;
