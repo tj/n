@@ -138,12 +138,11 @@ install_node() {
   # activate
   local dir=$VERSIONS_DIR/$version
   if test -d $dir; then
-    # TODO: refactor, this is lame
-    cd $dir \
-      && mkdir -p $N_PREFIX/lib/node \
-      && cp -fR $dir/include/node $N_PREFIX/include \
-      && cp -fR $dir/bin/* $N_PREFIX/bin \
-      && cp -fR $dir/lib/node/* $N_PREFIX/lib/node/ .
+    # symlink everything, purge old copies or symlinks
+    for d in bin lib share include; do
+      rm -rf $N_PREFIX/$d
+      ln -s $dir/$d $N_PREFIX/$d
+    done
   # install
   else
     local tarball="node-v$version.tar.gz"
