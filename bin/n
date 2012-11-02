@@ -143,7 +143,7 @@ install_node() {
       && mkdir -p $N_PREFIX/lib/node \
       && cp -fR $dir/include/node $N_PREFIX/include \
       && cp -fR $dir/bin/* $N_PREFIX/bin \
-      && cp -fR $dir/lib/node/* $N_PREFIX/lib/node/ .
+      && cp -fR $dir/lib/node/* $N_PREFIX/lib/node/
   # install
   else
     local tarball="node-v$version.tar.gz"
