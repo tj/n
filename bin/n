@@ -80,6 +80,7 @@ display_help() {
     use     as
     list    ls
     custom  c
+    install
 
 help
   exit 0
@@ -354,6 +355,7 @@ else
       stable) install_node `n --stable`; exit ;;
       ls|list) list_versions $2; exit ;;
       c|custom) shift; install_tarball $@; exit ;;
+      install) shift; install_node $@; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
