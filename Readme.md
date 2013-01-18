@@ -83,34 +83,32 @@ Execute npm with 0.6.3 regardless of the active version:
 
  Output from `n --help`:
 
-     Usage: n [options] [COMMAND] [config]
+    Usage: n [options] [COMMAND] [config]
 
-     Commands:
+    Commands:
 
-       n                           Output versions installed
-       n latest [config ...]       Install or activate the latest node release
-       n stable [config ...]       Install or activate the latest stable node release
-       n <version> [config ...]    Install and/or use node <version>
-       n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
-       n use <version> [args ...]  Execute node <version> with [args ...]
-       n npm <version> [args ...]  Execute npm <version> with [args ...]
-       n bin <version>             Output bin path for <version>
-       n rm <version ...>          Remove the given version(s)
-       n --latest                  Output the latest node version available
-       n --stable                  Output the latest stable node version available
-       n ls                        Output the versions of node available
+      n                            Output versions installed
+      n latest [config ...]        Install or activate the latest node release
+      n stable [config ...]        Install or activate the latest stable node release
+      n <version> [config ...]     Install and/or use node <version>
+      n use <version> [args ...]   Execute node <version> with [args ...]
+      n bin <version>              Output bin path for <version>
+      n rm <version ...>           Remove the given version(s)
+      n --latest                   Output the latest node version available
+      n --stable                   Output the latest stable node version available
+      n ls                         Output the versions of node available
 
-     Options:
+    Options:
 
-       -V, --version   Output current version of n
-       -h, --help      Display help information
+      -V, --version   Output current version of n
+      -h, --help      Display help information
 
-     Aliases:
+    Aliases:
 
-       -       rm
-       which   bin
-       use     as
-       custom  c
+      which   bin
+      use     as
+      list    ls
+      -       rm
 
 ## Details
 
