@@ -1,4 +1,10 @@
 
+0.8.2 / 2013-01-18 
+==================
+
+  * add back support for "v" prefix on install
+  * add `n prev` to revert to previously selected version
+
 0.8.1 / 2013-01-18 
 ==================
 
