@@ -58,6 +58,7 @@ display_help() {
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
+    n prev                       Revert to the previously activated version
     n --latest                   Output the latest node version available
     n --stable                   Output the latest stable node version available
     n ls                         Output the versions of node available
@@ -163,8 +164,21 @@ tarball_url() {
 #
 
 activate() {
-  local dir=$VERSIONS_DIR/$1
+  local version=$1
+  local dir=$VERSIONS_DIR/$version
+  check_current_version
+  echo $active > $VERSIONS_DIR/.prev
   cp -fr $dir/* $N_PREFIX
+}
+
+#
+# Activate previous node.
+#
+
+activate_previous() {
+  test -f $VERSIONS_DIR/.prev || abort "no previous versions activated"
+  local prev=$(cat $VERSIONS_DIR/.prev)
+  activate $prev
 }
 
 #
@@ -313,6 +327,7 @@ else
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions $2; exit ;;
+      prev) activate_previous; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
