@@ -177,6 +177,11 @@ install_node() {
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version)
 
+  if test -d $dir; then
+    activate $version
+    exit
+  fi
+
   echo
   log install $version
 
