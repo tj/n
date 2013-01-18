@@ -1,6 +1,6 @@
 # n
 
- My own flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
+Simple flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
 ## Installation
 
@@ -12,18 +12,19 @@ or
 
 ### Installing Binaries
 
-Install a few nodes ("v" is optional), the version given becomes the active node binary once installation is complete.
+Install a few nodes:
 
-    $ n 0.2.6
-    $ n v0.3.3
+    $ n 0.8.14
+    $ n 0.8.17
+    $ n 0.9.6
 
 List installed binaries:
 
     $ n
 
-      0.2.5
-    ο 0.2.6
-      0.3.3
+      0.8.14
+    ο 0.8.17
+      0.9.6
 
 Pass some config flags to _./configure_:
 
@@ -44,10 +45,6 @@ Use or install the stable official release:
 
     $ n stable
 
-Install a custom or patched version of node from a tarball:
-
-    $ n custom 0.6.5 https://github.com/dshaw/node/tarball/patch/v0.6.5status
-
 ### Removing Binaries
 
 Remove some versions:
@@ -66,18 +63,13 @@ them directly by asking `n` for the binary path:
     $ n bin 0.3.3
     /usr/local/n/versions/0.3.3/bin/node
 
-Execute a script with 0.3.3 regardless of the active version:
+Or by useing a specifiv version through `n`'s `use` sub-command:
 
     $ n use 0.3.3 some.js
 
 with flags:
 
     $ n as 0.3.3 --debug some.js
-
-Execute npm with 0.6.3 regardless of the active version:
-
-    $ n npm 0.6.3 install coffee-script
-    $ n npm 0.6.3 list
 
 ## Usage
 
