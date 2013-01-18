@@ -67,7 +67,7 @@ them directly by asking `n` for the binary path:
     $ n bin 0.3.3
     /usr/local/n/versions/0.3.3/bin/node
 
-Or by useing a specifiv version through `n`'s `use` sub-command:
+Or by using a specific version through `n`'s `use` sub-command:
 
     $ n use 0.3.3 some.js
 
