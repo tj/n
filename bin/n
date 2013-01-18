@@ -189,7 +189,7 @@ activate_previous() {
 #
 
 install_node() {
-  local version=$1
+  local version=${1#v}
   local config=$@
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version)
