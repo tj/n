@@ -159,6 +159,15 @@ tarball_url() {
 }
 
 #
+# Activate <version>
+#
+
+activate() {
+  local dir=$VERSIONS_DIR/$1
+  cp -fr $dir/* $N_PREFIX
+}
+
+#
 # Install <version>
 #
 
@@ -181,7 +190,7 @@ install_node() {
   curl -L# $url | tar -zx --strip 1
   erase_line
 
-  cp -fr $dir/* $N_PREFIX
+  activate $version
   log installed $(node --version)
   echo
 }
