@@ -147,9 +147,9 @@ tarball_url() {
 
   # from nave(1)
   case "$uname" in
-    Linux\ *) os=linux ;;
-    Darwin\ *) os=darwin ;;
-    SunOS\ *) os=sunos ;;
+    Linux*) os=linux ;;
+    Darwin*) os=darwin ;;
+    SunOS*) os=sunos ;;
   esac
 
   case "$uname" in
