@@ -45,6 +45,10 @@ Use or install the stable official release:
 
     $ n stable
 
+Switch to the previous version you were using:
+
+    $ n prev
+
 ### Removing Binaries
 
 Remove some versions:
