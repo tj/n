@@ -6,12 +6,16 @@ VERSION="0.7.3"
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 
+# setup
+
+test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
+
 #
-# Log the given <msg ...>
+# Log <type> <msg>
 #
 
 log() {
-  printf "\033[90m...\033[0m $@\n"
+  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" $1 $2
 }
 
 #
@@ -19,16 +23,8 @@ log() {
 #
 
 abort() {
-  printf "\033[31mError: $@\033[0m\n" && exit 1
+  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
 }
-
-# setup
-
-test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
-
-if ! test -d $VERSIONS_DIR; then
-  abort "Failed to create versions directory ($VERSIONS_DIR), do you have permissions to do this?"
-fi
 
 # curl / wget support
 
@@ -59,9 +55,7 @@ display_help() {
     n latest [config ...]        Install or activate the latest node release
     n stable [config ...]        Install or activate the latest stable node release
     n <version> [config ...]     Install and/or use node <version>
-    n custom <version> <tarball> [config ...]  Install custom node <tarball> with [args ...]
     n use <version> [args ...]   Execute node <version> with [args ...]
-    n npm <version> [args ...]   Execute npm <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
     n --latest                   Output the latest node version available
@@ -75,11 +69,10 @@ display_help() {
 
   Aliases:
 
-    -       rm
     which   bin
     use     as
     list    ls
-    custom  c
+    -       rm
 
 help
   exit 0
@@ -112,114 +105,85 @@ check_current_version() {
 
 display_versions() {
   check_current_version
+  echo
   for dir in $VERSIONS_DIR/*; do
     local version=${dir##*/}
     local config=`test -f $dir/.config && cat $dir/.config`
     if test "$version" = "$active"; then
-      printf "  \033[32mο\033[0m $version \033[90m$config\033[0m\n"
+      printf "  \033[36mο\033[0m $version \033[90m$config\033[0m\n"
     else
-      printf "    $version \033[90m$config\033[0m\n"
+      printf "    \033[90m$version $config\033[0m\n"
     fi
   done
+  echo
 }
 
 #
-# Install node <version> [config ...]
+# Move up a line and erase.
+#
+
+erase_line() {
+  printf "\e[1A\e[2K"
+}
+
+#
+# Check if the HEAD response of <url> is 200.
+#
+
+is_ok() {
+  curl -Is $1 | head -n 1 | grep 200 > /dev/null
+}
+
+#
+# Determine tarball url for <version>.
+#
+
+tarball_url() {
+  local version=$1
+  local uname=$(uname -a)
+  local arch=x86
+  local os=
+
+  # from nave(1)
+  case "$uname" in
+    Linux\ *) os=linux ;;
+    Darwin\ *) os=darwin ;;
+    SunOS\ *) os=sunos ;;
+  esac
+
+  case "$uname" in
+    *x86_64*) arch=x64 ;;
+  esac
+
+  echo "http://nodejs.org/dist/v${version}/node-v${version}-${os}-${arch}.tar.gz"
+}
+
+#
+# Install <version>
 #
 
 install_node() {
-  local version=$1; shift
-  local config=$@
-  check_current_version
-
-  # remove "v"
-  version=${version#v}
-
-  # activate
-  local dir=$VERSIONS_DIR/$version
-  if test -d $dir; then
-    # TODO: refactor, this is lame
-    cd $dir \
-      && mkdir -p $N_PREFIX/lib/node \
-      && cp -fR $dir/include/node $N_PREFIX/include \
-      && cp -fR $dir/bin/* $N_PREFIX/bin \
-      && cp -fR $dir/lib/node/* $N_PREFIX/lib/node/ .
-  # install
-  else
-    local tarball="node-v$version.tar.gz"
-    local url="http://nodejs.org/dist/$tarball"
-
-    # >= 0.5.x
-    local minor=$(echo $version | cut -d '.' -f 2)
-    test $minor -ge "5" && url="http://nodejs.org/dist/v$version/$tarball"
-
-    install_tarball $version $url $config
-  fi
-}
-
-#
-# Install node <version> <tarball> [config ...]
-#
-
-install_tarball() {
   local version=$1
-  local url=$2; shift 2
   local config=$@
-
-  # remove "v"
-  version=${version#v}
-
   local dir=$VERSIONS_DIR/$version
-  local tarball="node-v$version.tar.gz"
-  local logpath="/tmp/n.log"
+  local url=$(tarball_url $version)
 
-  # create build directory
-  mkdir -p $N_PREFIX/n/node-v$version
+  echo
+  log install $version
 
-  # fetch and unpack
-  cd $N_PREFIX/n/node-v$version \
-    && $GET $url | tar xz --strip-components=1 > $logpath 2>&1
+  is_ok $url || abort "invalid version $version"
 
-  # see if things are alright
-  if test $? -gt 0; then
-    rm $tarball
-    echo "\033[31mError: installation failed\033[0m"
-    echo "  node version $version does not exist,"
-    echo "  n failed to fetch the tarball,"
-    echo "  or tar failed. Try a different"
-    echo "  version or view $logpath to view"
-    echo "  error details."
-    exit 1
-  fi
+  log mkdir $dir
+  mkdir -p $dir
+  cd $dir
 
-  cd "$N_PREFIX/n/node-v$version" \
-    && ./configure --prefix $VERSIONS_DIR/$version $config\
-    && JOBS=4 make install \
-    && cd .. \
-    && cleanup $version \
-    && mkdir -p $dir \
-    && echo $config > "$dir/.config" \
-    && n $version \
-    && ln -s "$N_PREFIX/n/versions/$version" "$N_PREFIX/n/current"
-}
+  log fetch $url
+  curl -L# $url | tar -zx --strip 1
+  erase_line
 
-#
-# Cleanup after the given <version>
-#
-
-cleanup() {
-  local version=$1
-  local dir="node-v$version"
-
-  if test -d $dir; then
-    log "removing source"
-    rm -fr $dir
-  fi
-
-  if test -f "$dir.tar.gz"; then
-    log "removing tarball"
-    rm -fr "$dir.tar.gz"
-  fi
+  cp -fr $dir/* $N_PREFIX
+  log installed $(node --version)
+  echo
 }
 
 #
@@ -270,25 +234,6 @@ execute_with_version() {
 }
 
 #
-# Execute the given <version> of npm
-# with [args ...]
-#
-
-execute_with_npm_version() {
-  test -z $1 && abort "version required"
-  local version=${1#v}
-  local bin=$VERSIONS_DIR/$version/bin
-
-  shift # remove version
-
-  if test -f $bin/npm; then
-    $bin/node $bin/npm $@
-  else
-    abort "npm is not installed, node.js version must be greater than or equal to 0.6.3"
-  fi
-}
-
-#
 # Display the latest node release version.
 #
 
@@ -314,7 +259,7 @@ display_latest_stable_version() {
 # Display the versions of node available.
 #
 
-list_versions() {
+display_remote_versions() {
   check_current_version
   local versions=""
   versions=`$GET 2> /dev/null http://nodejs.org/dist/ \
@@ -322,17 +267,19 @@ list_versions() {
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }'`
 
+  echo
   for v in $versions; do
     if test "$active" = "$v"; then
-      printf "  \033[32mο\033[0m $v \033[0m\n"
+      printf "  \033[36mο\033[0m $v \033[0m\n"
     else
       if test -d $VERSIONS_DIR/$v; then
-        printf "  * $v \033[0m\n"
+        printf "    $v \033[0m\n"
       else
-        printf "    $v\n"
+        printf "    \033[90m$v\033[0m\n"
       fi
     fi
   done
+  echo
 }
 
 # Handle arguments
@@ -348,12 +295,10 @@ else
       --stable) display_latest_stable_version $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
-      npm) shift; execute_with_npm_version $@; exit ;;
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
-      ls|list) list_versions $2; exit ;;
-      c|custom) shift; install_tarball $@; exit ;;
+      ls|list) display_remote_versions $2; exit ;;
       *) install_node $@; exit ;;
     esac
     shift
