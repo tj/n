@@ -5,6 +5,8 @@
 VERSION="0.8.2"
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
+UP=$'\033[A'
+DOWN=$'\033[B'
 
 # setup
 
@@ -80,6 +82,38 @@ help
 }
 
 #
+# Hide cursor.
+#
+
+hide_cursor() {
+  printf "\e[?25l"
+}
+
+#
+# Show cursor.
+#
+
+show_cursor() {
+  printf "\e[?25h"
+}
+
+#
+# Output version after selected.
+#
+
+next_version_installed() {
+  list_versions_installed | grep $selected -A 1 | tail -n 1
+}
+
+#
+# Output version before selected.
+#
+
+prev_version_installed() {
+  list_versions_installed | grep $selected -B 1 | head -n 1
+}
+
+#
 # Output n version.
 #
 
@@ -100,17 +134,16 @@ check_current_version() {
 }
 
 #
-# Display current node --version
-# and others installed.
+# Display installed versions with <selected>.
 #
 
-display_versions() {
-  check_current_version
+display_versions_with_selected() {
+  selected=$1
   echo
   for dir in $VERSIONS_DIR/*; do
     local version=${dir##*/}
     local config=`test -f $dir/.config && cat $dir/.config`
-    if test "$version" = "$active"; then
+    if test "$version" = "$selected"; then
       printf "  \033[36mο\033[0m $version \033[90m$config\033[0m\n"
     else
       printf "    \033[90m$version $config\033[0m\n"
@@ -120,11 +153,52 @@ display_versions() {
 }
 
 #
+# List installed versions.
+#
+
+list_versions_installed() {
+  for dir in $VERSIONS_DIR/*; do
+    local version=${dir##*/}
+    echo $version
+  done
+}
+
+#
+# Display current node --version
+# and others installed.
+#
+
+display_versions() {
+  clear
+  check_current_version
+  display_versions_with_selected $active
+
+  while true; do
+    read -s -n 3 c
+    case "$c" in
+      $UP)
+        clear
+        display_versions_with_selected $(prev_version_installed)
+        ;;
+      $DOWN)
+        clear
+        display_versions_with_selected $(next_version_installed)
+        ;;
+      *)
+        clear
+        activate $selected
+        exit
+        ;;
+    esac
+  done
+}
+
+#
 # Move up a line and erase.
 #
 
 erase_line() {
-  printf "\e[1A\e[2K"
+  printf "\033[1A\033[2K"
 }
 
 #

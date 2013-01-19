@@ -18,7 +18,9 @@ Install a few nodes:
     $ n 0.8.17
     $ n 0.9.6
 
-List installed binaries:
+Type `n` to prompt selection of an installed node. Use the up /
+down arrow to navigate, and press enter or the right arrow to
+select, or ^C to cancel:
 
     $ n
 
