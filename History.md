@@ -1,4 +1,9 @@
 
+0.9.0 / 2013-01-19 
+==================
+
+  * add up/down arrows for navigating installed version selection
+
 0.8.2 / 2013-01-18 
 ==================
 
