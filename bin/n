@@ -215,7 +215,7 @@ is_ok() {
 
 tarball_url() {
   local version=$1
-  local uname=$(uname -a)
+  local uname="$(uname -a)"
   local arch=x86
   local os=
 
