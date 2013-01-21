@@ -1,4 +1,10 @@
 
+0.9.1 / 2013-01-21 
+==================
+
+  * filter out versions that lack binaries (see #95) [mattrobenolt]
+  * quote `uname -s` to solve issue on Ubuntu 12.04 [nw]
+
 0.9.0 / 2013-01-19 
 ==================
 
