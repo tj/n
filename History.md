@@ -1,8 +1,12 @@
+0.9.3 / 2013-03-12
+==================
+
+  * use [0-9] instead of \d in regex for better compatibility
+
 0.9.2 / 2013-03-12
 ==================
 
   * fix version number in `n`
-  * bump version
 
 0.9.1 / 2013-01-21 
 ==================
