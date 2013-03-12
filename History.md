@@ -1,7 +1,7 @@
 0.9.3 / 2013-03-12
 ==================
 
-  * use [0-9] instead of \d in regex for better compatibility
+  * use [0-9] instead of \d in regex for better compatibility (see #105) [atuttle]
 
 0.9.2 / 2013-03-12
 ==================
