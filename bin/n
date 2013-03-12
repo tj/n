@@ -242,7 +242,7 @@ activate() {
   local dir=$VERSIONS_DIR/$version
   check_current_version
   echo $active > $VERSIONS_DIR/.prev
-  cp -fr $dir/* $N_PREFIX
+  rsync -K -a $dir/* $N_PREFIX
 }
 
 #
