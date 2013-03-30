@@ -89,6 +89,7 @@ with flags:
       n latest [config ...]        Install or activate the latest node release
       n stable [config ...]        Install or activate the latest stable node release
       n <version> [config ...]     Install and/or use node <version>
+      n <version> 32               Install and/or use node <version> but for 32 bit architecture
       n use <version> [args ...]   Execute node <version> with [args ...]
       n bin <version>              Output bin path for <version>
       n rm <version ...>           Remove the given version(s)
