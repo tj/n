@@ -271,7 +271,6 @@ activate_previous() {
 
 install_node() {
   local version=${1#v}
-  local bit32=${2}
   local config=$@
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version $bit32)
