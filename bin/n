@@ -8,6 +8,7 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
 
+
 # setup
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
@@ -57,6 +58,7 @@ display_help() {
     n latest [config ...]        Install or activate the latest node release
     n stable [config ...]        Install or activate the latest stable node release
     n <version> [config ...]     Install and/or use node <version>
+    n <version> 32               Install and/or use node <version> but for 32 bit architecture
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
@@ -217,6 +219,7 @@ tarball_url() {
   local version=$1
   local uname="$(uname -a)"
   local arch=x86
+  local thirtyTwoBit=$2 || false
   local os=
 
   # from nave(1)
@@ -230,6 +233,10 @@ tarball_url() {
     *x86_64*) arch=x64 ;;
   esac
 
+  if [ "$thirtyTwoBit" = "32" ]; then
+    arch=x86
+  fi
+  
   echo "http://nodejs.org/dist/v${version}/node-v${version}-${os}-${arch}.tar.gz"
 }
 
@@ -264,9 +271,10 @@ activate_previous() {
 
 install_node() {
   local version=${1#v}
+  local bit32=${2}
   local config=$@
   local dir=$VERSIONS_DIR/$version
-  local url=$(tarball_url $version)
+  local url=$(tarball_url $version $bit32)
 
   if test -d $dir; then
     activate $version
