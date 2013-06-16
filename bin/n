@@ -228,6 +228,7 @@ tarball_url() {
 
   case "$uname" in
     *x86_64*) arch=x64 ;;
+    *armv6l*) arch=arm-pi ;;
   esac
 
   echo "http://nodejs.org/dist/v${version}/node-v${version}-${os}-${arch}.tar.gz"
