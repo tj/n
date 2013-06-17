@@ -33,10 +33,10 @@ abort() {
 GET=
 
 # wget support (Added --no-check-certificate for Github downloads)
-which wget > /dev/null && GET="wget --no-check-certificate -q -O-"
+command -v wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
 # curl support
-which curl > /dev/null && GET="curl -# -L"
+command -v curl > /dev/null && GET="curl -# -L"
 
 # Ensure we have curl or wget
 
