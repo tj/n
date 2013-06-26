@@ -1,3 +1,10 @@
+
+1.0.0 / 2013-06-26 
+==================
+
+ * Use -R when activating. Fixes #118
+ * Add RPI support, fix visionmedia/n#108
+
 0.9.3 / 2013-03-12
 ==================
 
