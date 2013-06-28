@@ -31,16 +31,17 @@ abort() {
 # curl / wget support
 
 GET=
+GET_HEADER=
 
-# wget support (Added --no-check-certificate for Github downloads)
-command -v wget > /dev/null && GET="wget --no-check-certificate -q -O-"
-
-# curl support
-command -v curl > /dev/null && GET="curl -# -L"
-
-# Ensure we have curl or wget
-
-test -z "$GET" && abort "curl or wget required"
+if command -v curl > /dev/null; then
+  GET="curl -L#"
+  GET_HEADER="curl -Is"
+elif command -v wget > /dev/null; then
+  GET="wget -O-"
+  GET_HEADER="wget --spider -SqO-"
+else
+  abort "curl or wget required"
+fi
 
 #
 # Output usage information.
@@ -206,7 +207,7 @@ erase_line() {
 #
 
 is_ok() {
-  curl -Is $1 | head -n 1 | grep 200 > /dev/null
+  $GET_HEADER $1 2>&1 | egrep "HTTP.*?200" > /dev/null
 }
 
 #
@@ -284,7 +285,7 @@ install_node() {
   cd $dir
 
   log fetch $url
-  curl -L# $url | tar -zx --strip 1
+  $GET $url | tar -zx --strip 1
   erase_line
 
   activate $version
