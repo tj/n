@@ -31,14 +31,14 @@ abort() {
 # curl / wget support
 
 GET=
-GET_OK=
+GET_HEADER=
 
 if command -v curl > /dev/null; then
   GET="curl -L#"
-  GET_OK="curl -Is"
+  GET_HEADER="curl -Is"
 elif command -v wget > /dev/null; then
   GET="wget -O-"
-  GET_OK="wget --spider -SqO-"
+  GET_HEADER="wget --spider -SqO-"
 else
   abort "curl or wget required"
 fi
@@ -207,7 +207,7 @@ erase_line() {
 #
 
 is_ok() {
-  $GET_OK $1 2>&1 | egrep "HTTP.*?200" > /dev/null
+  $GET_HEADER $1 2>&1 | egrep "HTTP.*?200" > /dev/null
 }
 
 #
