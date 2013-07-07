@@ -240,10 +240,12 @@ tarball_url() {
 
 activate() {
   local version=$1
-  local dir=$VERSIONS_DIR/$version
   check_current_version
-  echo $active > $VERSIONS_DIR/.prev
-  cp -fR $dir/* $N_PREFIX
+  if [ "$version" != "$active" ]; then
+    local dir=$VERSIONS_DIR/$version
+    echo $active > $VERSIONS_DIR/.prev
+    cp -fR $dir/* $N_PREFIX
+  fi
 }
 
 #
