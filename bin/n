@@ -409,6 +409,7 @@ display_remote_versions() {
 # Handle arguments
 
 if test $# -eq 0; then
+  test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
   display_versions
 else
   while test $# -ne 0; do
