@@ -268,6 +268,20 @@ activate_previous() {
 
 install_node() {
   local version=${1#v}
+
+  local dots=`echo $version | sed 's/[^.]*//g'`
+  if test ${#dots} -eq 1; then
+    version=`$GET 2> /dev/null http://nodejs.org/dist/ \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | egrep -v '^0\.[0-7]\.' \
+    | egrep -v '^0\.8\.[0-5]$' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | egrep ^$version \
+    | tail -n1`
+    
+    test $version || abort "invalid version ${1#v}"
+  fi
+  
   local config=$@
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version)
