@@ -299,11 +299,10 @@ install_node() {
 # Remove <version ...>
 #
 
-remove_version() {
+remove_versions() {
   test -z $1 && abort "version(s) required"
-  local version=${1#v}
   while test $# -ne 0; do
-    rm -rf $VERSIONS_DIR/$version
+    rm -rf $VERSIONS_DIR/${1#v}
     shift
   done
 }
@@ -406,7 +405,7 @@ else
       --stable) display_latest_stable_version; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
-      rm|-) remove_version $2; exit ;;
+      rm|-) shift; remove_versions $@; exit ;;
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
