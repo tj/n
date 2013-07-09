@@ -401,14 +401,14 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
-      --latest) display_latest_version $2; exit ;;
-      --stable) display_latest_stable_version $2; exit ;;
+      --latest) display_latest_version; exit ;;
+      --stable) display_latest_stable_version; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) remove_version $2; exit ;;
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
-      ls|list) display_remote_versions $2; exit ;;
+      ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
       *) install_node $@; exit ;;
     esac
