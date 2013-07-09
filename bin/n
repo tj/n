@@ -255,6 +255,7 @@ activate() {
 activate_previous() {
   test -f $VERSIONS_DIR/.prev || abort "no previous versions activated"
   local prev=$(cat $VERSIONS_DIR/.prev)
+  test -d $VERSIONS_DIR/$prev || abort "previous version $prev not installed"
   activate $prev
   echo
   log activate $prev
