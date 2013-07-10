@@ -1,4 +1,12 @@
 
+1.1.0 / 2013-07-10 
+==================
+
+ * add: resolve version with one dot (`n 0.8` etc)
+ * fix: interactive listing sort
+ * fix: abort gracefully if no installed version
+ * fix: `n prev`
+
 1.0.0 / 2013-06-26
 ==================
 
