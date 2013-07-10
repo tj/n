@@ -177,12 +177,18 @@ display_versions() {
     read -s -n 3 c
     case "$c" in
       $UP)
-        clear
-        display_versions_with_selected $(prev_version_installed)
+        local prev=`prev_version_installed`
+        if test $prev != $selected; then
+          clear
+          display_versions_with_selected $prev
+        fi
         ;;
       $DOWN)
-        clear
-        display_versions_with_selected $(next_version_installed)
+        local next=`next_version_installed`
+        if test $next != $selected; then
+          clear
+          display_versions_with_selected $next
+        fi
         ;;
       *)
         clear
