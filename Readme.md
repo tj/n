@@ -28,17 +28,6 @@ select, or ^C to cancel:
     ο 0.8.17
       0.9.6
 
-Pass some config flags to _./configure_:
-
-    $ n 0.2.6 --debug
-
-List installed binaries, config flags are shown:
-
-      0.2.3
-    ο 0.2.6 --debug
-      0.3.4
-      0.3.5
-
 Use or install the latest official release:
 
     $ n latest
@@ -55,40 +44,40 @@ Switch to the previous version you were using:
 
 Remove some versions:
 
-    $ n rm 0.2.4 v0.3.0
+    $ n rm 0.9.4 v0.10.0
 
 Instead of using `rm` we can simply use `-`:
 
-    $ n - 0.2.4
+    $ n - 0.9.4
 
 ### Binary Usage
 
 When running multiple versions of node, we can target
 them directly by asking `n` for the binary path:
 
-    $ n bin 0.3.3
-    /usr/local/n/versions/0.3.3/bin/node
+    $ n bin 0.9.4
+    /usr/local/n/versions/0.9.4/bin/node
 
 Or by using a specific version through `n`'s `use` sub-command:
 
-    $ n use 0.3.3 some.js
+    $ n use 0.9.4 some.js
 
 with flags:
 
-    $ n as 0.3.3 --debug some.js
+    $ n as 0.9.4 --debug some.js
 
 ## Usage
 
  Output from `n --help`:
 
-    Usage: n [options] [COMMAND] [config]
+    Usage: n [options] [COMMAND] [args]
 
     Commands:
 
       n                            Output versions installed
-      n latest [config ...]        Install or activate the latest node release
-      n stable [config ...]        Install or activate the latest stable node release
-      n <version> [config ...]     Install and/or use node <version>
+      n latest                     Install or activate the latest node release
+      n stable                     Install or activate the latest stable node release
+      n <version>                  Install node <version>
       n use <version> [args ...]   Execute node <version> with [args ...]
       n bin <version>              Output bin path for <version>
       n rm <version ...>           Remove the given version(s)
