@@ -1,14 +1,14 @@
 #!/usr/bin/env sh
 
-# Library version
+#
+# Setup.
+#
 
 VERSION="1.1.0"
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-
-# setup
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
@@ -28,17 +28,16 @@ abort() {
   printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
 }
 
-# curl / wget support
+#
+# Ensure we have curl or wget support.
+#
 
 GET=
 
 # wget support (Added --no-check-certificate for Github downloads)
 command -v wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
-# curl support
 command -v curl > /dev/null && GET="curl -# -L"
-
-# Ensure we have curl or wget
 
 test -z "$GET" && abort "curl or wget required"
 
@@ -47,16 +46,16 @@ test -z "$GET" && abort "curl or wget required"
 #
 
 display_help() {
-  cat <<-help
+  cat <<-EOF
 
-  Usage: n [options] [COMMAND] [config]
+  Usage: n [options] [COMMAND] [args]
 
   Commands:
 
     n                            Output versions installed
-    n latest [config ...]        Install or activate the latest node release
-    n stable [config ...]        Install or activate the latest stable node release
-    n <version> [config ...]     Install and/or use node <version>
+    n latest                     Install or activate the latest node release
+    n stable                     Install or activate the latest stable node release
+    n <version>                  Install node <version>
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
@@ -77,7 +76,7 @@ display_help() {
     list    ls
     -       rm
 
-help
+EOF
   exit 0
 }
 
@@ -134,7 +133,7 @@ check_current_version() {
 }
 
 #
-# Display sorted versions directories paths
+# Display sorted versions directories paths.
 #
 
 versions_paths() {
@@ -144,7 +143,7 @@ versions_paths() {
 }
 
 #
-# Display installed versions with <selected>.
+# Display installed versions with <selected>
 #
 
 display_versions_with_selected() {
@@ -152,11 +151,10 @@ display_versions_with_selected() {
   echo
   for dir in `versions_paths`; do
     local version=${dir##*/}
-    local config=`test -f $dir/.config && cat $dir/.config`
     if test "$version" = "$selected"; then
-      printf "  \033[36mο\033[0m $version \033[90m$config\033[0m\n"
+      printf "  \033[36mο\033[0m $version\033[0m\n"
     else
-      printf "    \033[90m$version $config\033[0m\n"
+      printf "    \033[90m$version\033[0m\n"
     fi
   done
   echo
@@ -174,8 +172,7 @@ list_versions_installed() {
 }
 
 #
-# Display current node --version
-# and others installed.
+# Display current node --version and others installed.
 #
 
 display_versions() {
@@ -220,7 +217,7 @@ is_ok() {
 }
 
 #
-# Determine tarball url for <version>.
+# Determine tarball url for <version>
 #
 
 tarball_url() {
@@ -251,7 +248,7 @@ tarball_url() {
 activate() {
   local version=$1
   check_current_version
-  if [ "$version" != "$active" ]; then
+  if test "$version" != "$active"; then
     local dir=$VERSIONS_DIR/$version
     echo $active > $VERSIONS_DIR/.prev
     cp -fR $dir/* $N_PREFIX
@@ -292,7 +289,6 @@ install_node() {
     test $version || abort "invalid version ${1#v}"
   fi
 
-  local config=$@
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version)
 
@@ -302,7 +298,7 @@ install_node() {
   fi
 
   echo
-  log install $version
+  log install v$version
 
   is_ok $url || abort "invalid version $version"
 
@@ -347,8 +343,7 @@ display_bin_path_for_version() {
 }
 
 #
-# Execute the given <version> of node
-# with [args ...]
+# Execute the given <version> of node with [args ...]
 #
 
 execute_with_version() {
@@ -416,7 +411,9 @@ display_remote_versions() {
   echo
 }
 
-# Handle arguments
+#
+# Handle arguments.
+#
 
 if test $# -eq 0; then
   test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
@@ -435,7 +432,7 @@ else
       stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
-      *) install_node $@; exit ;;
+      *) install_node $1; exit ;;
     esac
     shift
   done
