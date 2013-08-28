@@ -2,6 +2,8 @@
 
 Simple flavour of node binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
+ ![](https://dsz91cxz97a03.cloudfront.net/4umODgexJb.gif)
+
 ## Installation
 
     $ npm install -g n
