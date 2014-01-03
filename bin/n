@@ -304,6 +304,10 @@ install_node() {
 
   log mkdir $dir
   mkdir -p $dir
+  if [ $? -ne 0 ] ; then
+    abort "sudo required"
+  fi
+  
   cd $dir
 
   log fetch $url
