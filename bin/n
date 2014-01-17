@@ -4,7 +4,15 @@
 # Setup.
 #
 
-VERSION="1.1.0"
+Pwd=$PWD
+cd $(dirname $0)
+cd $(dirname $(dirname $(readlink $0)))
+
+VERSION=`node_modules/.bin/JSON.sh -l < package.json | 
+      grep version | awk '{print $2}'`
+
+cd $Pwd
+
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'

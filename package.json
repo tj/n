@@ -5,6 +5,7 @@
   , "homepage": "https://github.com/visionmedia/n"
   , "bugs": "https://github.com/visionmedia/n/issues"
   , "keywords": ["node", "binary", "version", "env"]
+  , "dependencies": { "JSON.sh": "*" }
   , "bin": { "n": "./bin/n" }
   , "repository": { "type": "git", "url": "git://github.com/visionmedia/n.git" }
   , "engines": { "node": "*" }
