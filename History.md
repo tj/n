@@ -1,5 +1,11 @@
 
-1.1.0 / 2013-07-10 
+1.2.0 / 2014-01-30
+==================
+
+ * fix: #! to use bash
+ * fix: handle `Permission denied` for `mkdir`
+
+1.1.0 / 2013-07-10
 ==================
 
  * add: resolve version with one dot (`n 0.8` etc)
