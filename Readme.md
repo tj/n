@@ -12,7 +12,7 @@ or
 
     $ make install
     
-to $HOME
+to `$HOME`. Prefix later calls to `n` with `N_PREFIX=$HOME`
 
     $ PREFIX=$HOME make install
 
