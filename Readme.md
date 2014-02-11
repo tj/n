@@ -11,6 +11,10 @@ Simple flavour of node binary management, no subshells, no profile setup, no con
 or
 
     $ make install
+    
+to $HOME
+
+    $ PREFIX=$HOME make install
 
 ### Installing Binaries
 
