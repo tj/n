@@ -4,6 +4,7 @@
 # Setup.
 #
 
+NONE="None"
 VERSION="1.2.1"
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
@@ -129,6 +130,8 @@ check_current_version() {
   if test $? -eq 0; then
     active=`node --version`
     active=${active#v}
+  else
+    active="$NONE"
   fi
 }
 
@@ -149,6 +152,11 @@ versions_paths() {
 display_versions_with_selected() {
   selected=$1
   echo
+  if test "$NONE" = "$selected"; then
+    printf "  \033[36mο\033[0m $NONE\033[0m\n"
+  else
+    printf "    \033[90m$NONE\033[0m\n"
+  fi
   for dir in `versions_paths`; do
     local version=${dir##*/}
     if test "$version" = "$selected"; then
@@ -165,6 +173,7 @@ display_versions_with_selected() {
 #
 
 list_versions_installed() {
+  echo "$NONE"
   for dir in `versions_paths`; do
     local version=${dir##*/}
     echo $version
@@ -251,7 +260,24 @@ activate() {
   if test "$version" != "$active"; then
     local dir=$VERSIONS_DIR/$version
     echo $active > $VERSIONS_DIR/.prev
-    cp -fR $dir/* $N_PREFIX
+    if test "$version" == "$NONE"; then
+      rm -rf $N_PREFIX/share/man/man1/node.1
+      rm -rf $N_PREFIX/include/node
+      rm -rf $N_PREFIX/lib/node
+      rm -rf $N_PREFIX/lib/node_modules
+      for file in `find $N_PREFIX/lib -type l -ilname "*node*"`; do
+	rm -rf $file
+      done
+      for file in `find $N_PREFIX/bin -type l -ilname "*node*"`; do
+	rm -rf $file
+      done
+      rm -rf $N_PREFIX/bin/node
+      rm -rf $N_PREFIX/README.md
+      rm -rf $N_PREFIX/LICENSE
+      rm -rf $N_PREFIX/ChangeLog
+    else
+      cp -fR $dir/* $N_PREFIX
+    fi
   fi
 }
 
