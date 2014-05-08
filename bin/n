@@ -263,9 +263,15 @@ activate() {
     if test "$version" == "$NONE"; then
       rm -rf $N_PREFIX/share/man/man1/node.1
       rm -rf $N_PREFIX/include/node
+      rm -rf $N_PREFIX/lib/node
       rm -rf $N_PREFIX/lib/node_modules
+      for file in `find $N_PREFIX/lib -type l -ilname "*node*"`; do
+	rm -rf $file
+      done
+      for file in `find $N_PREFIX/bin -type l -ilname "*node*"`; do
+	rm -rf $file
+      done
       rm -rf $N_PREFIX/bin/node
-      rm -rf $N_PREFIX/bin/npm
       rm -rf $N_PREFIX/README.md
       rm -rf $N_PREFIX/LICENSE
       rm -rf $N_PREFIX/ChangeLog
