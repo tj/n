@@ -69,6 +69,7 @@ display_help() {
 
     -V, --version   Output current version of n
     -h, --help      Display help information
+    -m, --mirror    Specify URL for download mirror
 
   Aliases:
 
