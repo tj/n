@@ -418,6 +418,10 @@ display_remote_versions() {
   echo
 }
 
+#
+# Set download mirror
+#
+
 set_mirror() {
   test -z $1 && abort "mirror URL required"
   MIRROR=`echo $1 | egrep -i "http(s)?:\/\/([a-z0-9_\-]+\.)+[a-z]+([\/][a-z0-9_\-]*)+"`
