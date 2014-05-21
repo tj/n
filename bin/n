@@ -424,7 +424,7 @@ display_remote_versions() {
 
 set_mirror() {
   test -z $1 && abort "mirror URL required"
-  MIRROR=`echo $1 | egrep -i "http(s)?:\/\/([a-z0-9_\-]+\.)+[a-z]+([\/][a-z0-9_\-]*)+"`
+  MIRROR=`echo $1 | egrep -i "http(s)?:\/\/([0-9a-z_.-])+\.[a-z]{2,6}(:[0-9]+)?([\/][a-z0-9_-]*)*"`
   test -z "$MIRROR" && abort "invalid mirror URL $1"
 }
 
