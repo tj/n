@@ -392,7 +392,6 @@ display_latest_stable_version() {
 #
 
 display_remote_versions() {
-  echo "displaying remote versions"
   check_current_version
   local versions=""
   versions=`$GET 2> /dev/null $N_MIRROR \
