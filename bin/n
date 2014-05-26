@@ -9,6 +9,7 @@ N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
+N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
@@ -238,7 +239,7 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "http://nodejs.org/dist/v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
 }
 
 #
@@ -278,7 +279,7 @@ install_node() {
 
   local dots=`echo $version | sed 's/[^.]*//g'`
   if test ${#dots} -eq 1; then
-    version=`$GET 2> /dev/null http://nodejs.org/dist/ \
+    version=`$GET 2> /dev/null $N_MIRROR \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
@@ -369,7 +370,7 @@ execute_with_version() {
 #
 
 display_latest_version() {
-  $GET 2> /dev/null http://nodejs.org/dist/ \
+  $GET 2> /dev/null $N_MIRROR \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
@@ -380,7 +381,7 @@ display_latest_version() {
 #
 
 display_latest_stable_version() {
-  $GET 2> /dev/null http://nodejs.org/dist/ \
+  $GET 2> /dev/null $N_MIRROR \
     | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
@@ -393,7 +394,7 @@ display_latest_stable_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
-  versions=`$GET 2> /dev/null http://nodejs.org/dist/ \
+  versions=`$GET 2> /dev/null $N_MIRROR \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
     | egrep -v '^0\.8\.[0-5]$' \
