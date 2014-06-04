@@ -126,7 +126,7 @@ display_n_version() {
 #
 
 check_current_version() {
-  which node &> /dev/null
+  command -v node &> /dev/null
   if test $? -eq 0; then
     active=`node --version`
     active=${active#v}
