@@ -294,8 +294,10 @@ install_node() {
   local url=$(tarball_url $version)
 
   if test -d $dir; then
-    activate $version
-    exit
+    if [[ ! -e $dir/n.lock ]] ; then
+      activate $version
+      exit
+    fi
   fi
 
   echo
@@ -307,6 +309,8 @@ install_node() {
   mkdir -p $dir
   if [ $? -ne 0 ] ; then
     abort "sudo required"
+  else
+    touch $dir/n.lock
   fi
 
   cd $dir
@@ -314,6 +318,7 @@ install_node() {
   log fetch $url
   curl -L# $url | tar -zx --strip 1
   erase_line
+  rm -f $dir/n.lock
 
   activate $version
   log installed $(node --version)
