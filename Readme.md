@@ -42,6 +42,14 @@ Use or install the stable official release:
 
     $ n stable
 
+Set default version:
+
+    $ n default 0.11.9
+
+Instead of using `default` we can simply use `d`:
+
+    $ n d 0.11.9
+
 Switch to the previous version you were using:
 
     $ n prev
