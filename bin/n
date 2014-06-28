@@ -252,7 +252,7 @@ activate() {
   if test "$version" != "$active"; then
     local dir=$VERSIONS_DIR/$version
     echo $active > $VERSIONS_DIR/.prev
-    cp -fR $dir/* $N_PREFIX
+    cp -fR $dir/bin $dir/lib $dir/include $dir/share $N_PREFIX
   fi
 }
 
