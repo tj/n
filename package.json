@@ -1,14 +1,31 @@
-{   "name": "n"
-  , "description": "node version manager"
-  , "version": "1.2.8"
-  , "author": "TJ Holowaychuk <tj@vision-media.ca>"
-  , "homepage": "https://github.com/visionmedia/n"
-  , "bugs": "https://github.com/visionmedia/n/issues"
-  , "keywords": ["node", "binary", "version", "manager", "switcher", "env" ]
-  , "bin": { "n": "./bin/n" }
-  , "repository": { "type": "git", "url": "git://github.com/visionmedia/n.git" }
-  , "preferGlobal": true
-  , "os": [ "!win32" ]
-  , "engines": { "node": "*" }
-  , "license": "MIT"
+{
+  "name": "n",
+  "description": "node version manager",
+  "version": "1.2.9",
+  "author": "TJ Holowaychuk <tj@vision-media.ca>",
+  "homepage": "https://github.com/visionmedia/n",
+  "bugs": "https://github.com/visionmedia/n/issues",
+  "keywords": [
+    "node",
+    "binary",
+    "version",
+    "manager",
+    "switcher",
+    "env"
+  ],
+  "bin": {
+    "n": "./bin/n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/visionmedia/n.git"
+  },
+  "preferGlobal": true,
+  "os": [
+    "!win32"
+  ],
+  "engines": {
+    "node": "*"
+  },
+  "license": "MIT"
 }
