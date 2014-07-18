@@ -292,6 +292,7 @@ install_node() {
 
   local dir=$VERSIONS_DIR/$version
   local url=$(tarball_url $version)
+  local symlink=$VERSIONS_DIR/v$version
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
@@ -311,6 +312,7 @@ install_node() {
     abort "sudo required"
   else
     touch $dir/n.lock
+    ln -s $dir $symlink
   fi
 
   cd $dir
@@ -333,6 +335,7 @@ remove_versions() {
   test -z $1 && abort "version(s) required"
   while test $# -ne 0; do
     rm -rf $VERSIONS_DIR/${1#v}
+    rm -rf $VERSIONS_DIR/v${1#v}
     shift
   done
 }
