@@ -53,7 +53,7 @@ display_help() {
 
   Commands:
 
-    n                            Output versions installed
+    n                            Output versions installed or help information if no version is installed
     n latest                     Install or activate the latest node release
     n stable                     Install or activate the latest stable node release
     n <version>                  Install node <version>
@@ -426,7 +426,7 @@ display_remote_versions() {
 #
 
 if test $# -eq 0; then
-  test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
+  test "$(ls -l $VERSIONS_DIR | grep ^d)" || display_help
   display_versions
 else
   while test $# -ne 0; do
