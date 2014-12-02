@@ -209,7 +209,7 @@ display_versions() {
   trap handle_sigtstp SIGTSTP
 
   while true; do
-    read -s -n 3 c
+    read -n 3 c
     case "$c" in
       $UP)
         clear
