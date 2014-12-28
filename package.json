@@ -3,8 +3,8 @@
   "description": "node version manager",
   "version": "1.2.11",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
-  "homepage": "https://github.com/visionmedia/n",
-  "bugs": "https://github.com/visionmedia/n/issues",
+  "homepage": "https://github.com/tj/n",
+  "bugs": "https://github.com/tj/n/issues",
   "contributors": [
     {
       "name": "Travis Webb",
@@ -13,11 +13,13 @@
     }
   ],
   "keywords": [
+    "nvm",
     "node",
-    "binary",
     "version",
     "manager",
     "switcher",
+    "node",
+    "binary",
     "env"
   ],
   "bin": {
@@ -25,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/visionmedia/n.git"
+    "url": "git://github.com/tj/n.git"
   },
   "preferGlobal": true,
   "os": [
