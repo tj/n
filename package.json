@@ -5,6 +5,13 @@
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "homepage": "https://github.com/visionmedia/n",
   "bugs": "https://github.com/visionmedia/n/issues",
+  "contributors": [
+    {
+      "name": "Travis Webb",
+      "email": "me@traviswebb.com",
+      "url": "tjw.io"
+    }
+  ],
   "keywords": [
     "node",
     "binary",
