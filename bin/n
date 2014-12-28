@@ -43,6 +43,30 @@ command -v curl > /dev/null && GET="curl -# -L"
 test -z "$GET" && abort "curl or wget required"
 
 #
+# Functions used when showing versions installed
+#
+
+enter_fullscreen() {
+  tput smcup
+  stty -echo
+}
+
+leave_fullscreen() {
+  tput rmcup
+  stty echo
+}
+
+handle_sigint() {
+  leave_fullscreen
+  exit $?
+}
+
+handle_sigtstp() {
+  leave_fullscreen
+  kill -s SIGSTOP $$
+}
+
+#
 # Output usage information.
 #
 
@@ -177,12 +201,15 @@ list_versions_installed() {
 #
 
 display_versions() {
-  clear
+  enter_fullscreen
   check_current_version
   display_versions_with_selected $active
 
+  trap handle_sigint INT
+  trap handle_sigtstp SIGTSTP
+
   while true; do
-    read -s -n 3 c
+    read -n 3 c
     case "$c" in
       $UP)
         clear
@@ -193,8 +220,8 @@ display_versions() {
         display_versions_with_selected $(next_version_installed)
         ;;
       *)
-        clear
         activate $selected
+        leave_fullscreen
         exit
         ;;
     esac
