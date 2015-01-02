@@ -253,6 +253,7 @@ tarball_url() {
   local uname="$(uname -a)"
   local arch=x86
   local os=
+  local url=
 
   # from nave(1)
   case "$uname" in
@@ -266,7 +267,13 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  if [[ $os == darwin ]]; then
+    url="${N_MIRROR}v${version}/node-v${version}.pkg"
+  else
+    url="${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  fi
+
+  echo $url
 }
 
 #
@@ -343,7 +350,18 @@ install_node() {
   cd $dir
 
   log fetch $url
-  curl -L# $url | tar -zx --strip 1
+  if [[ $url == *.pkg ]] ; then
+      curl -L# $url -o node-v$version.pkg
+      pkgutil --expand node-v$version.pkg /tmp/node-v$version
+      cp /tmp/node-v$version/local.pkg/Payload .
+      cat Payload | gzip -d | cpio -id
+      rm Payload
+      rm -rf /tmp/node-v$version
+      rm node-v$version.pkg
+  else
+      curl -L# $url | tar -zx --strip 1
+  fi
+
   erase_line
   rm -f $dir/n.lock
 
