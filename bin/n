@@ -9,7 +9,7 @@ N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
