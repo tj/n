@@ -82,6 +82,7 @@ display_help() {
     n stable                     Install or activate the latest stable node release
     n <version>                  Install node <version>
     n use <version> [args ...]   Execute node <version> with [args ...]
+    n shell <version> [exec args ...]   Execute node <version> with in a new shell or executable
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
     n prev                       Revert to the previously activated version
@@ -398,6 +399,29 @@ execute_with_version() {
 }
 
 #
+# Execute the given [exec args...] with the given <version> of node in its PATH
+#
+
+shell_with_version() {
+  test -z $1 && abort "version required"
+  local version=${1#v}
+  shift
+  local bindir=$VERSIONS_DIR/$version/bin
+  local exec
+  if test -n "$@"; then
+    exec=$@
+  else
+    exec="$SHELL"
+  fi
+
+  if test -f $bin; then
+    PATH=${bindir}:$PATH ${exec}
+  else
+    abort "$version is not installed"
+  fi
+}
+
+#
 # Display the latest node release version.
 #
 
@@ -464,6 +488,7 @@ else
       --stable) display_latest_stable_version; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
+      shell) shift; shell_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
