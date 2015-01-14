@@ -5,7 +5,7 @@
 #
 
 VERSION="1.2.13"
-N_PREFIX=${N_PREFIX-/home/grey93/n}
+N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
@@ -451,15 +451,38 @@ display_latest_stable_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
-  set_mirror $1
 
-  versions=`$GET 2> /dev/null $MIRROR \
+  echo
+  versions=`$GET 2> /dev/null $IO_MIRROR \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
     | egrep -v '^0\.8\.[0-5]$' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }'`
 
+  printf "\033[33mio.js\033[0m versions"
+  echo
+  for v in $versions; do
+    if test "$active" = "$v"; then
+      printf "  \033[36mο\033[0m io/$v \033[0m\n"
+    else
+      if test -d $VERSIONS_DIR/$v; then
+        printf "    io/$v \033[0m\n"
+      else
+        printf "    \033[90mio/$v\033[0m\n"
+      fi
+    fi
+  done
+  echo
+
+  versions=`$GET 2> /dev/null $N_MIRROR \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | egrep -v '^0\.[0-7]\.' \
+    | egrep -v '^0\.8\.[0-5]$' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | awk '{ print "  " $1 }'`
+
+  printf "\033[32mnode.js\033[0m versions"
   echo
   for v in $versions; do
     if test "$active" = "$v"; then
