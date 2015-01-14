@@ -10,8 +10,11 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 
-test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
+MIRROR=
+
+test -d $VERSIONS_DIR || mkdir -p "$VERSIONS_DIR/io"
 
 #
 # Log <type> <msg>
@@ -158,6 +161,21 @@ check_current_version() {
 }
 
 #
+# Check for installed version, and populate $is_current_io
+#
+
+check_current_is_io() {
+  command -v node &> /dev/null
+  if test $? -eq 0; then
+    if test -h `which node`; then
+      is_current_io=1
+    else
+      is_current_io=0
+    fi
+  fi
+}
+
+#
 # Display sorted versions directories paths.
 #
 
@@ -168,11 +186,22 @@ versions_paths() {
 }
 
 #
+# Display iojs sorted versions directories paths.
+#
+
+io_versions_paths() {
+  ls -d $VERSIONS_DIR/**/* \
+    | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
+    | sort -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+#
 # Display installed versions with <selected>
 #
 
 display_versions_with_selected() {
   selected=$1
+
   echo
   for dir in `versions_paths`; do
     local version=${dir##*/}
@@ -183,6 +212,28 @@ display_versions_with_selected() {
     fi
   done
   echo
+
+  echo
+  for dir in `io_versions_paths`; do
+    local version=${dir##*/}
+    if [ "io/$version" = "$selected" ] || [ "$version" = "$selected" ]; then
+      printf "  \033[36mο\033[0m io/$version\033[0m\n"
+    else
+      printf "    \033[90mio/$version\033[0m\n"
+    fi
+  done
+  echo
+}
+
+#
+# set mirror
+#
+
+set_mirror() {
+  MIRROR=$N_MIRROR
+  if test "$1" = 1; then
+    MIRROR=$IO_MIRROR
+  fi
 }
 
 #
@@ -194,6 +245,10 @@ list_versions_installed() {
     local version=${dir##*/}
     echo $version
   done
+  for dir in `io_versions_paths`; do
+    local version=${dir##*/}
+    echo "io/$version"
+  done
 }
 
 #
@@ -203,6 +258,7 @@ list_versions_installed() {
 display_versions() {
   enter_fullscreen
   check_current_version
+  check_current_is_io
   display_versions_with_selected $active
 
   trap handle_sigint INT
@@ -250,9 +306,18 @@ is_ok() {
 
 tarball_url() {
   local version=$1
+  if test "$2" = 1; then
+    version=${1#io/}
+  fi
   local uname="$(uname -a)"
   local arch=x86
   local os=
+
+  set_mirror $2
+  local bin_name="node"
+  if test "$2" = 1; then
+    bin_name="iojs"
+  fi
 
   # from nave(1)
   case "$uname" in
@@ -266,7 +331,7 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  echo "${MIRROR}v${version}/${bin_name}-v${version}-${os}-${arch}.tar.gz"
 }
 
 #
@@ -304,9 +369,11 @@ activate_previous() {
 install_node() {
   local version=${1#v}
 
+  set_mirror $2
+
   local dots=`echo $version | sed 's/[^.]*//g'`
   if test ${#dots} -eq 1; then
-    version=`$GET 2> /dev/null $N_MIRROR \
+    version=`$GET 2> /dev/null $MIRROR \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
@@ -318,7 +385,7 @@ install_node() {
   fi
 
   local dir=$VERSIONS_DIR/$version
-  local url=$(tarball_url $version)
+  local url=$(tarball_url $version $2)
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
@@ -426,6 +493,30 @@ display_latest_stable_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
+
+  echo
+  versions=`$GET 2> /dev/null $IO_MIRROR \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | egrep -v '^0\.[0-7]\.' \
+    | egrep -v '^0\.8\.[0-5]$' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | awk '{ print "  " $1 }'`
+
+  printf "\033[33mio.js\033[0m versions"
+  echo
+  for v in $versions; do
+    if test "$active" = "$v"; then
+      printf "  \033[36mο\033[0m io/$v \033[0m\n"
+    else
+      if test -d $VERSIONS_DIR/$v; then
+        printf "    io/$v \033[0m\n"
+      else
+        printf "    \033[90mio/$v\033[0m\n"
+      fi
+    fi
+  done
+  echo
+
   versions=`$GET 2> /dev/null $N_MIRROR \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
@@ -433,6 +524,7 @@ display_remote_versions() {
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }'`
 
+  printf "\033[32mnode.js\033[0m versions"
   echo
   for v in $versions; do
     if test "$active" = "$v"; then
@@ -469,6 +561,7 @@ else
       stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
+      io/*) install_node $1 1; exit ;;
       *) install_node $1; exit ;;
     esac
     shift
