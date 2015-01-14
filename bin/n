@@ -161,6 +161,21 @@ check_current_version() {
 }
 
 #
+# Check for installed version, and populate $is_current_io
+#
+
+check_current_is_io() {
+  command -v node &> /dev/null
+  if test $? -eq 0; then
+    if test -h `which node`; then
+      is_current_io=1
+    else
+      is_current_io=0
+    fi
+  fi
+}
+
+#
 # Display sorted versions directories paths.
 #
 
@@ -171,11 +186,22 @@ versions_paths() {
 }
 
 #
+# Display iojs sorted versions directories paths.
+#
+
+io_versions_paths() {
+  ls -d $VERSIONS_DIR/**/* \
+    | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
+    | sort -k 1,1n -k 2,2n -k 3,3n -t .
+}
+
+#
 # Display installed versions with <selected>
 #
 
 display_versions_with_selected() {
   selected=$1
+
   echo
   for dir in `versions_paths`; do
     local version=${dir##*/}
@@ -183,6 +209,17 @@ display_versions_with_selected() {
       printf "  \033[36mο\033[0m $version\033[0m\n"
     else
       printf "    \033[90m$version\033[0m\n"
+    fi
+  done
+  echo
+
+  echo
+  for dir in `io_versions_paths`; do
+    local version=${dir##*/}
+    if [ "io/$version" = "$selected" ] || [ "$version" = "$selected" ]; then
+      printf "  \033[36mο\033[0m io/$version\033[0m\n"
+    else
+      printf "    \033[90mio/$version\033[0m\n"
     fi
   done
   echo
@@ -208,6 +245,10 @@ list_versions_installed() {
     local version=${dir##*/}
     echo $version
   done
+  for dir in `io_versions_paths`; do
+    local version=${dir##*/}
+    echo "io/$version"
+  done
 }
 
 #
@@ -217,6 +258,7 @@ list_versions_installed() {
 display_versions() {
   enter_fullscreen
   check_current_version
+  check_current_is_io
   display_versions_with_selected $active
 
   trap handle_sigint INT
