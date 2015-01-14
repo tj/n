@@ -4,13 +4,13 @@
 # Setup.
 #
 
-VERSION="1.2.13"
+VERSION="1.2.14"
 N_PREFIX=${N_PREFIX-/usr/local}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
-
+N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
+IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
 #
@@ -81,6 +81,7 @@ display_help() {
     n latest                     Install or activate the latest node release
     n stable                     Install or activate the latest stable node release
     n <version>                  Install node <version>
+    n --iojs <version>           Install iojs <version>
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
@@ -266,7 +267,11 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  if test "$N_MIRROR" == "$IO_MIRROR"; then
+    echo "${N_MIRROR}v${version}/iojs-v${version}-${os}-${arch}.tar.gz"
+  else
+    echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  fi
 }
 
 #
@@ -449,6 +454,13 @@ display_remote_versions() {
 }
 
 #
+# Use io.js mirror instead of n_mirror
+#
+use_iojs_mirror() {
+  N_MIRROR="$IO_MIRROR"
+}
+
+#
 # Handle arguments.
 #
 
@@ -460,6 +472,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
+      --io|--iojs) use_iojs_mirror && install_node $2 ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
