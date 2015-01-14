@@ -6,10 +6,14 @@
 
 VERSION="1.2.13"
 N_PREFIX=${N_PREFIX-/usr/local}
+N_BIN_PREFIX=${N_BIN_PREFIX-}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
+IO_FLAG=${IO_FLAG-}
+IO_BIN_PREFIX=${IO_PREFIX-io-}
+IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
@@ -81,6 +85,7 @@ display_help() {
     n latest                     Install or activate the latest node release
     n stable                     Install or activate the latest stable node release
     n <version>                  Install node <version>
+    n --io|--iojs <version>      Install iojs <version>
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
@@ -88,6 +93,7 @@ display_help() {
     n --latest                   Output the latest node version available
     n --stable                   Output the latest stable node version available
     n ls                         Output the versions of node available
+    n ls --io                    Output the versions of iojs available
 
   Options:
 
@@ -266,7 +272,11 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  if test "$N_MIRROR" == "$IO_MIRROR"; then
+    echo "${N_MIRROR}v${version}/iojs-v${version}-${os}-${arch}.tar.gz"
+  else
+    echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  fi
 }
 
 #
@@ -274,7 +284,7 @@ tarball_url() {
 #
 
 activate() {
-  local version=$1
+  local version=$N_BIN_PREFIX$1
   check_current_version
   if test "$version" != "$active"; then
     local dir=$VERSIONS_DIR/$version
@@ -317,7 +327,7 @@ install_node() {
     test $version || abort "invalid version ${1#v}"
   fi
 
-  local dir=$VERSIONS_DIR/$version
+  local dir=$VERSIONS_DIR/$N_BIN_PREFIX$version
   local url=$(tarball_url $version)
 
   if test -d $dir; then
@@ -328,7 +338,7 @@ install_node() {
   fi
 
   echo
-  log install v$version
+  log install v$N_BIN_PREFIX$version
 
   is_ok $url || abort "invalid version $version"
 
@@ -449,8 +459,28 @@ display_remote_versions() {
 }
 
 #
+# Override N_MIRROR with IO_MIRROR
+#
+
+set_iojs_mirror() {
+  N_MIRROR="$IO_MIRROR"
+}
+
+set_iojs_prefix() {
+  N_BIN_PREFIX="$IO_BIN_PREFIX"
+  IO_FLAG="--io"
+}
+
+#
 # Handle arguments.
 #
+
+if [[ $1 == *"--io"* ]]; then
+  set_iojs_mirror && set_iojs_prefix
+  shift
+elif [[ $@ == *"--io"* ]]; then
+  set_iojs_mirror && set_iojs_prefix
+fi
 
 if test $# -eq 0; then
   test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
@@ -465,8 +495,8 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install_node `n --latest`; exit ;;
-      stable) install_node `n --stable`; exit ;;
+      latest) install_node `n --latest $IO_FLAG`; exit ;;
+      stable) install_node `n --stable $IO_FLAG`; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
       *) install_node $1; exit ;;
