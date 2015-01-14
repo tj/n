@@ -5,13 +5,16 @@
 #
 
 VERSION="1.2.13"
-N_PREFIX=${N_PREFIX-/usr/local}
+N_PREFIX=${N_PREFIX-/home/grey93/n}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 
-test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
+MIRROR=
+
+test -d $VERSIONS_DIR || mkdir -p "$VERSIONS_DIR/io"
 
 #
 # Log <type> <msg>
@@ -186,6 +189,17 @@ display_versions_with_selected() {
 }
 
 #
+# set mirror
+#
+
+set_mirror() {
+  MIRROR=$N_MIRROR
+  if test "$1" = 1; then
+    MIRROR=$IO_MIRROR
+  fi
+}
+
+#
 # List installed versions.
 #
 
@@ -250,9 +264,18 @@ is_ok() {
 
 tarball_url() {
   local version=$1
+  if test "$2" = 1; then
+    version=${1#io/}
+  fi
   local uname="$(uname -a)"
   local arch=x86
   local os=
+
+  set_mirror $2
+  local bin_name="node"
+  if test "$2" = 1; then
+    bin_name="iojs"
+  fi
 
   # from nave(1)
   case "$uname" in
@@ -266,7 +289,7 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  echo "${MIRROR}v${version}/${bin_name}-v${version}-${os}-${arch}.tar.gz"
 }
 
 #
@@ -304,9 +327,11 @@ activate_previous() {
 install_node() {
   local version=${1#v}
 
+  set_mirror $2
+
   local dots=`echo $version | sed 's/[^.]*//g'`
   if test ${#dots} -eq 1; then
-    version=`$GET 2> /dev/null $N_MIRROR \
+    version=`$GET 2> /dev/null $MIRROR \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
@@ -318,7 +343,7 @@ install_node() {
   fi
 
   local dir=$VERSIONS_DIR/$version
-  local url=$(tarball_url $version)
+  local url=$(tarball_url $version $2)
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
@@ -426,7 +451,9 @@ display_latest_stable_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
-  versions=`$GET 2> /dev/null $N_MIRROR \
+  set_mirror $1
+
+  versions=`$GET 2> /dev/null $MIRROR \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
     | egrep -v '^0\.8\.[0-5]$' \
@@ -468,7 +495,9 @@ else
       latest) install_node `n --latest`; exit ;;
       stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
+      io/ls|io/list) display_remote_versions 1; exit ;;
       prev) activate_previous; exit ;;
+      io/*) install_node $1 1; exit ;;
       *) install_node $1; exit ;;
     esac
     shift
