@@ -5,14 +5,16 @@
 #
 
 VERSION="1.2.13"
+CONFIG_FILE="$HOME/.n"
+N_DISTRO=${N_DISTRO-node}
 N_PREFIX=${N_PREFIX-/usr/local}
-N_BIN_PREFIX=${N_BIN_PREFIX-}
+N_BIN_PREFIX=${N_BIN_PREFIX-node/}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
 IO_FLAG=${IO_FLAG-}
-IO_BIN_PREFIX=${IO_PREFIX-io-}
+IO_BIN_PREFIX=${IO_BIN_PREFIX-io/}
 IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
@@ -85,7 +87,6 @@ display_help() {
     n latest                     Install or activate the latest node release
     n stable                     Install or activate the latest stable node release
     n <version>                  Install node <version>
-    n --io|--iojs <version>      Install iojs <version>
     n use <version> [args ...]   Execute node <version> with [args ...]
     n bin <version>              Output bin path for <version>
     n rm <version ...>           Remove the given version(s)
@@ -93,7 +94,8 @@ display_help() {
     n --latest                   Output the latest node version available
     n --stable                   Output the latest stable node version available
     n ls                         Output the versions of node available
-    n ls --io                    Output the versions of iojs available
+    n distro <distro>            Select the preferred distro
+    n --distro                   Display selected distro
 
   Options:
 
@@ -168,8 +170,8 @@ check_current_version() {
 #
 
 versions_paths() {
-  ls -d $VERSIONS_DIR/* \
-    | egrep "/io-[0-9]|[0-9]+\.[0-9]+\.[0-9]+$" \
+  ls -d $VERSIONS_DIR/**/* \
+    | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
     | sort -k 1,1n -k 2,2n -k 3,3n -t .
 }
 
@@ -338,7 +340,7 @@ install_node() {
   fi
 
   echo
-  log install v$N_BIN_PREFIX$version
+  log install $N_BIN_PREFIXv$version
 
   is_ok $url || abort "invalid version $version"
 
@@ -459,44 +461,75 @@ display_remote_versions() {
 }
 
 #
+# Display current default distro
+#
+
+display_selected_distro() {
+  cat $CONFIG_FILE
+}
+
+#
+# Set variables to the distro selected/default to node
+#
+
+get_distro() {
+  N_DISTRO=$(cat $CONFIG_FILE)
+  N_DISTRO=${N_DISTRO-node}
+
+  set_mirror && set_prefix
+}
+
+#
+# Set distro configuration
+#
+
+set_distro() {
+  echo $1 > $CONFIG_FILE
+}
+
+#
 # Override N_MIRROR with IO_MIRROR
 #
 
-set_iojs_mirror() {
-  N_MIRROR="$IO_MIRROR"
+set_mirror() {
+  if [[ $N_DISTRO == "io"* ]]; then
+    N_MIRROR="$IO_MIRROR"
+  fi
 }
 
-set_iojs_prefix() {
-  N_BIN_PREFIX="$IO_BIN_PREFIX"
-  IO_FLAG="--io"
+#
+# Set the binary prefix according to distro
+#
+
+set_prefix() {
+  if [[ $N_DISTRO == "io"* ]]; then
+    N_BIN_PREFIX="$IO_BIN_PREFIX"
+  fi
 }
 
 #
 # Handle arguments.
 #
 
-if [[ $1 == *"--io"* ]]; then
-  set_iojs_mirror && set_iojs_prefix
-  shift
-elif [[ $@ == *"--io"* ]]; then
-  set_iojs_mirror && set_iojs_prefix
-fi
-
 if test $# -eq 0; then
   test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
   display_versions
 else
+  get_distro
+
   while test $# -ne 0; do
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
+      --distro) display_selected_distro; exit ;;
+      distro) set_distro $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install_node `n --latest $IO_FLAG`; exit ;;
-      stable) install_node `n --stable $IO_FLAG`; exit ;;
+      latest) install_node `n --latest`; exit ;;
+      stable) install_node `n --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
       *) install_node $1; exit ;;
