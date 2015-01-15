@@ -5,11 +5,17 @@
 #
 
 VERSION="1.2.13"
+CONFIG_FILE="$HOME/.n"
+N_DISTRO=${N_DISTRO-node}
 N_PREFIX=${N_PREFIX-/usr/local}
+N_BIN_PREFIX=${N_BIN_PREFIX-node/}
 VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
+IO_FLAG=${IO_FLAG-}
+IO_BIN_PREFIX=${IO_BIN_PREFIX-io/}
+IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
@@ -88,6 +94,8 @@ display_help() {
     n --latest                   Output the latest node version available
     n --stable                   Output the latest stable node version available
     n ls                         Output the versions of node available
+    n distro <distro>            Select the preferred distro
+    n --distro                   Display selected distro
 
   Options:
 
@@ -162,7 +170,7 @@ check_current_version() {
 #
 
 versions_paths() {
-  ls -d $VERSIONS_DIR/* \
+  ls -d $VERSIONS_DIR/**/* \
     | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
     | sort -k 1,1n -k 2,2n -k 3,3n -t .
 }
@@ -176,7 +184,7 @@ display_versions_with_selected() {
   echo
   for dir in `versions_paths`; do
     local version=${dir##*/}
-    if test "$version" = "$selected"; then
+    if [[ "$version" = *"$selected" ]]; then
       printf "  \033[36mο\033[0m $version\033[0m\n"
     else
       printf "    \033[90m$version\033[0m\n"
@@ -266,7 +274,11 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  if test "$N_MIRROR" == "$IO_MIRROR"; then
+    echo "${N_MIRROR}v${version}/iojs-v${version}-${os}-${arch}.tar.gz"
+  else
+    echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  fi
 }
 
 #
@@ -274,7 +286,7 @@ tarball_url() {
 #
 
 activate() {
-  local version=$1
+  local version=$N_BIN_PREFIX$1
   check_current_version
   if test "$version" != "$active"; then
     local dir=$VERSIONS_DIR/$version
@@ -317,7 +329,7 @@ install_node() {
     test $version || abort "invalid version ${1#v}"
   fi
 
-  local dir=$VERSIONS_DIR/$version
+  local dir=$VERSIONS_DIR/$N_BIN_PREFIX$version
   local url=$(tarball_url $version)
 
   if test -d $dir; then
@@ -328,7 +340,7 @@ install_node() {
   fi
 
   echo
-  log install v$version
+  log install $N_BIN_PREFIXv$version
 
   is_ok $url || abort "invalid version $version"
 
@@ -449,6 +461,53 @@ display_remote_versions() {
 }
 
 #
+# Display current default distro
+#
+
+display_selected_distro() {
+  cat $CONFIG_FILE
+}
+
+#
+# Set variables to the distro selected/default to node
+#
+
+get_distro() {
+  N_DISTRO=$(cat $CONFIG_FILE)
+  N_DISTRO=${N_DISTRO-node}
+
+  set_mirror && set_prefix
+}
+
+#
+# Set distro configuration
+#
+
+set_distro() {
+  echo $1 > $CONFIG_FILE
+}
+
+#
+# Override N_MIRROR with IO_MIRROR
+#
+
+set_mirror() {
+  if [[ $N_DISTRO == "io"* ]]; then
+    N_MIRROR="$IO_MIRROR"
+  fi
+}
+
+#
+# Set the binary prefix according to distro
+#
+
+set_prefix() {
+  if [[ $N_DISTRO == "io"* ]]; then
+    N_BIN_PREFIX="$IO_BIN_PREFIX"
+  fi
+}
+
+#
 # Handle arguments.
 #
 
@@ -456,12 +515,16 @@ if test $# -eq 0; then
   test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
   display_versions
 else
+  get_distro
+
   while test $# -ne 0; do
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
+      --distro) display_selected_distro; exit ;;
+      distro) set_distro $2; exit ;;
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
