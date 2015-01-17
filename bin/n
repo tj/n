@@ -5,13 +5,45 @@
 #
 
 VERSION="1.2.14"
-N_PREFIX=${N_PREFIX-/usr/local}
-VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
-N_MIRROR=${N_MIRROR-https://nodejs.org/dist/}
-IO_MIRROR=${IO_MIRROR-https://iojs.org/dist/}
-test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
+N_PREFIX=${N_PREFIX-/usr/local}
+BASE_VERSIONS_DIR=$N_PREFIX/n/versions
+
+#
+# All Bin(node/io) configurations
+#
+
+BINS=("node"
+      "io")
+MIRROR=(${NODE_MIRROR-https://nodejs.org/dist/}
+        ${IO_MIRROR-https://iojs.org/dist/})
+BIN_NAME=("node"
+          "iojs")
+VERSIONS_DIR=($BASE_VERSIONS_DIR/node
+              $BASE_VERSIONS_DIR/io)
+
+#
+# State
+#
+
+DEFAULT=0
+
+#
+# set_default <bin_name>
+#
+
+set_default() {
+  for (( i=0 ; i<${#BINS[@]} ; i++ )); do
+    if test ${BINS[$i]} = $1; then
+      DEFAULT=$i
+    fi
+  done
+}
+
+for dir in ${VERSIONS_DIR[@]}; do
+  test -d $dir || mkdir -p $dir
+done
 
 #
 # Log <type> <msg>
@@ -73,22 +105,37 @@ handle_sigtstp() {
 display_help() {
   cat <<-EOF
 
-  Usage: n [options] [COMMAND] [args]
+  Usage: n [options/env] [COMMAND] [args]
+
+  Environments:
+    n [COMMAND] [args]            Uses default env (node)
+    n node [COMMAND] [args]       Sets env as node
+    n io [COMMAND]                Sets env as io
 
   Commands:
 
-    n                            Output versions installed
-    n latest                     Install or activate the latest node release
-    n stable                     Install or activate the latest stable node release
-    n <version>                  Install node <version>
-    n --iojs <version>           Install iojs <version>
-    n use <version> [args ...]   Execute node <version> with [args ...]
-    n bin <version>              Output bin path for <version>
-    n rm <version ...>           Remove the given version(s)
-    n prev                       Revert to the previously activated version
-    n --latest                   Output the latest node version available
-    n --stable                   Output the latest stable node version available
-    n ls                         Output the versions of node available
+    n                              Output versions installed
+    n latest                       Install or activate the latest node release
+    n stable                       Install or activate the latest stable node release
+    n <version>                    Install node <version>
+    n use <version> [args ...]     Execute node <version> with [args ...]
+    n bin <version>                Output bin path for <version>
+    n rm <version ...>             Remove the given version(s)
+    n prev                         Revert to the previously activated version
+    n --latest                     Output the latest node version available
+    n --stable                     Output the latest stable node version available
+    n ls                           Output the versions of node available
+
+  (iojs):
+    n io latest                    Install or activate the latest iojs release
+    n io stable                    Install or activate the latest stable iojs release
+    n io <version>                 Install iojs <version>
+    n io use <version> [args ...]  Execute iojs <version> with [args ...]
+    n io bin <version>             Output bin path for <version>
+    n io rm <version ...>          Remove the given version(s)
+    n io --latest                  Output the latest iojs version available
+    n io --stable                  Output the latest stable iojs version available
+    n io ls                        Output the versions of iojs available
 
   Options:
 
@@ -97,6 +144,7 @@ display_help() {
 
   Aliases:
 
+    iojs    io
     which   bin
     use     as
     list    ls
@@ -153,8 +201,15 @@ display_n_version() {
 check_current_version() {
   command -v node &> /dev/null
   if test $? -eq 0; then
-    active=`node --version`
-    active=${active#v}
+    local current=`node --version`
+    current=${current#v}
+    for bin in ${BINS[@]}; do
+      if diff &> /dev/null \
+        $BASE_VERSIONS_DIR/$bin/$current/bin/node \
+        `which node` ; then
+        active=$bin/$current
+      fi
+    done
   fi
 }
 
@@ -163,7 +218,8 @@ check_current_version() {
 #
 
 versions_paths() {
-  ls -d $VERSIONS_DIR/* \
+  find $BASE_VERSIONS_DIR -type d -maxdepth 2 \
+    | sed 's|'$BASE_VERSIONS_DIR'/||g' \
     | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
     | sort -k 1,1n -k 2,2n -k 3,3n -t .
 }
@@ -175,8 +231,7 @@ versions_paths() {
 display_versions_with_selected() {
   selected=$1
   echo
-  for dir in `versions_paths`; do
-    local version=${dir##*/}
+  for version in `versions_paths`; do
     if test "$version" = "$selected"; then
       printf "  \033[36mο\033[0m $version\033[0m\n"
     else
@@ -191,8 +246,7 @@ display_versions_with_selected() {
 #
 
 list_versions_installed() {
-  for dir in `versions_paths`; do
-    local version=${dir##*/}
+  for version in `versions_paths`; do
     echo $version
   done
 }
@@ -267,11 +321,8 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  if test "$N_MIRROR" == "$IO_MIRROR"; then
-    echo "${N_MIRROR}v${version}/iojs-v${version}-${os}-${arch}.tar.gz"
-  else
-    echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
-  fi
+  echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
+
 }
 
 #
@@ -282,8 +333,8 @@ activate() {
   local version=$1
   check_current_version
   if test "$version" != "$active"; then
-    local dir=$VERSIONS_DIR/$version
-    echo $active > $VERSIONS_DIR/.prev
+    local dir=$BASE_VERSIONS_DIR/$version
+    echo $active > $BASE_VERSIONS_DIR/.prev
     cp -fR $dir/bin $dir/lib $dir/include $dir/share $N_PREFIX
   fi
 }
@@ -293,9 +344,9 @@ activate() {
 #
 
 activate_previous() {
-  test -f $VERSIONS_DIR/.prev || abort "no previous versions activated"
-  local prev=$(cat $VERSIONS_DIR/.prev)
-  test -d $VERSIONS_DIR/$prev || abort "previous version $prev not installed"
+  test -f $BASE_VERSIONS_DIR/.prev || abort "no previous versions activated"
+  local prev=$(cat $BASE_VERSIONS_DIR/.prev)
+  test -d $BASE_VERSIONS_DIR/$prev || abort "previous version $prev not installed"
   activate $prev
   echo
   log activate $prev
@@ -306,12 +357,12 @@ activate_previous() {
 # Install <version>
 #
 
-install_node() {
+install() {
   local version=${1#v}
 
   local dots=`echo $version | sed 's/[^.]*//g'`
   if test ${#dots} -eq 1; then
-    version=`$GET 2> /dev/null $N_MIRROR \
+    version=`$GET 2> /dev/null ${MIRROR[DEFAULT]} \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
@@ -322,18 +373,18 @@ install_node() {
     test $version || abort "invalid version ${1#v}"
   fi
 
-  local dir=$VERSIONS_DIR/$version
+  local dir=${VERSIONS_DIR[$DEFAULT]}/$version
   local url=$(tarball_url $version)
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
-      activate $version
+      activate ${BINS[$DEFAULT]}/$version
       exit
     fi
   fi
 
   echo
-  log install v$version
+  log install ${BINS[$DEFAULT]}-v$version
 
   is_ok $url || abort "invalid version $version"
 
@@ -352,7 +403,7 @@ install_node() {
   erase_line
   rm -f $dir/n.lock
 
-  activate $version
+  activate ${BINS[$DEFAULT]}/$version
   log installed $(node --version)
   echo
 }
@@ -364,7 +415,7 @@ install_node() {
 remove_versions() {
   test -z $1 && abort "version(s) required"
   while test $# -ne 0; do
-    rm -rf $VERSIONS_DIR/${1#v}
+    rm -rf ${VERSIONS_DIR[$DEFAULT]}/${1#v}
     shift
   done
 }
@@ -376,7 +427,7 @@ remove_versions() {
 display_bin_path_for_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
-  local bin=$VERSIONS_DIR/$version/bin/node
+  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
   if test -f $bin; then
     printf $bin
   else
@@ -391,7 +442,7 @@ display_bin_path_for_version() {
 execute_with_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
-  local bin=$VERSIONS_DIR/$version/bin/node
+  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
 
   shift # remove version
 
@@ -403,35 +454,35 @@ execute_with_version() {
 }
 
 #
-# Display the latest node release version.
+# Display the latest release version.
 #
 
 display_latest_version() {
-  $GET 2> /dev/null $N_MIRROR \
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
 }
 
 #
-# Display the latest stable node release version.
+# Display the latest stable release version.
 #
 
 display_latest_stable_version() {
-  $GET 2> /dev/null $N_MIRROR \
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
 }
 
 #
-# Display the versions of node available.
+# Display the versions available.
 #
 
 display_remote_versions() {
   check_current_version
   local versions=""
-  versions=`$GET 2> /dev/null $N_MIRROR \
+  versions=`$GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
     | egrep -v '^0\.8\.[0-5]$' \
@@ -454,35 +505,28 @@ display_remote_versions() {
 }
 
 #
-# Use io.js mirror instead of n_mirror
-#
-use_iojs_mirror() {
-  N_MIRROR="$IO_MIRROR"
-}
-
-#
 # Handle arguments.
 #
 
 if test $# -eq 0; then
-  test "$(ls -l $VERSIONS_DIR | grep ^d)" || abort "no installed version"
+  test -z "$(versions_paths)" && abort "no installed version"
   display_versions
 else
   while test $# -ne 0; do
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
-      --io|--iojs) use_iojs_mirror && install_node $2 ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
+      io|iojs|node) set_default $1;; # set bin and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install_node `n --latest`; exit ;;
-      stable) install_node `n --stable`; exit ;;
+      latest) install `$0 ${BINS[$DEFAULT]} --latest`; exit ;;
+      stable) install `$0 ${BINS[$DEFAULT]} --stable`; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
-      *) install_node $1; exit ;;
+      *) install $1; exit ;;
     esac
     shift
   done
