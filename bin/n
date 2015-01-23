@@ -10,6 +10,7 @@ VERSIONS_DIR=$N_PREFIX/n/versions
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_MIRROR=${N_MIRROR-http://nodejs.org/dist/}
+N_PLATFORM=${N_PLATFORM-node}
 
 test -d $VERSIONS_DIR || mkdir -p $VERSIONS_DIR
 
@@ -266,7 +267,7 @@ tarball_url() {
     *armv6l*) arch=arm-pi ;;
   esac
 
-  echo "${N_MIRROR}v${version}/node-v${version}-${os}-${arch}.tar.gz"
+  echo "${N_MIRROR}v${version}/${N_PLATFORM}-v${version}-${os}-${arch}.tar.gz"
 }
 
 #
