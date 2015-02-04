@@ -218,7 +218,7 @@ check_current_version() {
 #
 
 versions_paths() {
-  find $BASE_VERSIONS_DIR -type d -maxdepth 2 \
+  find $BASE_VERSIONS_DIR -maxdepth 2 -type d \
     | sed 's|'$BASE_VERSIONS_DIR'/||g' \
     | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
     | sort -k 1,1n -k 2,2n -k 3,3n -t .
