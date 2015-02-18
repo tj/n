@@ -2,6 +2,7 @@
 PREFIX ?= /usr/local
 
 install: bin/n
+	mkdir -p $(PREFIX)/$(dir $<)
 	cp $< $(PREFIX)/$<
 
 uninstall:
