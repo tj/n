@@ -321,7 +321,11 @@ tarball_url() {
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
   esac
-
+  
+  if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
+    arch=arm-pi 
+  fi
+  
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
 
 }
