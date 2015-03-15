@@ -201,12 +201,12 @@ display_n_version() {
 check_current_version() {
   command -v node &> /dev/null
   if test $? -eq 0; then
-    local current=`node --version`
+    local current=$(node --version)
     current=${current#v}
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
         $BASE_VERSIONS_DIR/$bin/$current/bin/node \
-        `which node` ; then
+        $(which node) ; then
         active=$bin/$current
       fi
     done
@@ -231,7 +231,7 @@ versions_paths() {
 display_versions_with_selected() {
   selected=$1
   echo
-  for version in `versions_paths`; do
+  for version in $(versions_paths); do
     if test "$version" = "$selected"; then
       printf "  \033[36mο\033[0m $version\033[0m\n"
     else
@@ -246,7 +246,7 @@ display_versions_with_selected() {
 #
 
 list_versions_installed() {
-  for version in `versions_paths`; do
+  for version in $(versions_paths); do
     echo $version
   done
 }
@@ -360,15 +360,15 @@ activate_previous() {
 install() {
   local version=${1#v}
 
-  local dots=`echo $version | sed 's/[^.]*//g'`
+  local dots=$(echo $version | sed 's/[^.]*//g')
   if test ${#dots} -eq 1; then
-    version=`$GET 2> /dev/null ${MIRROR[DEFAULT]} \
+    version=$($GET 2> /dev/null ${MIRROR[DEFAULT]} \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
       | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
       | egrep ^$version \
-      | tail -n1`
+      | tail -n1)
 
     test $version || abort "invalid version ${1#v}"
   fi
@@ -482,12 +482,12 @@ display_latest_stable_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
-  versions=`$GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+  versions=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | egrep -v '^0\.[0-7]\.' \
     | egrep -v '^0\.8\.[0-5]$' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | awk '{ print "  " $1 }'`
+    | awk '{ print "  " $1 }')
 
   echo
   for v in $versions; do
@@ -522,8 +522,8 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install `$0 ${BINS[$DEFAULT]} --latest`; exit ;;
-      stable) install `$0 ${BINS[$DEFAULT]} --stable`; exit ;;
+      latest) install $($0 ${BINS[$DEFAULT]} --latest); exit ;;
+      stable) install $($0 ${BINS[$DEFAULT]} --stable); exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
       *) install $1; exit ;;
