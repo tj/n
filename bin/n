@@ -490,11 +490,12 @@ display_remote_versions() {
     | awk '{ print "  " $1 }')
 
   echo
+  local bin=${BINS[$DEFAULT]}
   for v in $versions; do
-    if test "$active" = "$v"; then
+    if test "$active" = "$bin/$v"; then
       printf "  \033[36mο\033[0m $v \033[0m\n"
     else
-      if test -d $VERSIONS_DIR/$v; then
+      if test -d $BASE_VERSIONS_DIR/$bin/$v; then
         printf "    $v \033[0m\n"
       else
         printf "    \033[90m$v\033[0m\n"
