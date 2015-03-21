@@ -340,7 +340,8 @@ activate() {
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
     echo $active > $BASE_VERSIONS_DIR/.prev
-    cp -fR $dir/bin $dir/lib $dir/include $dir/share $N_PREFIX
+    cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
+    [[ -d "$dir/iclude" ]] && cp -fR $dir/include
   fi
 }
 
