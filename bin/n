@@ -341,7 +341,7 @@ activate() {
     local dir=$BASE_VERSIONS_DIR/$version
     echo $active > $BASE_VERSIONS_DIR/.prev
     cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
-    [[ -d "$dir/iclude" ]] && cp -fR $dir/include
+    [[ -d "$dir/include" ]] && cp -fR $dir/include $N_PREFIX
   fi
 }
 
