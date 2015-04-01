@@ -513,6 +513,14 @@ display_remote_versions() {
   echo
 }
 
+install_latest() {
+  install $(display_latest_version)
+}
+
+install_stable() {
+  install $(display_latest_stable_version)
+}
+
 #
 # Handle arguments.
 #
@@ -532,8 +540,8 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install $($0 --latest); exit ;;
-      stable) install $($0 --stable); exit ;;
+      latest) install_latest; exit ;;
+      stable) install_stable; exit ;;
       ls|list) display_remote_versions; exit ;;
       *) install $1; exit ;;
     esac
