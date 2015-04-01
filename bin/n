@@ -341,6 +341,22 @@ activate() {
 }
 
 #
+# Install latest version.
+#
+
+install_latest() {
+  install $(display_latest_version)
+}
+
+#
+# Install latest stable version.
+#
+
+install_stable() {
+  install $(display_latest_stable_version)
+}
+
+#
 # Install <version>
 #
 
@@ -425,7 +441,7 @@ display_bin_path_for_version() {
   local version=${1#v}
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
   if test -f $bin; then
-    printf "$bin \n"
+    echo $bin
   else
     abort "$1 is not installed"
   fi
@@ -511,14 +527,6 @@ display_remote_versions() {
     fi
   done
   echo
-}
-
-install_latest() {
-  install $(display_latest_version)
-}
-
-install_stable() {
-  install $(display_latest_stable_version)
 }
 
 #
