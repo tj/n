@@ -44,10 +44,6 @@ Use or install the stable official release:
 
     $ n stable
 
-Switch to the previous version you were using:
-
-    $ n prev
-
 ### Removing Binaries
 
 Remove some versions:
@@ -82,7 +78,6 @@ with flags:
 
     Environments:
      n [COMMAND] [args]            Uses default env (node)
-     n node [COMMAND] [args]       Sets env as node
      n io [COMMAND]                Sets env as io
 
     Commands:
@@ -94,7 +89,6 @@ with flags:
       n use <version> [args ...]   Execute node <version> with [args ...]
       n bin <version>              Output bin path for <version>
       n rm <version ...>           Remove the given version(s)
-      n prev                       Revert to the previously activated version
       n --latest                   Output the latest node version available
       n --stable                   Output the latest stable node version available
       n ls                         Output the versions of node available
@@ -102,23 +96,21 @@ with flags:
     (iojs):
     
       n io latest                    Install or activate the latest iojs release
-      n io stable                    Install or activate the latest stable iojs release
       n io <version>                 Install iojs <version>
       n io use <version> [args ...]  Execute iojs <version> with [args ...]
       n io bin <version>             Output bin path for <version>
       n io rm <version ...>          Remove the given version(s)
       n io --latest                  Output the latest iojs version available
-      n io --stable                  Output the latest stable iojs version available
       n io ls                        Output the versions of iojs available
  		 
     Options:
 
       -V, --version   Output current version of n
       -h, --help      Display help information
+      -q, --quiet     Disable curl output (if available)
 
     Aliases:
 
-      iojs    io
       which   bin
       use     as
       list    ls
