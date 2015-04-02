@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="1.4.0"
+VERSION="2.0.0"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
@@ -465,15 +465,15 @@ execute_with_version() {
   fi
 }
 
-NODE_STABLE_VERSION='[0-9]+\.[0-9]*[02468]\.[0-9]+'
-LATEST_VERSION='[0-9]+\.[0-9]+\.[0-9]+'
-
 #
 # Display the latest release version.
 #
 
 display_latest_version() {
-  fetch_version $LATEST_VERSION
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | tail -n1
 }
 
 #
@@ -481,20 +481,10 @@ display_latest_version() {
 #
 
 display_latest_stable_version() {
-  if test $DEFAULT -eq 0; then
-    fetch_version $NODE_STABLE_VERSION
-  else
-    fetch_version $LATEST_VERSION
-  fi
-}
+  test $DEFAULT -eq 1 && abort "stable not supported for io.js"
 
-#
-# Fetch version from mirror.
-#
-
-fetch_version() {
   $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
-    | egrep -o $1 \
+    | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
 }
