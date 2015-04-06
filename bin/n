@@ -210,6 +210,14 @@ check_current_version() {
 }
 
 #
+# Check the operation is supported for io.
+#
+
+check_io_supported() {
+  test $DEFAULT -eq 1 && abort "$1 not supported for io.js"
+}
+
+#
 # Display sorted versions directories paths.
 #
 
@@ -353,6 +361,7 @@ install_latest() {
 #
 
 install_stable() {
+  check_io_supported "stable"
   install $(display_latest_stable_version)
 }
 
@@ -481,7 +490,7 @@ display_latest_version() {
 #
 
 display_latest_stable_version() {
-  test $DEFAULT -eq 1 && abort "stable not supported for io.js"
+  check_io_supported "--stable"
 
   $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
