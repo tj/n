@@ -2,6 +2,8 @@
 
 Simple flavour of node/iojs binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
+*Note: Does not work on Windows at the moment. Pull Requests are appreciated.*
+
  ![](https://i.cloudup.com/59cA8VEDae.gif)
 
 ## Installation
