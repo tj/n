@@ -321,9 +321,9 @@ tarball_url() {
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
   esac
-  
+
   if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
-    arch=arm-pi 
+    arch=arm-pi
   fi
 
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
@@ -384,7 +384,9 @@ install() {
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
-      activate ${BINS[$DEFAULT]}/$version
+      if [ "$2" != "-d" ]; then
+        activate ${BINS[$DEFAULT]}/$version
+      fi
       exit
     fi
   fi
@@ -409,7 +411,9 @@ install() {
   erase_line
   rm -f $dir/n.lock
 
-  activate ${BINS[$DEFAULT]}/$version
+  if [ "$2" != "-d" ]; then
+    activate ${BINS[$DEFAULT]}/$version
+  fi
   log installed $(node --version)
   echo
 }
@@ -533,7 +537,7 @@ else
       stable) install $($0 ${BINS[$DEFAULT]} --stable); exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
-      *) install $1; exit ;;
+      *) install $1 $2; exit ;;
     esac
     shift
   done
