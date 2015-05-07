@@ -321,9 +321,9 @@ tarball_url() {
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
   esac
-  
+
   if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
-    arch=arm-pi 
+    arch=arm-pi
   fi
 
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
@@ -340,6 +340,7 @@ activate() {
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
     echo $active > $BASE_VERSIONS_DIR/.prev
+    chmod 755 $dir/bin/*
     cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
     [[ -d "$dir/include" ]] && cp -fR $dir/include $N_PREFIX
   fi
