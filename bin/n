@@ -384,9 +384,10 @@ install() {
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
-      if [ "$2" != "-d" ]; then
-        activate ${BINS[$DEFAULT]}/$version
+      if [ "$2" == "-d" -o "$2" == "--download" ]; then
+        exit
       fi
+      activate ${BINS[$DEFAULT]}/$version
       exit
     fi
   fi
@@ -411,11 +412,13 @@ install() {
   erase_line
   rm -f $dir/n.lock
 
-  if [ "$2" != "-d" ]; then
+  if [ "$2" == "-d" -o "$2" == "--download" ]; then
+    echo
+  else
     activate ${BINS[$DEFAULT]}/$version
+    log installed $(node --version)
+    echo
   fi
-  log installed $(node --version)
-  echo
 }
 
 #
