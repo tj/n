@@ -405,7 +405,7 @@ install() {
   cd $dir
 
   log fetch $url
-  curl -L# $url | tar -zx --strip 1
+  curl -L# $url | tar -zx --strip-components=1
   erase_line
   rm -f $dir/n.lock
 
