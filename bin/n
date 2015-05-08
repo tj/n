@@ -28,6 +28,7 @@ VERSIONS_DIR=($BASE_VERSIONS_DIR/node
 #
 
 DEFAULT=0
+ACTIVATE=true
 
 #
 # set_default <bin_name>
@@ -385,10 +386,9 @@ install() {
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
-      if [ "$2" == "-d" -o "$2" == "--download" ]; then
-        exit
+      if $ACTIVATE ; then
+        activate ${BINS[$DEFAULT]}/$version
       fi
-      activate ${BINS[$DEFAULT]}/$version
       exit
     fi
   fi
@@ -413,13 +413,11 @@ install() {
   erase_line
   rm -f $dir/n.lock
 
-  if [ "$2" == "-d" -o "$2" == "--download" ]; then
-    echo
-  else
+  if $ACTIVATE ; then
     activate ${BINS[$DEFAULT]}/$version
     log installed $(node --version)
-    echo
   fi
+  echo
 }
 
 #
@@ -531,6 +529,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
+      -d|--download) ACTIVATE=false ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       io|iojs|node) set_default $1;; # set bin and continue
@@ -541,7 +540,7 @@ else
       stable) install $($0 ${BINS[$DEFAULT]} --stable); exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
-      *) install $1 $2; exit ;;
+      *) install $1; exit ;;
     esac
     shift
   done
