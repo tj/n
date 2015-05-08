@@ -82,7 +82,6 @@ with flags:
 
     Environments:
      n [COMMAND] [args]            Uses default env (node)
-     n node [COMMAND] [args]       Sets env as node
      n io [COMMAND]                Sets env as io
 
     Commands:
@@ -118,7 +117,6 @@ with flags:
 
     Aliases:
 
-      iojs    io
       which   bin
       use     as
       list    ls

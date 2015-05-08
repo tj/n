@@ -109,7 +109,6 @@ display_help() {
 
   Environments:
     n [COMMAND] [args]            Uses default env (node)
-    n node [COMMAND] [args]       Sets env as node
     n io [COMMAND]                Sets env as io
 
   Commands:
@@ -144,7 +143,6 @@ display_help() {
 
   Aliases:
 
-    iojs    io
     which   bin
     use     as
     list    ls
@@ -525,7 +523,7 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
-      io|iojs|node) set_default $1;; # set bin and continue
+      io) set_default $1 ;; # set bin and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
