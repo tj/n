@@ -1,5 +1,7 @@
 # n
 
+[![Join the chat at https://gitter.im/tj/n](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tj/n?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Simple flavour of node/iojs binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
 *Note: Does not work on Windows at the moment. Pull Requests are appreciated.*
