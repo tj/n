@@ -324,8 +324,8 @@ tarball_url() {
 
   if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
     local semver=${version//./ }
-    local major=$semver | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//'
-    local minor=$semver | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//'
+    local major=$(echo $semver | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
+    local minor=$(echo $semver | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
     [[ $major -eq "" && $minor -lt 12 ]] && arch=arm-pi
   fi
 
