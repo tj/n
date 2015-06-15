@@ -28,6 +28,7 @@ VERSIONS_DIR=($BASE_VERSIONS_DIR/node
 #
 
 DEFAULT=0
+ARCH=
 
 #
 # set_default <bin_name>
@@ -44,6 +45,18 @@ set_default() {
 for dir in ${VERSIONS_DIR[@]}; do
   test -d $dir || mkdir -p $dir
 done
+
+#
+# set_arch <arch> to override $(uname -a)
+#
+
+set_arch() {
+  if test ! -z $1; then
+    ARCH=$1
+  else
+    abort "missing -a|--arch value"
+  fi
+}
 
 #
 # Log <type> <msg>
@@ -321,10 +334,12 @@ tarball_url() {
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
   esac
-  
+
   if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
-    arch=arm-pi 
+    arch=arm-pi
   fi
+
+  [ ! -z $ARCH ] && arch=$ARCH
 
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
 
@@ -525,6 +540,7 @@ else
       -h|--help|help) display_help ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
+      -a|--arch) shift; set_arch $1;; # set arch and continue
       io|iojs|node) set_default $1;; # set bin and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
