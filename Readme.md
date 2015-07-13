@@ -15,7 +15,7 @@ Simple flavour of node/iojs binary management, no subshells, no profile setup, n
 or
 
     $ make install
-    
+
 to `$HOME`. Prefix later calls to `n` with `N_PREFIX=$HOME`
 
     $ PREFIX=$HOME make install
@@ -79,7 +79,7 @@ with flags:
 ## Usage
 
  Output from `n --help`:
- 
+
     Usage: n [options/env] [COMMAND] [args]
 
     Environments:
@@ -101,7 +101,7 @@ with flags:
       n ls                         Output the versions of node available
 
     (iojs):
-    
+
       n io latest                    Install or activate the latest iojs release
       n io <version>                 Install iojs <version>
       n io use <version> [args ...]  Execute iojs <version> with [args ...]
@@ -109,12 +109,13 @@ with flags:
       n io rm <version ...>          Remove the given version(s)
       n io --latest                  Output the latest iojs version available
       n io ls                        Output the versions of iojs available
- 		 
+
     Options:
 
       -V, --version   Output current version of n
       -h, --help      Display help information
       -q, --quiet     Disable curl output (if available)
+      -d, --download  Download only
 
     Aliases:
 
