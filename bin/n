@@ -157,7 +157,7 @@ display_help() {
     -h, --help      Display help information
     -q, --quiet     Disable curl output (if available)
     -d, --download  Download only
-    -a, --arch                     Override system architecture
+    -a, --arch      Override system architecture
 
   Aliases:
 
