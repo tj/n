@@ -28,9 +28,10 @@ VERSIONS_DIR=($BASE_VERSIONS_DIR/node
 #
 
 DEFAULT=0
+QUIET=true
 
 #
-# set_default <bin_name>
+# set_default <BIN_NAME>
 #
 
 set_default() {
@@ -70,7 +71,7 @@ GET=
 # wget support (Added --no-check-certificate for Github downloads)
 command -v wget > /dev/null && GET="wget --no-check-certificate -q -O-"
 
-command -v curl > /dev/null && GET="curl -# -L"
+command -v curl > /dev/null && GET="curl -# -L" && QUIET=false
 
 test -z "$GET" && abort "curl or wget required"
 
@@ -139,6 +140,7 @@ display_help() {
 
     -V, --version   Output current version of n
     -h, --help      Display help information
+    -q, --quiet     Disable curl output (if available)
 
   Aliases:
 
@@ -302,7 +304,11 @@ erase_line() {
 #
 
 is_ok() {
-  curl -Is $1 | head -n 1 | grep 200 > /dev/null
+  if command -v curl > /dev/null; then
+    curl -Is $1 | head -n 1 | grep 200 > /dev/null
+  else
+    $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
+  fi
 }
 
 #
@@ -406,7 +412,6 @@ install() {
   fi
 
   local dir=${VERSIONS_DIR[$DEFAULT]}/$version
-  local url=$(tarball_url $version)
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
@@ -418,6 +423,7 @@ install() {
   echo
   log install ${BINS[$DEFAULT]}-v$version
 
+  local url=$(tarball_url $version)
   is_ok $url || abort "invalid version $version"
 
   log mkdir $dir
@@ -431,13 +437,21 @@ install() {
   cd $dir
 
   log fetch $url
-  curl -L# $url | tar -zx --strip-components=1
-  erase_line
+  $GET $url | tar -zx --strip 1
+  [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
   activate ${BINS[$DEFAULT]}/$version
   log installed $(node --version)
   echo
+}
+
+#
+# Set curl to quiet (silent) mode.
+#
+
+set_quiet() {
+  command -v curl > /dev/null && GET="$GET -s" && QUIET=true
 }
 
 #
@@ -550,6 +564,7 @@ else
     case $1 in
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
+      -q|--quiet) set_quiet ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       io|iojs|node) set_default $1;; # set bin and continue
