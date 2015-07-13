@@ -29,6 +29,7 @@ VERSIONS_DIR=($BASE_VERSIONS_DIR/node
 
 DEFAULT=0
 QUIET=true
+ACTIVATE=true
 
 #
 # set_default <BIN_NAME>
@@ -140,6 +141,7 @@ display_help() {
     -V, --version   Output current version of n
     -h, --help      Display help information
     -q, --quiet     Disable curl output (if available)
+    -d, --download  Download only
 
   Aliases:
 
@@ -413,7 +415,9 @@ install() {
 
   if test -d $dir; then
     if [[ ! -e $dir/n.lock ]] ; then
-      activate ${BINS[$DEFAULT]}/$version
+      if $ACTIVATE ; then
+        activate ${BINS[$DEFAULT]}/$version
+      fi
       exit
     fi
   fi
@@ -439,8 +443,10 @@ install() {
   [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
-  activate ${BINS[$DEFAULT]}/$version
-  log installed $(node --version)
+  if $ACTIVATE ; then
+    activate ${BINS[$DEFAULT]}/$version
+    log installed $(node --version)
+  fi
   echo
 }
 
@@ -563,6 +569,7 @@ else
       -V|--version) display_n_version ;;
       -h|--help|help) display_help ;;
       -q|--quiet) set_quiet ;;
+      -d|--download) ACTIVATE=false ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       io) set_default $1 ;; # set bin and continue
