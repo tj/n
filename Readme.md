@@ -76,6 +76,19 @@ with flags:
 
     $ n as 0.9.4 --debug some.js
 
+### Different Architectures
+
+By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
+
+Download and use latest 32 bit version of node:
+
+    $ n --arch x86 latest
+
+Download and use latest 32 bit version of iojs:
+
+    $ n io --arch x86 latest
+
+
 ## Usage
 
  Output from `n --help`:
@@ -88,21 +101,23 @@ with flags:
 
     Commands:
 
-      n                            Output versions installed
-      n latest                     Install or activate the latest node release
-      n stable                     Install or activate the latest stable node release
-      n <version>                  Install node <version>
-      n use <version> [args ...]   Execute node <version> with [args ...]
-      n bin <version>              Output bin path for <version>
-      n rm <version ...>           Remove the given version(s)
-      n prev                       Revert to the previously activated version
-      n --latest                   Output the latest node version available
-      n --stable                   Output the latest stable node version available
-      n ls                         Output the versions of node available
+      n                              Output versions installed
+      n latest                       Install or activate the latest node release
+      n -a x86 latest                As above but force 32 bit architecture
+      n stable                       Install or activate the latest stable node release
+      n <version>                    Install node <version>
+      n use <version> [args ...]     Execute node <version> with [args ...]
+      n bin <version>                Output bin path for <version>
+      n rm <version ...>             Remove the given version(s)
+      n prev                         Revert to the previously activated version
+      n --latest                     Output the latest node version available
+      n --stable                     Output the latest stable node version available
+      n ls                           Output the versions of node available
 
     (iojs):
 
       n io latest                    Install or activate the latest iojs release
+      n io -a x86 latest             As above but force 32 bit architecture
       n io <version>                 Install iojs <version>
       n io use <version> [args ...]  Execute iojs <version> with [args ...]
       n io bin <version>             Output bin path for <version>
@@ -116,6 +131,7 @@ with flags:
       -h, --help      Display help information
       -q, --quiet     Disable curl output (if available)
       -d, --download  Download only
+      -a, --arch      Override system architecture
 
     Aliases:
 

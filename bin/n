@@ -30,6 +30,7 @@ VERSIONS_DIR=($BASE_VERSIONS_DIR/node
 DEFAULT=0
 QUIET=true
 ACTIVATE=true
+ARCH=
 
 #
 # set_default <BIN_NAME>
@@ -46,6 +47,18 @@ set_default() {
 for dir in ${VERSIONS_DIR[@]}; do
   test -d $dir || mkdir -p $dir
 done
+
+#
+# set_arch <arch> to override $(uname -a)
+#
+
+set_arch() {
+  if test ! -z $1; then
+    ARCH=$1
+  else
+    abort "missing -a|--arch value"
+  fi
+}
 
 #
 # Log <type> <msg>
@@ -117,6 +130,7 @@ display_help() {
 
     n                              Output versions installed
     n latest                       Install or activate the latest node release
+    n -a x86 latest                As above but force 32 bit architecture
     n stable                       Install or activate the latest stable node release
     n <version>                    Install node <version>
     n use <version> [args ...]     Execute node <version> with [args ...]
@@ -129,6 +143,7 @@ display_help() {
 
   (iojs):
     n io latest                    Install or activate the latest iojs release
+    n io -a x86 latest             As above but force 32 bit architecture
     n io <version>                 Install iojs <version>
     n io use <version> [args ...]  Execute iojs <version> with [args ...]
     n io bin <version>             Output bin path for <version>
@@ -142,6 +157,7 @@ display_help() {
     -h, --help      Display help information
     -q, --quiet     Disable curl output (if available)
     -d, --download  Download only
+    -a, --arch                     Override system architecture
 
   Aliases:
 
@@ -340,6 +356,8 @@ tarball_url() {
     local minor=$(echo $semver | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
     [[ $major -eq "" && $minor -lt 12 ]] && arch=arm-pi
   fi
+
+  [ ! -z $ARCH ] && arch=$ARCH
 
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
 
@@ -577,6 +595,7 @@ else
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       io) set_default $1 ;; # set bin and continue
+      -a|--arch) shift; set_arch $1;; # set arch and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
