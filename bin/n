@@ -128,13 +128,11 @@ display_help() {
 
   (iojs):
     n io latest                    Install or activate the latest iojs release
-    n io stable                    Install or activate the latest stable iojs release
     n io <version>                 Install iojs <version>
     n io use <version> [args ...]  Execute iojs <version> with [args ...]
     n io bin <version>             Output bin path for <version>
     n io rm <version ...>          Remove the given version(s)
     n io --latest                  Output the latest iojs version available
-    n io --stable                  Output the latest stable iojs version available
     n io ls                        Output the versions of iojs available
 
   Options:
@@ -211,6 +209,14 @@ check_current_version() {
       fi
     done
   fi
+}
+
+#
+# Check the operation is supported for io.
+#
+
+check_io_supported() {
+  test $DEFAULT -eq 1 && abort "$1 not supported for io.js"
 }
 
 #
@@ -360,6 +366,23 @@ activate_previous() {
 }
 
 #
+# Install latest version.
+#
+
+install_latest() {
+  install $(display_latest_version)
+}
+
+#
+# Install latest stable version.
+#
+
+install_stable() {
+  check_io_supported "stable"
+  install $(display_latest_stable_version)
+ }
+
+#
 # Install <version>
 #
 
@@ -475,6 +498,7 @@ display_latest_version() {
 #
 
 display_latest_stable_version() {
+  check_io_supported "--stable"
   $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
@@ -529,8 +553,8 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
-      latest) install $($0 ${BINS[$DEFAULT]} --latest); exit ;;
-      stable) install $($0 ${BINS[$DEFAULT]} --stable); exit ;;
+      latest) install_latest; exit ;;
+      stable) install_stable; exit ;;
       ls|list) display_remote_versions; exit ;;
       prev) activate_previous; exit ;;
       *) install $1; exit ;;

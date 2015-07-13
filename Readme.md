@@ -104,13 +104,11 @@ with flags:
     (iojs):
     
       n io latest                    Install or activate the latest iojs release
-      n io stable                    Install or activate the latest stable iojs release
       n io <version>                 Install iojs <version>
       n io use <version> [args ...]  Execute iojs <version> with [args ...]
       n io bin <version>             Output bin path for <version>
       n io rm <version ...>          Remove the given version(s)
       n io --latest                  Output the latest iojs version available
-      n io --stable                  Output the latest stable iojs version available
       n io ls                        Output the versions of iojs available
  		 
     Options:
