@@ -115,6 +115,7 @@ with flags:
 
       -V, --version   Output current version of n
       -h, --help      Display help information
+      -q, --quiet     Disable curl output (if available)
 
     Aliases:
 
