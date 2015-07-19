@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="1.4.0"
+VERSION="2.0.0"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
@@ -136,7 +136,6 @@ display_help() {
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
-    n prev                         Revert to the previously activated version
     n --latest                     Output the latest node version available
     n --stable                     Output the latest stable node version available
     n ls                           Output the versions of node available
@@ -372,24 +371,9 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    echo $active > $BASE_VERSIONS_DIR/.prev
     cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
     [[ -d "$dir/include" ]] && cp -fR $dir/include $N_PREFIX
   fi
-}
-
-#
-# Activate previous node.
-#
-
-activate_previous() {
-  test -f $BASE_VERSIONS_DIR/.prev || abort "no previous versions activated"
-  local prev=$(cat $BASE_VERSIONS_DIR/.prev)
-  test -d $BASE_VERSIONS_DIR/$prev || abort "previous version $prev not installed"
-  activate $prev
-  echo
-  log activate $prev
-  echo
 }
 
 #
@@ -602,7 +586,6 @@ else
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
       ls|list) display_remote_versions; exit ;;
-      prev) activate_previous; exit ;;
       *) install $1; exit ;;
     esac
     shift
