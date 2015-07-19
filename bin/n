@@ -442,7 +442,7 @@ install() {
   cd $dir
 
   log fetch $url
-  $GET $url | tar -zx --strip 1
+  $GET $url | tar -zx --strip-components=1
   [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
