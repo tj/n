@@ -11,15 +11,21 @@ Simple flavour of node/iojs binary management, no subshells, no profile setup, n
 
 ## Installation
 
+With node/iojs already installed:
+
     $ npm install -g n
 
-or
-
-    $ make install
-
-to `$HOME`. Prefix later calls to `n` with `N_PREFIX=$HOME`
+or, by cloning this repo and running:
 
     $ PREFIX=$HOME make install
+
+to install to `$HOME`. Prefix later calls to `n` with `N_PREFIX=$HOME` or export `N_PREFIX` in your shell initialization file.
+
+Alternatively, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
+
+    curl -L http://git.io/n-install | bash
+
+installs the latest `n` to `$HOME/n`, modifies the initialization files of supported shells to export `N_PREFIX`, and installs the latest stable node version.
 
 ### Installing Binaries
 
