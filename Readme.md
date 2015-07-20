@@ -22,7 +22,8 @@ or, by cloning this repo and running:
 to install `n` to subdirectory `bin/n` of the directory specified in environment variable `PREFIX`, which defaults to `/usr/local` (note that you will likely need `sudo` to install there).  
 To change the default to, say, `$HOME`, i.e., to install `n` to `$HOME/bin/n`, run `PREFIX=$HOME make install`.  
 
-Once installed, `n` downloads node/iojs versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`. To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
+Once installed, `n` downloads node/iojs versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ node/iojs version is installed directly in `N_PREFIX`.  
+To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
 
 Alternatively, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
 
