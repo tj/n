@@ -17,15 +17,19 @@ With node/iojs already installed:
 
 or, by cloning this repo and running:
 
-    $ PREFIX=$HOME make install
+    $ make install
 
-to install to `$HOME`. Prefix later calls to `n` with `N_PREFIX=$HOME` or export `N_PREFIX` in your shell initialization file.
+to install `n` to subdirectory `bin/n` of the directory specified in environment variable `PREFIX`, which defaults to `/usr/local` (note that you will likely need `sudo` to install there).  
+To change the default to, say, `$HOME`, i.e., to install `n` to `$HOME/bin/n`, run `PREFIX=$HOME make install`.  
+
+Once installed, `n` downloads node/iojs versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`. To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
 
 Alternatively, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
 
     curl -L http://git.io/n-install | bash
 
-installs the latest `n` to `$HOME/n`, modifies the initialization files of supported shells to export `N_PREFIX`, and installs the latest stable node version.
+sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest stable node version.  
+As a result, both `n` itself and all node/iojs versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script; script `n-update` updates `n` itself to the latest version - see the [n-install repo](https://github.com/mklement0/n-install) for details.
 
 ### Installing Binaries
 
