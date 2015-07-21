@@ -467,6 +467,7 @@ set_quiet() {
 
 remove_versions() {
   test -z $1 && abort "version(s) required"
+  [ "v$1" == $(node --version) ] && abort "cannot remove currently active version"
   while test $# -ne 0; do
     rm -rf ${VERSIONS_DIR[$DEFAULT]}/${1#v}
     shift
