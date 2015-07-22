@@ -470,7 +470,7 @@ remove_versions() {
   check_current_version
   while test $# -ne 0; do
     local version=${1#v}
-    [ "${BINS[$DEFAULT]}/$version" == "$active" ] && abort "cannot remove currently active version"
+    [ "${BINS[$DEFAULT]}/$version" == "$active" ] && abort "cannot remove currently active version ($active)"
     rm -rf ${VERSIONS_DIR[$DEFAULT]}/$version
     shift
   done
