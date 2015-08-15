@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="2.0.0"
+VERSION="2.0.2"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
@@ -467,8 +467,11 @@ set_quiet() {
 
 remove_versions() {
   test -z $1 && abort "version(s) required"
+  check_current_version
   while test $# -ne 0; do
-    rm -rf ${VERSIONS_DIR[$DEFAULT]}/${1#v}
+    local version=${1#v}
+    [ "${BINS[$DEFAULT]}/$version" == "$active" ] && abort "cannot remove currently active version ($active)"
+    rm -rf ${VERSIONS_DIR[$DEFAULT]}/$version
     shift
   done
 }
