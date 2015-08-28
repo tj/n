@@ -4,11 +4,27 @@
 # Setup.
 #
 
-VERSION="2.0.2"
+VERSION="1.3.0"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
+
+#
+# Log <type> <msg>
+#
+
+log() {
+  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" $1 $2
+}
+
+#
+# Exit with the given <msg ...>
+#
+
+abort() {
+  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
+}
 
 #
 # All Bin(node/io) configurations
@@ -23,6 +39,47 @@ BIN_NAME=("node"
 VERSIONS_DIR=($BASE_VERSIONS_DIR/node
               $BASE_VERSIONS_DIR/io)
 
+if [ -n "$PROJECT_NAME" ]; then
+  BINS+=($PROJECT_NAME)
+  BIN_NAME+=($PROJECT_NAME)
+  if [ -z "$PROJECT_URL" ]; then
+    abort "Must specify PROJECT_URL when supplying PROJECT_NAME"
+  fi
+  MIRROR+=(${PROJECT_URL})
+  VERSIONS_DIR+=($BASE_VERSIONS_DIR/$PROJECT_NAME)
+fi
+
+#
+# Ensure we have curl or wget support.
+#
+
+CURL_PARAMS=( "-L"
+              "-#")
+
+WGET_PARAMS=( "--no-check-certificate"
+              "-q"
+              "-O-")
+
+if [ -n "$HTTP_USER" ];then
+  if [ -z "$HTTP_PASSWORD" ]; then
+    abort "Must specify HTTP_PASSWORD when supplying HTTP_USER"
+  fi
+  CURL_PARAMS+=("-u $HTTP_USER:$HTTP_PASSWORD")
+  WGET_PARAMS+=("--http-password=$HTTP_PASSWORD"
+                "--http-user=$HTTP_USER")
+elif [ -n "$HTTP_PASSWORD" ]; then
+  abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
+fi
+
+GET=
+
+# wget support
+command -v wget > /dev/null && GET="wget ${WGET_PARAMS[@]}"
+
+command -v curl > /dev/null && GET="curl ${CURL_PARAMS[@]}" && QUIET=false
+
+test -z "$GET" && abort "curl or wget required"
+
 #
 # State
 #
@@ -35,6 +92,7 @@ ARCH=
 #
 # set_default <BIN_NAME>
 #
+
 
 set_default() {
   for (( i=0 ; i<${#BINS[@]} ; i++ )); do
@@ -59,35 +117,6 @@ set_arch() {
     abort "missing -a|--arch value"
   fi
 }
-
-#
-# Log <type> <msg>
-#
-
-log() {
-  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" $1 $2
-}
-
-#
-# Exit with the given <msg ...>
-#
-
-abort() {
-  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
-}
-
-#
-# Ensure we have curl or wget support.
-#
-
-GET=
-
-# wget support (Added --no-check-certificate for Github downloads)
-command -v wget > /dev/null && GET="wget --no-check-certificate -q -O-"
-
-command -v curl > /dev/null && GET="curl -# -L" && QUIET=false
-
-test -z "$GET" && abort "curl or wget required"
 
 #
 # Functions used when showing versions installed
@@ -136,6 +165,7 @@ display_help() {
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
+    n prev                         Revert to the previously activated version
     n --latest                     Output the latest node version available
     n --stable                     Output the latest stable node version available
     n ls                           Output the versions of node available
@@ -217,6 +247,9 @@ check_current_version() {
   command -v node &> /dev/null
   if test $? -eq 0; then
     local current=$(node --version)
+    if [ -n "$PROJECT_VERSION_CHECK" ]; then
+      current=$(node -p "$PROJECT_VERSION_CHECK || process.exit(1)" || node --version)
+    fi
     current=${current#v}
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
@@ -320,7 +353,7 @@ erase_line() {
 
 is_ok() {
   if command -v curl > /dev/null; then
-    curl -Is $1 | head -n 1 | grep 200 > /dev/null
+    $GET -Is $1 | head -n 1 | grep 200 > /dev/null
   else
     $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
   fi
@@ -371,9 +404,24 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
+    echo $active > $BASE_VERSIONS_DIR/.prev
     cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
     [[ -d "$dir/include" ]] && cp -fR $dir/include $N_PREFIX
   fi
+}
+
+#
+# Activate previous node.
+#
+
+activate_previous() {
+  test -f $BASE_VERSIONS_DIR/.prev || abort "no previous versions activated"
+  local prev=$(cat $BASE_VERSIONS_DIR/.prev)
+  test -d $BASE_VERSIONS_DIR/$prev || abort "previous version $prev not installed"
+  activate $prev
+  echo
+  log activate $prev
+  echo
 }
 
 #
@@ -391,7 +439,7 @@ install_latest() {
 install_stable() {
   check_io_supported "stable"
   install $(display_latest_stable_version)
- }
+}
 
 #
 # Install <version>
@@ -405,8 +453,6 @@ install() {
     version=$($GET 2> /dev/null ${MIRROR[DEFAULT]} \
       | egrep "</a>" \
       | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-      | egrep -v '^0\.[0-7]\.' \
-      | egrep -v '^0\.8\.[0-5]$' \
       | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
       | egrep ^$version \
       | tail -n1)
@@ -442,7 +488,7 @@ install() {
   cd $dir
 
   log fetch $url
-  $GET $url | tar -zx --strip-components=1
+  $GET $url | tar -zx --strip 1
   [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
@@ -467,11 +513,8 @@ set_quiet() {
 
 remove_versions() {
   test -z $1 && abort "version(s) required"
-  check_current_version
   while test $# -ne 0; do
-    local version=${1#v}
-    [ "${BINS[$DEFAULT]}/$version" == "$active" ] && abort "cannot remove currently active version ($active)"
-    rm -rf ${VERSIONS_DIR[$DEFAULT]}/$version
+    rm -rf ${VERSIONS_DIR[$DEFAULT]}/${1#v}
     shift
   done
 }
@@ -544,8 +587,6 @@ display_remote_versions() {
   versions=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep "</a>" \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | egrep -v '^0\.[0-7]\.' \
-    | egrep -v '^0\.8\.[0-5]$' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | awk '{ print "  " $1 }')
 
@@ -582,6 +623,7 @@ else
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       io) set_default $1 ;; # set bin and continue
+      project) DEFAULT=2 ;;
       -a|--arch) shift; set_arch $1;; # set arch and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
@@ -589,6 +631,7 @@ else
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
       ls|list) display_remote_versions; exit ;;
+      prev) activate_previous; exit ;;
       *) install $1; exit ;;
     esac
     shift

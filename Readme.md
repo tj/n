@@ -147,6 +147,27 @@ Download and use latest 32 bit version of iojs:
       list    ls
       -       rm
 
+## Using Non-Official Environments
+
+If you would like to use a project other than the official node.js or io.js projects, you can use the special `n project [command]` which allows you to controll the behaviour of `n` using environment variables.
+
+Example:
+
+To grab the latest iojs version but name it "foo" instead,
+
+      PROJECT_NAME="foo" PROJECT_URL="https://iojs.org/dist/" n project latest
+
+Required Variables:
+
+* `PROJECT_NAME`: The name the project will be stored under
+* `PROJECT_URL`: The location to download the project from. Note, this must folllow the same format as the iojs/node.js repos
+
+Optional Variables:
+
+* `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
+* `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
+* `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
+
 ## Details
 
  `n` by default installs node to _/usr/local/n/versions_, from
