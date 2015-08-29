@@ -4,7 +4,7 @@
 
 Simple flavour of node/iojs binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
-*Note: Does not work on Windows at the moment. Pull Requests are appreciated.*   
+*Note: Does not work on Windows at the moment. Pull Requests are appreciated.*
 *If you are searching for the latest version below 2.x.x, check out the branch "1.x.x"*
 
  ![](https://i.cloudup.com/59cA8VEDae.gif)
@@ -146,6 +146,27 @@ Download and use latest 32 bit version of iojs:
       use     as
       list    ls
       -       rm
+
+## Using Non-Official Environments
+
+If you would like to use a project other than the official Node.js or io.js projects, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
+
+Example:
+
+To grab the latest io.js version but name it "foo" instead,
+
+      PROJECT_NAME="foo" PROJECT_URL="https://iojs.org/dist/" n project latest
+
+Required Variables:
+
+* `PROJECT_NAME`: The name the project will be stored under
+* `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the io.js/Node.js repos
+
+Optional Variables:
+
+* `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
+* `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
+* `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the Node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
 
 ## Details
 
