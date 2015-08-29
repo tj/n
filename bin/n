@@ -409,8 +409,13 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    cp -fR $dir/bin $dir/lib $dir/share $N_PREFIX
-    [[ -d "$dir/include" ]] && cp -fR $dir/include $N_PREFIX
+    for subdir in bin lib include share; do
+      if test -L "$N_PREFIX/$subdir"; then
+        find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
+      else
+        cp -fR "$dir/$subdir" $N_PREFIX
+      fi
+    done
   fi
 }
 
