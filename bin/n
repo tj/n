@@ -196,7 +196,12 @@ display_help() {
     -       rm
 
 EOF
-  exit 0
+}
+
+err_no_installed_print_help() {
+  printf "\n  \033[31mError: no installed version\033[0m\n"
+  display_help
+  exit 1
 }
 
 #
@@ -603,13 +608,13 @@ display_remote_versions() {
 #
 
 if test $# -eq 0; then
-  test -z "$(versions_paths)" && abort "no installed version"
+  test -z "$(versions_paths)" && err_no_installed_print_help
   display_versions
 else
   while test $# -ne 0; do
     case $1 in
       -V|--version) display_n_version ;;
-      -h|--help|help) display_help ;;
+      -h|--help|help) display_help; exit ;;
       -q|--quiet) set_quiet ;;
       -d|--download) ACTIVATE=false ;;
       --latest) display_latest_version; exit ;;
