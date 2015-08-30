@@ -319,6 +319,7 @@ list_versions_installed() {
 display_versions() {
   enter_fullscreen
   check_current_version
+  clear
   display_versions_with_selected $active
 
   trap handle_sigint INT
