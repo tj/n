@@ -84,19 +84,6 @@ with flags:
 
     $ n as 0.9.4 --debug some.js
 
-### Different Architectures
-
-By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
-
-Download and use latest 32 bit version of node:
-
-    $ n --arch x86 latest
-
-Download and use latest 32 bit version of iojs:
-
-    $ n io --arch x86 latest
-
-
 ## Usage
 
  Output from `n --help`:
@@ -147,7 +134,7 @@ Download and use latest 32 bit version of iojs:
       list    ls
       -       rm
 
-## Using Non-Official Environments
+## Custom source
 
 If you would like to use a project other than the official Node.js or io.js projects, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
 
@@ -167,6 +154,19 @@ Optional Variables:
 * `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
 * `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
 * `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the Node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
+
+## Custom architecture
+
+By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
+
+Download and use latest 32 bit version of node:
+
+    $ n --arch x86 latest
+
+Download and use latest 32 bit version of iojs:
+
+    $ n io --arch x86 latest
+
 
 ## Details
 
