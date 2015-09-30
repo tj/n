@@ -365,11 +365,15 @@ is_ok() {
   fi
 }
 
+is_windows() {
+  [ "$(uname -a)" = MINGW* ]
+}
+
 #
-# Determine tarball url for <version>
+# Determine installer url for <version>
 #
 
-tarball_url() {
+installer_url() {
   local version=$1
   local uname="$(uname -a)"
   local arch=x86
@@ -397,8 +401,30 @@ tarball_url() {
 
   [ ! -z $ARCH ] && arch=$ARCH
 
-  echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
+  if [ is_windows ]; then
+    get_windows_installer_url $version $arch
+  else
+    echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
+  fi
 
+}
+
+get_windows_installer_url() {
+  local version=$1
+  local arch=$2
+  local subdir="/"
+
+  local semver=${version//./ }
+  local major=$(echo $semver | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')
+
+  # iojs and node >= 4 have a different download location. This can be proxied as any version >=1
+  if [[ $major -ne "" && $major -ge 1 ]]; then
+    subdir="/win-${arch}/"
+  else
+    [ $arch = "x64" ] && subdir="/x64/"
+  fi
+
+  echo "${MIRROR[$DEFAULT]}v${version}${subdir}${BIN_NAME[$DEFAULT]}.exe"
 }
 
 #
@@ -435,7 +461,9 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    for subdir in bin lib include share; do
+    local subdirs=
+    [ is_windows ] && subdirs="bin" || subdirs="bin lib include share"
+    for subdir in $subdirs; do
       if test -L "$N_PREFIX/$subdir"; then
         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
       else
@@ -498,7 +526,7 @@ install() {
   echo
   log install ${BINS[$DEFAULT]}-v$version
 
-  local url=$(tarball_url $version)
+  local url=$(installer_url $version)
   is_ok $url || abort "invalid version $version"
 
   log mkdir $dir
@@ -512,7 +540,11 @@ install() {
   cd $dir
 
   log fetch $url
-  $GET $url | tar -zx --strip-components=1
+  if [ is_windows ]; then
+    install_windows $dir
+  else
+    $GET $url | tar -zx --strip-components=1
+  fi
   [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
@@ -523,6 +555,13 @@ install() {
     log installed $(node --version)
   fi
   echo
+}
+
+install_windows() {
+  local dir=$1
+  mkdir -p $dir/bin
+
+  $GET $url >> "${dir}/bin/${BIN_NAME[$DEFAULT]}.exe"
 }
 
 #
