@@ -362,13 +362,13 @@ is_ok() {
     if $GET -Is $1 | head -n 1 | grep '3..' > /dev/null; then
       is_ok $GET -Is $1 | grep Location | awk -F ': ' '{print $2}'
     else
-      $GET -Is $1 | head -n 1 | grep 200 > /dev/null
+      $GET -Is $1 | head -n 1 | grep '2..' > /dev/null
     fi
   else
-    if $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null; then
+    if $GET -S --spider 2>&1 $1 | head -n 1 | grep '3..' > /dev/null; then
       is_ok $GET -S --spider 2>&1 $1 | grep Location | awk -F ': ' '{print $2}'
     else
-      $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
+      $GET -S --spider 2>&1 $1 | head -n 1 | grep '2..' > /dev/null
     fi
   fi
 }
