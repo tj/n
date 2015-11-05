@@ -162,12 +162,14 @@ display_help() {
     n latest                       Install or activate the latest node release
     n -a x86 latest                As above but force 32 bit architecture
     n stable                       Install or activate the latest stable node release
+    n lts                          Install or activate the latest LTS node release
     n <version>                    Install node <version>
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
     n --latest                     Output the latest node version available
     n --stable                     Output the latest stable node version available
+    n --lts                        Output the latest LTS node version available
     n ls                           Output the versions of node available
 
   (iojs):
@@ -464,6 +466,15 @@ install_stable() {
 }
 
 #
+# Install latest LTS version.
+#
+
+install_lts() {
+  check_io_supported "lts"
+  install $(display_latest_lts_version)
+}
+
+#
 # Install <version>
 #
 
@@ -609,6 +620,24 @@ display_latest_stable_version() {
 }
 
 #
+# Display the latest lts release version.
+#
+
+display_latest_lts_version() {
+  check_io_supported "--lts"
+  local folder_name=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+    | egrep "</a>" \
+    | egrep -o 'latest-[a-z]{2,}' \
+    | sort \
+    | tail -n1)
+
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]}/$folder_name/ \
+    | egrep "</a>" \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | head -n1  
+}
+
+#
 # Display the versions available.
 #
 
@@ -653,6 +682,7 @@ else
       -d|--download) ACTIVATE=false ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
+      --lts) display_latest_lts_version; exit ;;
       io) set_default $1 ;; # set bin and continue
       project) DEFAULT=2 ;;
       -a|--arch) shift; set_arch $1;; # set arch and continue
@@ -661,6 +691,7 @@ else
       rm|-) shift; remove_versions $@; exit ;;
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
+      lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
       *) install $1; exit ;;
     esac
