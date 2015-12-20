@@ -586,6 +586,10 @@ execute_with_version() {
     version=$(display_latest_version)
   fi
 
+  if [ "$version" = "stable" ]; then
+    version=$(display_latest_stable_version)
+  fi
+
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
 
   shift # remove version
