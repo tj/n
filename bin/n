@@ -581,6 +581,11 @@ display_bin_path_for_version() {
 execute_with_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
+
+  if [ "$version" = "latest" ]; then
+    version=$(display_latest_version)
+  fi
+
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
 
   shift # remove version
@@ -634,7 +639,7 @@ display_latest_lts_version() {
   $GET 2> /dev/null ${MIRROR[$DEFAULT]}/$folder_name/ \
     | egrep "</a>" \
     | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | head -n1  
+    | head -n1
 }
 
 #
