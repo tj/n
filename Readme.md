@@ -4,7 +4,8 @@
 
 Simple flavour of node/iojs binary management, no subshells, no profile setup, no convoluted api, just _simple_.
 
-*Note: Does not work on Windows at the moment. Pull Requests are appreciated.*
+*Note: Works on Windows if you're using MinGW/MSYS. See [Windows Installation] for more information.* 
+*Pull Requests are appreciated.*
 *If you are searching for the latest version below 2.x.x, check out the branch "1.x.x"*
 
  ![](https://i.cloudup.com/59cA8VEDae.gif)
@@ -31,6 +32,16 @@ Alternatively, consider third-party installer [n-install](https://github.com/mkl
 
 sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest stable node version.  
 As a result, both `n` itself and all node/iojs versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script; script `n-update` updates `n` itself to the latest version - see the [n-install repo](https://github.com/mklement0/n-install) for details.
+
+### Windows Installation
+Because node does not package npm with the node executable, npm is not versioned by n on Windows. This has only been tested to work with MinGW/MSYS, which is what [Git for Windows](https://git-scm.com/download/win) uses. To use n on Windows:
+
+1. Install node/iojs and npm
+2. Run npm install -g n
+3. Set N_PREFIX to a writeable directory (~/n is a good choice)
+4. (Optional) Add `export N_PREFIX=~/n` to ~/.bashrc (/Users/YourUserName/.bashrc)
+5. Add the directory defined above to your Windows Path. IMPORTANT: This path should come before your global node installation. Your PATH should look something like: ...;C:\Users\MyUser\n;...;C:\Program Files\nodejs\bin
+6. Continue to the Installing Binaries section below.
 
 ### Installing Binaries
 
