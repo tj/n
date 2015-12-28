@@ -1,4 +1,3 @@
-
 PREFIX ?= /usr/local
 
 install: bin/n
