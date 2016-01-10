@@ -92,6 +92,16 @@ with flags:
 
     $ n as 0.9.4 --debug some.js
 
+### Working with `npm`
+
+After switching Node.js versions using `n`, `npm` may not work properly. This should fix it (thanks [@mikemoser](https://github.com/mikemoser)!):
+
+```shell
+curl -0 -L http://npmjs.org/install.sh | sudo sh
+```
+
+`sudo` may not be required depending on your system configuration.
+
 ## Usage
 
  Output from `n --help`:
