@@ -566,6 +566,15 @@ remove_versions() {
 display_bin_path_for_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
+
+  if [ "$version" = "latest" ]; then
+    version=$(display_latest_version)
+  fi
+
+  if [ "$version" = "stable" ]; then
+    version=$(display_latest_stable_version)
+  fi
+
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
   if test -f $bin; then
     printf "$bin \n"
