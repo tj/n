@@ -10,6 +10,8 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 ![](https://cloud.githubusercontent.com/assets/1139621/16576615/f7f729b2-4255-11e6-843a-67ef881ff895.png)
 
+(Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
+
 ## Installation
 
 Since you probably already have `node`, the easiest way to install `n` is through `npm`:
