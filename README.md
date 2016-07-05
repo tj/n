@@ -8,7 +8,7 @@
 
 Node.js version management: no subshells, no profile setup, no convoluted API, just **simple**.
 
-![](http://nimit.io/images/n/n.gif)
+![](https://cloud.githubusercontent.com/assets/1139621/16576615/f7f729b2-4255-11e6-843a-67ef881ff895.png)
 
 ## Installation
 
