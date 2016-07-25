@@ -20,3 +20,7 @@ echo Use 0.10.36
 $N 0.10.36
 
 test $($NPM --version) = "2.2.0"
+rc=$?
+
+rm -rf $N_PREFIX
+exit $rc
