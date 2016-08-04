@@ -183,6 +183,10 @@ Download and use latest 32 bit version of `iojs`:
 
     $ n io --arch x86 latest
 
+Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo systems (x86 image is no longer available but x64 runs fine):
+
+    $ n --arch x64 lts
+
 ## Additional Details
 
 `n` installs versions to `/usr/local/n/versions` by default. Here, it can see what versions are currently installed and activate previously installed versions accordingly when `n <version>` is invoked again.
