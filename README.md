@@ -29,7 +29,7 @@ To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX
 
 Additionally, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
 
-    curl -L http://git.io/n-install | bash
+    curl -L https://git.io/n-install | bash
 
 sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest stable `node` version.
 
@@ -95,7 +95,7 @@ Flags also work here:
 After switching Node.js versions using `n`, `npm` may not work properly. This should fix it (thanks [@mikemoser](https://github.com/mikemoser)!):
 
 ```sh
-$ curl -0 -L http://npmjs.org/install.sh | sudo sh
+$ curl -0 -L https://npmjs.org/install.sh | sudo sh
 ```
 
 `sudo` may not be required depending on your system configuration.
