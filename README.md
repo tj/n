@@ -8,6 +8,8 @@
 
 Node.js version management: no subshells, no profile setup, no convoluted API, just **simple**.
 
+## **Want to install Node nightly releases? Try [this](https://github.com/tj/n/issues/376#issuecomment-250876666)!**
+
 ![](http://nimit.io/images/n/n.gif)
 
 (Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
