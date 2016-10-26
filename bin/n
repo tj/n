@@ -87,6 +87,7 @@ test -z "$GET" && abort "curl or wget required"
 DEFAULT=0
 QUIET=true
 ACTIVATE=true
+NIGHTLY=false
 ARCH=
 
 #
@@ -672,15 +673,23 @@ display_latest_lts_version() {
     | head -n1
 }
 
+
+display_nightly_versions() {
+  MIRROR=(https://nodejs.org/download/nightly/)
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+  | egrep "</a>" \
+  | sed -n "s/.*href=\"v\($1.*\)\/\".*/\1/p"
+}
+
 #
 # Display latest nightly
 #
 
 display_latest_nightly_version() {
+  MIRROR=(https://nodejs.org/download/nightly/)
   $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep "</a>" \
     | sed -n "s/.*href=\"v\($1.*\)\/\".*/\1/p" \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | egrep ^$1 \
     | tail -n1
 }
@@ -692,12 +701,15 @@ display_latest_nightly_version() {
 display_remote_versions() {
   check_current_version
   local versions=""
-  versions=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | awk '{ print "  " $1 }')
-
+  if $NIGHTLY; then
+    versions=$(display_nightly_versions)
+  else
+    versions=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+      | egrep "</a>" \
+      | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+      | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+      | awk '{ print "  " $1 }')
+  fi
   echo
   local bin=${BINS[$DEFAULT]}
   for v in $versions; do
@@ -730,6 +742,7 @@ else
       -h|--help|help) display_help; exit ;;
       -q|--quiet) set_quiet ;;
       -d|--download) ACTIVATE=false ;;
+      --nightly) NIGHTLY=true;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       --lts) display_latest_lts_version; exit ;;
