@@ -227,7 +227,7 @@ show_cursor() {
 #
 
 next_version_installed() {
-  list_versions_installed | grep $selected -A 1 | tail -n 1
+  list_versions_installed | grep "$selected" -A 1 | tail -n 1
 }
 
 #
@@ -235,7 +235,7 @@ next_version_installed() {
 #
 
 prev_version_installed() {
-  list_versions_installed | grep $selected -B 1 | head -n 1
+  list_versions_installed | grep "$selected" -B 1 | head -n 1
 }
 
 #
@@ -507,7 +507,7 @@ install() {
       | egrep -v '^0\.[0-7]\.' \
       | egrep -v '^0\.8\.[0-5]$' \
       | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-      | egrep ^$version \
+      | egrep "^$version" \
       | tail -n1)
 
     test $version || abort "invalid version ${1#v}"
