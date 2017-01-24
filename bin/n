@@ -583,7 +583,15 @@ remove_versions() {
 #
 
 prune() {
-    abort "not implemented"
+  check_current_version
+  for version in $(versions_paths); do
+    if [ $version != $active ]
+    then
+      echo $version
+      rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
+      shift
+    fi
+  done
 }
 
 #
