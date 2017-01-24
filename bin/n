@@ -167,6 +167,7 @@ display_help() {
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
+    n prune                        Remove all versions except the current version
     n --latest                     Output the latest node version available
     n --stable                     Output the latest stable node version available
     n --lts                        Output the latest LTS node version available
@@ -578,6 +579,14 @@ remove_versions() {
 }
 
 #
+# Prune non-active versions
+#
+
+prune() {
+    abort "not implemented"
+}
+
+#
 # Output bin path for <version>
 #
 
@@ -717,6 +726,7 @@ else
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
       latest) install_latest; exit ;;
+      prune) prune; exit ;;
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
