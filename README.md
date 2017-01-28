@@ -207,7 +207,7 @@ If you are searching for the latest version of `n` below 2.x.x, check out the br
 * Ted Gaydos – [@tedgaydos](https://github.com/tedgaydos)
 * Travis Webb – [@tjwebb](https://github.com/tjwebb)
 
-Please Read [Contributing Docs](./.github/CONTRIBUTING.MD)
+Please Read [Contributing Docs](https://github.com/tj/n/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 
