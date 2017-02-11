@@ -97,7 +97,7 @@ Flags also work here:
 After switching Node.js versions using `n`, `npm` may not work properly. This should fix it (thanks [@mikemoser](https://github.com/mikemoser)!):
 
 ```sh
-$ curl -0 -L https://npmjs.org/install.sh | sudo sh
+$ curl -0 -L https://npmjs.com/install.sh | sudo sh
 ```
 
 `sudo` may not be required depending on your system configuration.
