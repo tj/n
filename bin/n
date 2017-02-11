@@ -15,7 +15,7 @@ BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 #
 
 log() {
-  printf "  \033[36m%10s\033[0m : \033[90m%s\033[0m\n" $1 $2
+  printf "  \033[36m%10s\033[0m : \e[2m%s\e[22m\033[0m\n" $1 $2
 }
 
 #
@@ -298,7 +298,7 @@ display_versions_with_selected() {
     if test "$version" = "$selected"; then
       printf "  \033[36mο\033[0m $version\033[0m\n"
     else
-      printf "    \033[90m$version\033[0m\n"
+      printf "    \e[2m$version\e[22m\n"
     fi
   done
   echo
@@ -686,7 +686,7 @@ display_remote_versions() {
       if test -d $BASE_VERSIONS_DIR/$bin/$v; then
         printf "    $v \033[0m\n"
       else
-        printf "    \033[90m$v\033[0m\n"
+        printf "    \e[2m$v\e[22m\n"
       fi
     fi
   done
