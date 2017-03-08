@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="2.1.4"
+VERSION="2.1.5"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
