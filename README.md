@@ -26,7 +26,7 @@ Alternatively, you can clone this repo and
 
 to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
-Once installed, `n` installs `node` versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ `node`/`iojs` version is installed directly in `N_PREFIX`.  
+Once installed, `n` installs `node` versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ `node`/`iojs` version is installed directly in `N_PREFIX`.
 To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
 
 Additionally, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
@@ -123,6 +123,7 @@ Output can also be obtained from `n --help`.
       n use <version> [args ...]     Execute node <version> with [args ...]
       n bin <version>                Output bin path for <version>
       n rm <version ...>             Remove the given version(s)
+      n prune                        Remove all versions except the current version
       n --latest                     Output the latest node version available
       n --stable                     Output the latest stable node version available
       n --lts                        Output the latest LTS node version available

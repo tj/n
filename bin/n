@@ -167,6 +167,7 @@ display_help() {
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
+    n prune                        Remove all versions except the current version
     n --latest                     Output the latest node version available
     n --stable                     Output the latest stable node version available
     n --lts                        Output the latest LTS node version available
@@ -578,12 +579,41 @@ remove_versions() {
 }
 
 #
+# Prune non-active versions
+#
+
+prune_versions() {
+  check_current_version
+  for version in $(versions_paths); do
+    if [ $version != $active ]
+    then
+      echo $version
+      rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
+      shift
+    fi
+  done
+}
+
+#
 # Output bin path for <version>
 #
 
 display_bin_path_for_version() {
   test -z $1 && abort "version required"
   local version=${1#v}
+
+  if [ "$version" = "latest" ]; then
+    version=$(display_latest_version)
+  fi
+
+  if [ "$version" = "stable" ]; then
+    version=$(display_latest_stable_version)
+  fi
+
+  if [ "$version" = "lts" ]; then
+    version=$(display_latest_lts_version)
+  fi
+
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
   if test -f $bin; then
     printf "$bin \n"
@@ -606,6 +636,10 @@ execute_with_version() {
 
   if [ "$version" = "stable" ]; then
     version=$(display_latest_stable_version)
+  fi
+
+  if [ "$version" = "lts" ]; then
+    version=$(display_latest_lts_version)
   fi
 
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
@@ -716,6 +750,7 @@ else
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;
       rm|-) shift; remove_versions $@; exit ;;
+      prune) prune_versions; exit ;;
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
