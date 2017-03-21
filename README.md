@@ -12,7 +12,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 ![](http://nimit.io/images/n/n.gif)
 
-(Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
+(`n` needs a bash shell from [Cygwin](https://www.cygwin.com) or [MSYS2](http://msys2.org)|[Git for Windows SDK](https://git-for-windows.github.io) to work on Windows.)
 
 ## Installation
 
@@ -204,7 +204,7 @@ Activated versions are then installed to the prefix `/usr/local`, which may be a
 
 To alter where `n` operates, simply `export N_PREFIX`.
 
-`n` does not work on Windows at the moment. Pull Requests are appreciated.
+`n` needs a bash shell from [Cygwin](https://www.cygwin.com) or [MSYS2](http://msys2.org)|[Git for Windows SDK](https://git-for-windows.github.io) to work on Windows.
 
 If you are searching for the latest version of `n` below 2.x.x, check out the branch `1.x.x`.
 

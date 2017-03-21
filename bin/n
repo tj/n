@@ -263,7 +263,7 @@ check_current_version() {
     current=${current#v}
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
-        $BASE_VERSIONS_DIR/$bin/$current/bin/node \
+        $BASE_VERSIONS_DIR/$bin/$current/$path2node \
         $(which node) ; then
         active=$bin/$current
       fi
@@ -388,24 +388,39 @@ is_oss_ok() {
   fi
 }
 
+get_os() {
+  # from nave(1)
+  case "$(uname -a)" in
+    Linux*) echo linux ;;
+    Darwin*) echo darwin ;;
+    SunOS*) echo sunos ;;
+    CYGWIN*|MSYS*) echo win;;
+  esac
+}
+
+if [ $(get_os) == 'win' ]; then
+  path2node="node"
+  set -o igncr
+else
+  path2node="bin/node"
+fi
+
 #
 # Determine tarball url for <version>
 #
 
 tarball_url() {
   local version=$1
-  local uname="$(uname -a)"
   local arch=x86
-  local os=
+  local os=$(get_os)
 
-  # from nave(1)
-  case "$uname" in
-    Linux*) os=linux ;;
-    Darwin*) os=darwin ;;
-    SunOS*) os=sunos ;;
-  esac
+  if [ $os == 'win' ]; then
+    local ext=zip
+  else
+    local ext=tar.gz
+  fi
 
-  case "$uname" in
+  case "$(uname -a)" in
     *x86_64*) arch=x64 ;;
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
@@ -420,7 +435,7 @@ tarball_url() {
 
   [ ! -z $ARCH ] && arch=$ARCH
 
-  echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
+  echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.${ext}"
 
 }
 
@@ -458,14 +473,20 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    for subdir in bin lib include share; do
-      if test -L "$N_PREFIX/$subdir"; then
-        find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
-      else
-        cp -fR "$dir/$subdir" $N_PREFIX
-      fi
-    done
-    disable_pax_mprotect "$N_PREFIX/bin/node"
+    local os=$(get_os)
+    if [ $os == 'win' ]; then
+      chmod +x $dir/node.exe $dir/npm $dir/npm.cmd
+      find "$dir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/bin" \;
+    else
+      for subdir in bin lib include share; do
+        if test -L "$N_PREFIX/$subdir"; then
+          find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
+        else
+          cp -fR "$dir/$subdir" $N_PREFIX
+        fi
+      done
+      disable_pax_mprotect "$N_PREFIX/$path2node"
+    fi
   fi
 }
 
@@ -544,7 +565,13 @@ install() {
   cd $dir
 
   log fetch $url
-  $GET $url | tar -zx --strip-components=1
+  if [[ $url =~ ".zip" ]]; then
+    $GET $url > __tmp.zip && unzip -q __tmp.zip
+    rm __tmp.zip
+    mv node-v*/* ./ && rmdir node-v*
+  else
+    $GET $url | tar -zx --strip-components=1
+  fi
   [ $QUIET == false ] && erase_line
   rm -f $dir/n.lock
 
@@ -616,7 +643,8 @@ display_bin_path_for_version() {
     version=$(display_latest_lts_version)
   fi
 
-  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
+  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/$path2node
+
   if test -f $bin; then
     printf "$bin \n"
   else
@@ -644,7 +672,7 @@ execute_with_version() {
     version=$(display_latest_lts_version)
   fi
 
-  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
+  local bin=${VERSIONS_DIR[$DEFAULT]}/$version/$path2node
 
   shift # remove version
 
