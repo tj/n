@@ -134,7 +134,9 @@ leave_fullscreen() {
 
 handle_sigint() {
   leave_fullscreen
-  exit $?
+  S="$?"
+  kill 0
+  exit $S
 }
 
 handle_sigtstp() {
