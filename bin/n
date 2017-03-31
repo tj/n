@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="2.1.6"
+VERSION="2.1.7"
 UP=$'\033[A'
 DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
@@ -134,7 +134,9 @@ leave_fullscreen() {
 
 handle_sigint() {
   leave_fullscreen
-  exit $?
+  S="$?"
+  kill 0
+  exit $S
 }
 
 handle_sigtstp() {
