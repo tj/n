@@ -54,6 +54,7 @@ fi
 #
 
 CURL_PARAMS=( "-L"
+              "--insecure"
               "-#")
 
 WGET_PARAMS=( "--no-check-certificate"
