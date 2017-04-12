@@ -76,6 +76,12 @@ Alternatively, you can use `-` in lieu of `rm`:
 
     $ n - 0.9.4
 
+Removing all versions except the current version
+
+```bash
+    $ n prune 
+```
+
 ### Binary Usage
 
 When running multiple versions of `node`, we can target
