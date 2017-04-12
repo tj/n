@@ -76,10 +76,10 @@ Alternatively, you can use `-` in lieu of `rm`:
 
     $ n - 0.9.4
 
-Removing all versions except the current version
+Removing all versions except the current version:
 
 ```bash
-    $ n prune 
+$ n prune 
 ```
 
 ### Binary Usage
