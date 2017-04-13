@@ -10,7 +10,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 ## **Want to install Node nightly releases? Try [this](https://github.com/tj/n/issues/376#issuecomment-250876666)!**
 
-![](images/n.gif)
+![](http://nimit.io/images/n/n.gif)
 
 (Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
 
@@ -79,7 +79,7 @@ Alternatively, you can use `-` in lieu of `rm`:
 Removing all versions except the current version:
 
 ```bash
-$ n prune
+$ n prune 
 ```
 
 ### Binary Usage
