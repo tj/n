@@ -286,7 +286,7 @@ check_io_supported() {
 versions_paths() {
   find $BASE_VERSIONS_DIR -maxdepth 2 -type d \
     | sed 's|'$BASE_VERSIONS_DIR'/||g' \
-    | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
+    | egrep "/[0-9]+\.[0-9]+\.[0-9]+(-nightly.*)?$" \
     | sort -k 1,1 -k 2,2n -k 3,3n -t .
 }
 
@@ -496,6 +496,14 @@ install_lts() {
 }
 
 #
+# Install nighlty Version
+#
+install_nightly() {
+  MIRROR=(https://nodejs.org/download/nightly/)
+  install $(display_latest_nightly_version $1)
+}
+
+#
 # Install <version>
 #
 
@@ -701,6 +709,19 @@ display_latest_lts_version() {
 }
 
 #
+# Display latest nightly
+#
+
+display_latest_nightly_version() {
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+    | egrep "</a>" \
+    | sed -n "s/.*href=\"v\($1.*\)\/\".*/\1/p" \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | egrep ^$1 \
+    | tail -n1
+}
+
+#
 # Display the versions available.
 #
 
@@ -729,6 +750,8 @@ display_remote_versions() {
   echo
 }
 
+
+
 #
 # Handle arguments.
 #
@@ -756,6 +779,7 @@ else
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
+      nightly) install_nightly $2; exit;;
       ls|list) display_remote_versions; exit ;;
       *) install $1; exit ;;
     esac
