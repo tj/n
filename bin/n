@@ -5,8 +5,6 @@
 #
 
 VERSION="2.1.7"
-UP=$'\033[A'
-DOWN=$'\033[B'
 N_PREFIX=${N_PREFIX-/usr/local}
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 
@@ -330,20 +328,48 @@ display_versions() {
   trap handle_sigint INT
   trap handle_sigtstp SIGTSTP
 
+  ESCAPE_SEQ=$'\033'
+  UP=$'A'
+  DOWN=$'B'
+
   while true; do
-    read -n 3 c
-    case "$c" in
-      $UP)
+    read -rsn 1 key
+    case "$key" in
+      $ESCAPE_SEQ)
+        # Handle ESC sequences followed by other characters, i.e. arrow keys
+        read -rsn 1 -t 1 tmp
+        if  [[ "$tmp" == "[" ]]; then
+          read -rsn 1 -t 1 arrow
+          case "$arrow" in
+            $UP)
+              clear
+              display_versions_with_selected $(prev_version_installed)
+              ;;
+            $DOWN)
+              clear
+              display_versions_with_selected $(next_version_installed)
+              ;;
+          esac
+        fi
+        ;;
+      "k")
         clear
         display_versions_with_selected $(prev_version_installed)
         ;;
-      $DOWN)
+      "j")
         clear
         display_versions_with_selected $(next_version_installed)
         ;;
-      *)
+      "q")
+        clear
+        leave_fullscreen
+        exit
+        ;;
+      "")
+        # enter key returns empty string
         activate $selected
         leave_fullscreen
+        echo $selected
         exit
         ;;
     esac
