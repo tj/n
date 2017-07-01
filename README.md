@@ -47,6 +47,7 @@ Simply execute `n <version>` to install a version of `node`. If `<version` has a
     $ n 0.9.6
 
 Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter or the right arrow key to select. Use ^C (control + C) to exit the selection screen.
+If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows. 
 
     $ n
 
