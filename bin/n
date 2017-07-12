@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="2.1.7"
+VERSION="2.1.8"
 N_PREFIX=${N_PREFIX-/usr/local}
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 
