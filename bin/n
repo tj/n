@@ -675,7 +675,7 @@ execute_with_version() {
   shift # remove version
 
   if test -f $bin; then
-    $bin "$@"
+    exec $bin "$@"
   else
     abort "$version is not installed"
   fi
