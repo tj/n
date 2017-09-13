@@ -47,7 +47,7 @@ Simply execute `n <version>` to install a version of `node`. If `<version` has a
     $ n 0.9.6
 
 Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter or the right arrow key to select. Use ^C (control + C) to exit the selection screen.
-If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows. 
+If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows.
 
     $ n
 
@@ -80,7 +80,7 @@ Alternatively, you can use `-` in lieu of `rm`:
 Removing all versions except the current version:
 
 ```bash
-$ n prune 
+$ n prune
 ```
 
 ### Binary Usage
@@ -135,6 +135,7 @@ Output can also be obtained from `n --help`.
       n --stable                     Output the latest stable node version available
       n --lts                        Output the latest LTS node version available
       n ls                           Output the versions of node available
+      n lsi                          Output installed versions of node and iojs
 
     (iojs):
 
