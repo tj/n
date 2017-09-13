@@ -158,10 +158,11 @@ Output can also be obtained from `n --help`.
 
     Aliases:
 
-      which   bin
-      use     as
-      list    ls
-      -       rm
+      which      bin
+      use        as
+      list       ls
+      installed  lsi
+      -          rm
 
 ## Custom source
 

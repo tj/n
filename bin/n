@@ -783,7 +783,7 @@ else
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
-      lsi) list_versions_installed; exit ;;
+      lsi|installed) list_versions_installed; exit ;;
       *) install $1; exit ;;
     esac
     shift
