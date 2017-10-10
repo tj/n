@@ -40,7 +40,7 @@ As a result, both `n` itself and all `node` versions it manages are hosted insid
 
 ### Installing/Activating Versions
 
-Simply execute `n <version>` to install a version of `node`. If `<version` has already been installed (via `n`), `n` will activate that version.
+Simply execute `n <version>` to install a version of `node`. If `<version>` has already been installed (via `n`), `n` will activate that version.
 
     $ n 0.8.14
     $ n 0.8.17
