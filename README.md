@@ -14,6 +14,20 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 (Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
 
+## Table of Contents
+
+* [Installation](#installation)
+  * [Installing/Activating Versions](#installingactivating-versions)
+  * [Removing Versions](#removing-versions)
+  * [Binary Usage](#binary-usage)
+  * [Working with `npm`](#working-with-npm)
+* [Usage](#usage)
+* [Custom source](#custom-source)
+* [Custom architecture](#custom-architecture)
+* [Additional Details](#additional-details)
+* [Core Team](#core-team)
+* [License](#license)
+
 ## Installation
 
 Since you probably already have `node`, the easiest way to install `n` is through `npm`:
