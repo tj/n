@@ -484,6 +484,7 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
+    local npm_dir="lib/node_modules/npm"
     for subdir in bin lib include share; do
       if test -L "$N_PREFIX/$subdir"; then
         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
@@ -491,6 +492,8 @@ activate() {
         cp -fR "$dir/$subdir" $N_PREFIX
       fi
     done
+    rm -fr "$N_PREFIX/lib/node_modules/npm"
+    cp -fR "$dir/$npm_dir" "$N_PREFIX/$npm_dir"
     disable_pax_mprotect "$N_PREFIX/bin/node"
   fi
 }
