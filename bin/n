@@ -385,32 +385,20 @@ erase_line() {
 }
 
 #
-# Check if the HEAD response of <url> is 200.
-#
-is_ok() {
-  if command -v curl > /dev/null; then
-    $GET -Is $1 | head -n 1 | grep 200 > /dev/null
-  else
-    $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
-  fi
-}
-
-#
 # Check if the OSS(Object Storage Service) mirror is ok.
 #
 is_oss_ok() {
+  local headers=
   if command -v curl > /dev/null; then
-    if $GET -Is $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok `$GET -Is $1 | grep Location | sed -Ee 's/Location: (.+\.tar\.gz).*$/\1/'`
-    else
-      $GET -Is $1 | head -n 1 | grep 200 > /dev/null
-    fi
+    headers=`$GET -Is $1`
   else
-    if $GET -S --spider 2>&1 $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok `$GET -S --spider 2>&1 $1 | grep Location | sed -Ee 's/Location: (.+\.tar\.gz).*$/\1/'`
-    else
-      $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
-    fi
+    headers=`$GET -S --spider 2>&1 $1`
+  fi
+
+  if echo "$headers" | head -n 1 | grep 302 > /dev/null; then
+    is_oss_ok `echo "$headers" | grep Location | sed -Ee 's/^Location: (.+\.tar\.gz).*$/\1/'`
+  else
+    echo "$headers" | head -n 1 | grep 200 > /dev/null
   fi
 }
 
@@ -557,7 +545,7 @@ install() {
   log install ${BINS[$DEFAULT]}-v$version
 
   local url=$(tarball_url $version)
-  is_ok $url || is_oss_ok $url || abort "invalid version $version"
+  is_oss_ok $url || abort "invalid version $version"
 
   log mkdir $dir
   mkdir -p $dir
