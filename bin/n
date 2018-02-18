@@ -208,6 +208,15 @@ err_no_installed_print_help() {
 }
 
 #
+# Warn user that current node is not managed by n.
+#
+
+warn_current_node_not_managed_by_n() {
+  printf "\n  \033[33mWarning: the current node binary could not be found among the versions installed by n. Make sure you add \$N_PREFIX/bin to PATH before other entries poiting to directories containing node binaries. This can also happen if you are using a \$PROJECT_VERSION_CHECK and it returns a different version than the one the current selected version was installed as (e.g. the current version is not a custom project version or \$PROJECT_VERSION_CHECK has changed since its installation).\033[0m\n\n"
+  read -rp "  Press ENTER to select a new version (selection will fallback to the first available version)"
+}
+
+#
 # Hide cursor.
 #
 
@@ -266,6 +275,10 @@ check_current_version() {
         active=$bin/$current
       fi
     done
+  fi
+  if test -z "$active"; then
+    warn_current_node_not_managed_by_n
+    active="$(list_versions_installed | head -n 1)"
   fi
 }
 
