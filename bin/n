@@ -322,7 +322,7 @@ list_versions_installed() {
 display_versions() {
   enter_fullscreen
   check_current_version
-  clear
+  tput clear
   display_versions_with_selected $active
 
   trap handle_sigint INT
@@ -342,26 +342,26 @@ display_versions() {
           read -rsn 1 -t 1 arrow
           case "$arrow" in
             $UP)
-              clear
+              tput clear
               display_versions_with_selected $(prev_version_installed)
               ;;
             $DOWN)
-              clear
+              tput clear
               display_versions_with_selected $(next_version_installed)
               ;;
           esac
         fi
         ;;
       "k")
-        clear
+        tput clear
         display_versions_with_selected $(prev_version_installed)
         ;;
       "j")
-        clear
+        tput clear
         display_versions_with_selected $(next_version_installed)
         ;;
       "q")
-        clear
+        tput clear
         leave_fullscreen
         exit
         ;;
