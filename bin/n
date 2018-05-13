@@ -285,7 +285,9 @@ versions_paths() {
   find $BASE_VERSIONS_DIR -maxdepth 2 -type d \
     | sed 's|'$BASE_VERSIONS_DIR'/||g' \
     | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
-    | sort -k 1,1 -k 2,2V -t /
+    | sed 's|/|.|' \
+    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -t . \
+    | sed 's|\.|/|'
 }
 
 #
