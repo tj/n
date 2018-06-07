@@ -54,8 +54,7 @@ fi
 CURL_PARAMS=( "-L"
               "-#")
 
-WGET_PARAMS=( "--no-check-certificate"
-              "-q"
+WGET_PARAMS=( "-q"
               "-O-")
 
 if [ -n "$HTTP_USER" ];then
