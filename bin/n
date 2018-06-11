@@ -486,7 +486,14 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    for subdir in bin lib include share; do
+    # Remove old npm to avoid potential issues with simple overwrite.
+    if test -d "$dir/lib/node_modules/npm"; then
+      if test -d "$N_PREFIX/lib/node_modules/npm"; then
+        rm -rf "$N_PREFIX/lib/node_modules/npm"
+      fi
+    fi
+    # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
+    for subdir in lib bin include share; do
       if test -L "$N_PREFIX/$subdir"; then
         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
       else
