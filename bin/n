@@ -487,14 +487,14 @@ activate() {
   if test "$version" != "$active"; then
     local old_dir=$BASE_VERSIONS_DIR/$active
     local dir=$BASE_VERSIONS_DIR/$version
+    if test -d "$N_PREFIX/lib/node_modules"; then
+      cp -fR "$N_PREFIX/lib/node_modules" "$old_dir/lib"
+    fi
     # Remove old npm to avoid potential issues with simple overwrite.
     if test -d "$dir/lib/node_modules/npm"; then
       if test -d "$N_PREFIX/lib/node_modules/npm"; then
         rm -rf "$N_PREFIX/lib/node_modules/npm"
       fi
-    fi
-    if test -d "$N_PREFIX/lib/node_modules"; then
-      cp -fR "$N_PREFIX/lib/node_modules" "$old_dir/lib"
     fi
     # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
     for subdir in lib bin include share; do
@@ -801,3 +801,4 @@ else
     shift
   done
 fi
+
