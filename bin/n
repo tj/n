@@ -86,6 +86,7 @@ DEFAULT=0
 QUIET=true
 ACTIVATE=true
 ARCH=
+PRESERVE_NPM=false
 
 #
 # set_default <BIN_NAME>
@@ -185,11 +186,12 @@ display_help() {
 
   Options:
 
-    -V, --version   Output current version of n
-    -h, --help      Display help information
-    -q, --quiet     Disable curl output (if available)
-    -d, --download  Download only
-    -a, --arch      Override system architecture
+    -V, --version       Output current version of n
+    -h, --help          Display help information
+    -q, --quiet         Disable curl output (if available)
+    -d, --download      Download only
+    -a, --arch          Override system architecture
+    -p, --preserve-npm  Preserve current npm during install or activate of node
 
   Aliases:
 
@@ -487,14 +489,17 @@ activate() {
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
     # Remove old npm to avoid potential issues with simple overwrite.
-    if test -d "$dir/lib/node_modules/npm"; then
+    if [[ $PRESERVE_NPM == false && -d "$dir/lib/node_modules/npm" ]]; then
       if test -d "$N_PREFIX/lib/node_modules/npm"; then
         rm -rf "$N_PREFIX/lib/node_modules/npm"
       fi
     fi
     # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
     for subdir in lib bin include share; do
-      if test -L "$N_PREFIX/$subdir"; then
+      if [[ $PRESERVE_NPM == true ]]; then
+        mkdir -p "$N_PREFIX/$subdir"
+        (cd "$dir/$subdir"; tar -cf - --exclude npm --exclude npx .) | (cd "$N_PREFIX/$subdir"; tar -xf -)
+      elif test -L "$N_PREFIX/$subdir"; then
         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
       else
         cp -fR "$dir/$subdir" $N_PREFIX
@@ -778,6 +783,7 @@ else
       -h|--help|help) display_help; exit ;;
       -q|--quiet) set_quiet ;;
       -d|--download) ACTIVATE=false ;;
+      -p|--preserve-npm) PRESERVE_NPM=true ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       --lts) display_latest_lts_version; exit ;;

@@ -101,6 +101,10 @@ Flags also work here:
 
 ### Working with `npm`
 
+A node install normally includes npm as well, which might be a downgrade if you have upgraded npm separately. You can preserve your current npm and exclude it from the install:
+
+    $ n --preserve-npm 6.1.0
+
 After switching Node.js versions using `n`, `npm` may not work properly. This should fix it (thanks [@mikemoser](https://github.com/mikemoser)!):
 
 ```sh
@@ -149,11 +153,12 @@ Output can also be obtained from `n --help`.
 
     Options:
 
-      -V, --version   Output current version of n
-      -h, --help      Display help information
-      -q, --quiet     Disable curl output (if available)
-      -d, --download  Download only
-      -a, --arch      Override system architecture
+      -V, --version       Output current version of n
+      -h, --help          Display help information
+      -q, --quiet         Disable curl output (if available)
+      -d, --download      Download only
+      -a, --arch          Override system architecture
+      -p, --preserve-npm  Preserve current npm during install or activate of node
 
     Aliases:
 
