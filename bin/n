@@ -391,7 +391,7 @@ erase_line() {
 #
 is_ok() {
   if command -v curl > /dev/null; then
-    $GET -Is $1 | head -n 1 | grep 200 > /dev/null
+    $GET -Is --connect-timeout 10 $1 | head -n 1 | grep 200 > /dev/null
   else
     $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
   fi
@@ -402,8 +402,8 @@ is_ok() {
 #
 is_oss_ok() {
   if command -v curl > /dev/null; then
-    if $GET -Is $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok $GET -Is $1 | grep Location | awk -F ': ' '{print $2}'
+    if $GET -Is --connect-timeout 10 $1 | head -n 1 | grep 302 > /dev/null; then
+      is_oss_ok $GET --connect-timeout 10 -Is $1 | grep Location | awk -F ': ' '{print $2}'
     else
       $GET -Is $1 | head -n 1 | grep 200 > /dev/null
     fi
