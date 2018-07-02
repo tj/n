@@ -386,14 +386,15 @@ erase_line() {
   printf "\033[1A\033[2K"
 }
 
+MAX_TIME=10
 #
 # Check if the HEAD response of <url> is 200.
 #
 is_ok() {
   if command -v curl > /dev/null; then
-    $GET -Is --connect-timeout 10 $1 | head -n 1 | grep 200 > /dev/null
+    $GET -Is --connect-timeout $MAX_TIME $1 | head -n 1 | grep 200 > /dev/null
   else
-    $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
+    $GET -S --spider -T $MAX_TIME 2>&1 $1 | head -n 1 | grep 200 > /dev/null
   fi
 }
 
@@ -402,16 +403,16 @@ is_ok() {
 #
 is_oss_ok() {
   if command -v curl > /dev/null; then
-    if $GET -Is --connect-timeout 10 $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok $GET --connect-timeout 10 -Is $1 | grep Location | awk -F ': ' '{print $2}'
+    if $GET -Is --connect-timeout $MAX_TIME $1 | head -n 1 | grep 302 > /dev/null; then
+      is_oss_ok $GET --connect-timeout $MAX_TIME -Is $1 | grep Location | awk -F ': ' '{print $2}'
     else
-      $GET -Is $1 | head -n 1 | grep 200 > /dev/null
+      $GET --connect-timeout $MAX_TIME -Is $1 | head -n 1 | grep 200 > /dev/null
     fi
   else
-    if $GET -S --spider 2>&1 $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok $GET -S --spider 2>&1 $1 | grep Location | awk -F ': ' '{print $2}'
+    if $GET -S --spider -T $MAX_TIME 2>&1 $1 | head -n 1 | grep 302 > /dev/null; then
+      is_oss_ok $GET -S --spider -T $MAX_TIME 2>&1 $1 | grep Location | awk -F ': ' '{print $2}'
     else
-      $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
+      $GET -S --spider -T $MAX_TIME 2>&1 $1 | head -n 1 | grep 200 > /dev/null
     fi
   fi
 }
