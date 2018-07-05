@@ -538,7 +538,7 @@ install() {
   local version=
   if [[ "$1" =~ [a-z]{2,} ]]; then
     version=$(display_latest_codename_version $1)
-    test $version || abort "invalid codename $1"
+    test $version || abort "invalid version $1"
   else
     version=${1#v}
   fi
