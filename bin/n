@@ -535,7 +535,13 @@ install_lts() {
 #
 
 install() {
-  local version=${1#v}
+  local version=
+  if [[ "$1" =~ [a-z]{2,} ]]; then
+    version=$(display_latest_codename_version $1)
+    test $version || abort "invalid version $1"
+  else
+    version=${1#v}
+  fi
 
   local dots=$(echo $version | sed 's/[^.]*//g')
   if test ${#dots} -lt 2; then
@@ -637,25 +643,26 @@ prune_versions() {
 
 display_bin_path_for_version() {
   test -z $1 && abort "version required"
-  local version=${1#v}
+  local version=$1
 
   if [ "$version" = "latest" ]; then
     version=$(display_latest_version)
-  fi
-
-  if [ "$version" = "stable" ]; then
+  elif [ "$version" = "stable" ]; then
     version=$(display_latest_stable_version)
-  fi
-
-  if [ "$version" = "lts" ]; then
+  elif [ "$version" = "lts" ]; then
     version=$(display_latest_lts_version)
+  elif [[ "$version" =~ [a-z]{2,} ]]; then
+    version=$(display_latest_codename_version $version)
+    test $version || abort "invalid codename $version"
+  else
+    local version=${1#v}
   fi
 
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
   if test -f $bin; then
     printf "$bin \n"
   else
-    abort "$1 is not installed"
+    abort "$version is not installed"
   fi
 }
 
@@ -665,18 +672,19 @@ display_bin_path_for_version() {
 
 execute_with_version() {
   test -z $1 && abort "version required"
-  local version=${1#v}
+  local version=$1
 
   if [ "$version" = "latest" ]; then
     version=$(display_latest_version)
-  fi
-
-  if [ "$version" = "stable" ]; then
+  elif [ "$version" = "stable" ]; then
     version=$(display_latest_stable_version)
-  fi
-
-  if [ "$version" = "lts" ]; then
+  elif [ "$version" = "lts" ]; then
     version=$(display_latest_lts_version)
+  elif [[ "$version" =~ [a-z]{2,} ]]; then
+    version=$(display_latest_codename_version $version)
+    test $version || abort "invalid codename $version"
+  else
+    version=${1#v}
   fi
 
   local bin=${VERSIONS_DIR[$DEFAULT]}/$version/bin/node
@@ -688,6 +696,25 @@ execute_with_version() {
   else
     abort "$version is not installed"
   fi
+}
+
+#
+# Display codename version.
+#
+
+display_latest_codename_version() {
+  local folder_name=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
+    | egrep "</a>" \
+    | egrep -o "latest-$1" \
+    | sort \
+    | tail -n1)
+  test $folder_name || return 0
+
+  $GET 2> /dev/null ${MIRROR[$DEFAULT]}/$folder_name/ \
+    | egrep "</a>" \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
+    | tail -n1
 }
 
 #
