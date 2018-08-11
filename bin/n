@@ -190,6 +190,7 @@ display_help() {
     -q, --quiet     Disable curl output (if available)
     -d, --download  Download only
     -a, --arch      Override system architecture
+    --insecure      Turn off certificate checking for https requests (may be needed from behind a proxy server)
 
   Aliases:
 
@@ -601,6 +602,18 @@ set_quiet() {
 }
 
 #
+# Set curl/wget to insecure mode
+#
+
+set_insecure() {
+  if command -v curl > /dev/null; then
+    GET="$GET -k"
+  else
+    GET="$GET --no-check-certificate"
+  fi
+}
+
+#
 # Remove <version ...>
 #
 
@@ -778,6 +791,7 @@ else
       -h|--help|help) display_help; exit ;;
       -q|--quiet) set_quiet ;;
       -d|--download) ACTIVATE=false ;;
+      --insecure) set_insecure ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       --lts) display_latest_lts_version; exit ;;
