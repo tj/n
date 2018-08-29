@@ -12,6 +12,8 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 ![](http://nimit.io/images/n/n.gif)
 
+[Video Tutorial](https://www.youtube.com/watch?v=bsJj6ii9_Fk)
+
 (Unfortunately `n` is not supported on Windows yet. If you're able to make it work, send in a pull request!)
 
 ## Installation
