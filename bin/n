@@ -121,12 +121,18 @@ set_arch() {
 #
 
 enter_fullscreen() {
-  tput smcup
+  # Set cursor to be invisible
+  tput civis 2> /dev/null
+  # Save screen contents
+  tput smcup 2> /dev/null
   stty -echo
 }
 
 leave_fullscreen() {
-  tput rmcup
+  # Set cursor to normal
+  tput cnorm 2> /dev/null
+  # Restore screen contentsq
+  tput rmcup 2> /dev/null
   stty echo
 }
 
@@ -205,22 +211,6 @@ err_no_installed_print_help() {
   printf "\n  \033[31mError: no installed version\033[0m\n"
   display_help
   exit 1
-}
-
-#
-# Hide cursor.
-#
-
-hide_cursor() {
-  printf "\e[?25l"
-}
-
-#
-# Show cursor.
-#
-
-show_cursor() {
-  printf "\e[?25h"
 }
 
 #
