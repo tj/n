@@ -626,7 +626,6 @@ prune_versions() {
     then
       echo $version
       rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
-      shift
     fi
   done
 }
