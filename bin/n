@@ -262,7 +262,7 @@ check_current_version() {
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
         $BASE_VERSIONS_DIR/$bin/$current/bin/node \
-        $(which node) ; then
+        $(command -v node) ; then
         active=$bin/$current
       fi
     done
@@ -622,7 +622,7 @@ remove_versions() {
 prune_versions() {
   check_current_version
   for version in $(versions_paths); do
-    if [ $version != $active ]
+    if [ "$version" != "$active" ]
     then
       echo $version
       rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
