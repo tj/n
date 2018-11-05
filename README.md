@@ -47,7 +47,7 @@ Simply execute `n <version>` to install a version of `node`. If `<version>` has 
     $ n 0.9.6
 
 Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter to select. Use `q` or ^C (control + C) to exit the selection screen.
-If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows. 
+If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows.
 
     $ n
 
@@ -58,10 +58,6 @@ If you like vim key bindings during the selection of node versions, you can use 
 Use or install the latest official release:
 
     $ n latest
-
-Use or install the stable official release:
-
-    $ n stable
 
 Use or install the latest LTS official release:
 
@@ -80,7 +76,7 @@ Alternatively, you can use `-` in lieu of `rm`:
 Removing all versions except the current version:
 
 ```bash
-$ n prune 
+$ n prune
 ```
 
 ### Binary Usage
@@ -124,7 +120,6 @@ Output can also be obtained from `n --help`.
       n                              Output versions installed
       n latest                       Install or activate the latest node release
       n -a x86 latest                As above but force 32 bit architecture
-      n stable                       Install or activate the latest stable node release
       n lts                          Install or activate the latest LTS node release
       n <version>                    Install node <version>
       n use <version> [args ...]     Execute node <version> with [args ...]
@@ -132,7 +127,6 @@ Output can also be obtained from `n --help`.
       n rm <version ...>             Remove the given version(s)
       n prune                        Remove all versions except the current version
       n --latest                     Output the latest node version available
-      n --stable                     Output the latest stable node version available
       n --lts                        Output the latest LTS node version available
       n ls                           Output the versions of node available
 
@@ -161,6 +155,7 @@ Output can also be obtained from `n --help`.
       use     as
       list    ls
       -       rm
+      stable  lts
 
 ## Custom source
 
