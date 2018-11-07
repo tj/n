@@ -155,7 +155,6 @@ display_help() {
     n                              Output versions installed
     n latest                       Install or activate the latest node release
     n -a x86 latest                As above but force 32 bit architecture
-    n stable                       Install or activate the latest stable node release
     n lts                          Install or activate the latest LTS node release
     n <version>                    Install node <version>
     n use <version> [args ...]     Execute node <version> with [args ...]
@@ -163,7 +162,6 @@ display_help() {
     n rm <version ...>             Remove the given version(s)
     n prune                        Remove all versions except the current version
     n --latest                     Output the latest node version available
-    n --stable                     Output the latest stable node version available
     n --lts                        Output the latest LTS node version available
     n ls                           Output the versions of node available
 
@@ -181,6 +179,7 @@ display_help() {
     use     as
     list    ls
     -       rm
+    stable  lts
 
 EOF
 }
@@ -246,7 +245,7 @@ check_current_version() {
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
         $BASE_VERSIONS_DIR/$bin/$current/bin/node \
-        $(which node) ; then
+        $(command -v node) ; then
         active=$bin/$current
       fi
     done
@@ -490,6 +489,7 @@ install_latest() {
 
 #
 # Install latest stable version.
+# (See additional comments for display_latest_stable_version)
 #
 
 install_stable() {
@@ -596,11 +596,10 @@ remove_versions() {
 prune_versions() {
   check_current_version
   for version in $(versions_paths); do
-    if [ $version != $active ]
+    if [ "$version" != "$active" ]
     then
       echo $version
       rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
-      shift
     fi
   done
 }
@@ -680,14 +679,15 @@ display_latest_version() {
 
 #
 # Display the latest stable release version.
+# Note: Stable is no longer used by nodejs to identify versions,
+# so this could be considered deprecated. To avoid breaking
+# existing usages and minimise code churn in meantime,
+# return the lts version.
+# lts is the version recommended for most users.
 #
 
 display_latest_stable_version() {
-  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
+  display_latest_lts_version
 }
 
 #
