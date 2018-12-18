@@ -113,7 +113,6 @@ Output can also be obtained from `n --help`.
 
     Environments:
      n [COMMAND] [args]            Uses default env (node)
-     n io [COMMAND]                Sets env as io
 
     Commands:
 
@@ -129,17 +128,6 @@ Output can also be obtained from `n --help`.
       n --latest                     Output the latest node version available
       n --lts                        Output the latest LTS node version available
       n ls                           Output the versions of node available
-
-    (iojs):
-
-      n io latest                    Install or activate the latest iojs release
-      n io -a x86 latest             As above but force 32 bit architecture
-      n io <version>                 Install iojs <version>
-      n io use <version> [args ...]  Execute iojs <version> with [args ...]
-      n io bin <version>             Output bin path for <version>
-      n io rm <version ...>          Remove the given version(s)
-      n io --latest                  Output the latest iojs version available
-      n io ls                        Output the versions of iojs available
 
     Options:
 
@@ -159,16 +147,16 @@ Output can also be obtained from `n --help`.
 
 ## Custom source
 
-If you would like to use a project other than the official Node.js or io.js projects, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
+If you would like to use a project other than the official Node.js project, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
 
-For example, to grab the latest io.js version but name it "foo" instead,
+For example, to grab the latest io.js version:
 
-      PROJECT_NAME="foo" PROJECT_URL="https://iojs.org/dist/" n project latest
+      PROJECT_NAME="iojs" PROJECT_URL="https://iojs.org/dist/" n project latest
 
 Required Variables:
 
 * `PROJECT_NAME`: The name the project will be stored under
-* `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the io.js/Node.js repos
+* `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the Node.js repos
 
 Optional Variables:
 
@@ -183,10 +171,6 @@ By default `n` picks the binaries matching your system architecture, e.g. `n` wi
 Download and use latest 32 bit version of `node`:
 
     $ n --arch x86 latest
-
-Download and use latest 32 bit version of `iojs`:
-
-    $ n io --arch x86 latest
 
 Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo systems (x86 image is no longer available but x64 runs fine):
 
