@@ -41,19 +41,20 @@ As a result, both `n` itself and all `node` versions it manages are hosted insid
 ### Installing/Activating Versions
 
 Simply execute `n <version>` to install a version of `node`. If `<version>` has already been installed (via `n`), `n` will activate that version.
+A leading v is optional, and a partial version number installs the newest matching version.
 
-    $ n 0.8.14
-    $ n 0.8.17
-    $ n 0.9.6
+    $ n 4.9.1
+    $ n 10
+    $ n v8.11.3
 
 Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter to select. Use `q` or ^C (control + C) to exit the selection screen.
 If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows.
 
     $ n
 
-      0.8.14
-    ο 0.8.17
-      0.9.6
+      node/4.9.1
+    ο node/8.11.3
+      node/10.15.0
 
 Use or install the latest official release:
 
