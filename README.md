@@ -146,7 +146,13 @@ Output can also be obtained from `n --help`.
       -       rm
       stable  lts
 
-## Custom source
+## Custom Mirror
+
+If you would like to use a mirror site instead of the official Node.js downloads at `https://nodejs.org/dist/`, you can define `NODE_MIRROR`. For example:
+
+    NODE_MIRROR="https://npm.taobao.org/mirrors/node/"
+
+## Custom Project
 
 If you would like to use a project other than the official Node.js project, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
 
