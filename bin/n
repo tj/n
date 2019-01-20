@@ -5,7 +5,7 @@
 #
 
 VERSION="2.1.12"
-N_PREFIX=${N_PREFIX-/usr/local}
+N_PREFIX=`which npm  | rev | cut -c9- | rev`
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 
 #
