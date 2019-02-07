@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - docker build -t dockerimages/n .
+  - docker build -t n .
 
 script:
 #  - docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "apt update && apt install -y curl && n latest && node -v"
