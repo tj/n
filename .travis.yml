@@ -1,0 +1,14 @@
+language: trusty
+
+services:
+  - docker
+
+before_install:
+  - docker build -t dockerimages/n .
+
+script:
+#  - docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "apt update && apt install -y curl && n latest && node -v"
+- docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "n 0.8 && node -v"
+- docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "n latest && node -v"
+- docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "n stable && node -v"
+- docker run -it --rm -v $PWD/bin/n:/usr/bin/n n /bin/sh -c "n 8 && node -v"
