@@ -412,7 +412,7 @@ disable_pax_mprotect() {
   local binary="$1"
 
   # try to disable mprotect via XATTR_PAX header
-  local PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" which paxctl-ng 2>&1)"
+  local PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" command -v paxctl-ng 2>&1)"
   local PAXCTL_ERROR=1
   if [ -x "$PAXCTL" ]; then
     $PAXCTL -l && $PAXCTL -m "$binary" >/dev/null 2>&1
@@ -421,7 +421,7 @@ disable_pax_mprotect() {
 
   # try to disable mprotect via PT_PAX header
   if [ "$PAXCTL_ERROR" != 0 ]; then
-    PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" which paxctl 2>&1)"
+    PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" command -v paxctl 2>&1)"
     if [ -x "$PAXCTL" ]; then
       $PAXCTL -Cm "$binary" >/dev/null 2>&1
     fi
