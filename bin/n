@@ -519,8 +519,7 @@ install() {
   is_ok "$url" || is_oss_ok "$url" || abort "invalid version $version"
 
   log mkdir "$dir"
-  mkdir -p "$dir"
-  if [ $? -ne 0 ] ; then
+  if ! mkdir -p "$dir"; then
     abort "sudo required"
   else
     touch "$dir/n.lock"
