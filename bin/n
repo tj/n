@@ -237,7 +237,8 @@ display_n_version() {
 check_current_version() {
   command -v node &> /dev/null
   if test $? -eq 0; then
-    local current=$(node --version)
+    local current
+    current=$(node --version)
     if [ -n "$PROJECT_VERSION_CHECK" ]; then
       current="$(node -p "$PROJECT_VERSION_CHECK || process.exit(1)" || node --version)"
     fi
@@ -396,10 +397,11 @@ is_oss_ok() {
 #
 
 tarball_url() {
-  local version=$1
-  local uname="$(uname -a)"
-  local arch=x86
-  local os=
+  local version uname arch os
+  version=$1
+  uname="$(uname -a)"
+  arch=x86
+  os=
 
   # from nave(1)
   case "$uname" in
@@ -415,9 +417,10 @@ tarball_url() {
   esac
 
   if [ "${arch}" = "armv6l" ] && [ "${BIN_NAME[$DEFAULT]}" = node ]; then
-    local semver=${version//./ }
-    local major="$(echo "$semver" | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
-    local minor="$(echo "$semver" | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
+    local semver major minor
+    semver=${version//./ }
+    major="$(echo "$semver" | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
+    minor="$(echo "$semver" | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
     [[ "$major" -eq "" && "$minor" -lt 12 ]] && arch=arm-pi
   fi
 
@@ -436,7 +439,8 @@ disable_pax_mprotect() {
   local binary="$1"
 
   # try to disable mprotect via XATTR_PAX header
-  local PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" which paxctl-ng 2>&1)"
+  local PAXCTL
+  PAXCTL="$(PATH="/sbin:/usr/sbin:$PATH" which paxctl-ng 2>&1)"
   local PAXCTL_ERROR=1
   if [ -x "$PAXCTL" ]; then
     $PAXCTL -l && $PAXCTL -m "$binary" >/dev/null 2>&1
@@ -511,7 +515,8 @@ install_lts() {
 install() {
   local version=${1#v}
 
-  local dots="$(echo "$version" | sed 's/[^.]*//g')"
+  local dots
+  dots="$(echo "$version" | sed 's/[^.]*//g')"
   if test ${#dots} -lt 2; then
     version="$($GET 2> /dev/null "${MIRROR[DEFAULT]}" \
       | grep -E "</a>" \
@@ -539,7 +544,8 @@ install() {
   echo
   log install "${BINS[$DEFAULT]}-v$version"
 
-  local url="$(tarball_url "$version")"
+  local url
+  url="$(tarball_url "$version")"
   is_ok "$url" || is_oss_ok "$url" || abort "invalid version $version"
 
   log mkdir "$dir"
@@ -695,7 +701,8 @@ display_latest_stable_version() {
 #
 
 display_latest_lts_version() {
-  local folder_name="$($GET 2> /dev/null "${MIRROR[$DEFAULT]}" \
+  local folder_name
+  folder_name="$($GET 2> /dev/null "${MIRROR[$DEFAULT]}" \
     | grep -E "</a>" \
     | grep -E -o 'latest-[a-z]{2,}' \
     | sort \
