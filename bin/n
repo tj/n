@@ -21,7 +21,7 @@ log() {
 #
 
 abort() {
-  printf "\n  \033[31mError: $@\033[0m\n\n" && exit 1
+  printf "\n  \033[31mError: $*\033[0m\n\n" && exit 1
 }
 
 #
@@ -68,9 +68,9 @@ fi
 GET=
 
 # wget support
-command -v wget > /dev/null && GET="wget ${WGET_PARAMS[@]}"
+command -v wget > /dev/null && GET="wget ${WGET_PARAMS[*]}"
 
-command -v curl > /dev/null && GET="curl ${CURL_PARAMS[@]}" && QUIET=false
+command -v curl > /dev/null && GET="curl ${CURL_PARAMS[*]}" && QUIET=false
 
 test -z "$GET" && abort "curl or wget required"
 
