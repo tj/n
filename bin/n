@@ -88,7 +88,7 @@ ARCH=
 #
 
 set_arch() {
-  if test ! -z "$1"; then
+  if test -n "$1"; then
     ARCH="$1"
   else
     abort "missing -a|--arch value"
@@ -397,7 +397,7 @@ tarball_url() {
     [[ "$major" -eq "" && "$minor" -lt 12 ]] && arch=arm-pi
   fi
 
-  [ ! -z "$ARCH" ] && arch="$ARCH"
+  [ -n "$ARCH" ] && arch="$ARCH"
 
   echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.gz"
 
