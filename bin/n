@@ -412,6 +412,8 @@ tarball_url() {
     *x86_64*) arch=x64 ;;
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
+    *arm64*) arch=arm64 ;;
+    *aarch64*) arch=arm64 ;;
   esac
 
   if [ ${arch} = "armv6l" -a ${BIN_NAME[$DEFAULT]} = node ]; then
