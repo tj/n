@@ -7,9 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
-
-Reminder: need to merge in arm and rm fix. Double check what is included!
+## [3.0.0] (date goes here)
 
 ### Added
 
@@ -21,7 +19,7 @@ Reminder: need to merge in arm and rm fix. Double check what is included!
 - show more version examples in README, including partial version number [#548][]
 - updated description of interactive version selection [#518][]
 - make (old) stable an alias for lts [#467][] [#335][]
-- remove use of `which` and use more standard `command -v` [#532][]
+- replace use of `which` with more standard `command -v` [#532][]
 
 ### Fixed
 
@@ -56,5 +54,5 @@ Reminder: need to merge in arm and rm fix. Double check what is included!
 
 <!-- reference links for releases -->
 
-[Unreleased]: https://github.com/tj/n/compare/v2.1.12...master
-[UnreleasedGitFlow]: https://github.com/tj/n/compare/master...develop
+[3.0.0]: https://github.com/tj/n/compare/v2.1.12...develop
+[Unreleased]: https://github.com/tj/n/compare/master...develop
