@@ -737,6 +737,33 @@ display_remote_versions() {
 }
 
 #
+# Display the versions locally downloaded.
+#
+
+display_local_versions() {
+  check_current_version
+
+  local versions="$(list_versions_installed)"
+
+  for v in $versions; do
+    # split string into binary/version parts
+	version_parts=(${v//\// })
+	bin="${version_parts[0]}"
+	version="${version_parts[1]}"
+
+	if test "$active" = "$v"; then
+      printf "  \033[36mο\033[0m $version \033[0m\n"
+    else
+      if test -d $BASE_VERSIONS_DIR/$bin/$version; then
+        printf "    $version \033[0m\n"
+      else
+        printf "    \e[2m$version\e[22m\n"
+      fi
+    fi
+  done
+}
+
+#
 # Handle arguments.
 #
 
@@ -763,7 +790,7 @@ else
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
-      lsi|installed) list_versions_installed; exit ;;
+      lsi|installed) display_local_versions; exit ;;
       *) install $1; exit ;;
     esac
     shift
