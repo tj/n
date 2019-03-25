@@ -4,7 +4,7 @@
 # Setup.
 #
 
-VERSION="2.1.8"
+VERSION="2.1.12"
 N_PREFIX=${N_PREFIX-/usr/local}
 BASE_VERSIONS_DIR=$N_PREFIX/n/versions
 
@@ -25,17 +25,13 @@ abort() {
 }
 
 #
-# All Bin(node/io) configurations
+# All Bin (node+custom) configurations
 #
 
-BINS=("node"
-      "io")
-MIRROR=(${NODE_MIRROR-https://nodejs.org/dist/}
-        ${IO_MIRROR-https://iojs.org/dist/})
-BIN_NAME=("node"
-          "iojs")
-VERSIONS_DIR=($BASE_VERSIONS_DIR/node
-              $BASE_VERSIONS_DIR/io)
+BINS=("node")
+MIRROR=(${NODE_MIRROR-https://nodejs.org/dist/})
+BIN_NAME=("node")
+VERSIONS_DIR=($BASE_VERSIONS_DIR/node)
 
 if [ -n "$PROJECT_NAME" ]; then
   BINS+=($PROJECT_NAME)
@@ -91,14 +87,13 @@ ARCH=
 # set_default <BIN_NAME>
 #
 
-
-set_default() {
-  for (( i=0 ; i<${#BINS[@]} ; i++ )); do
-    if test ${BINS[$i]} = $1; then
-      DEFAULT=$i
-    fi
-  done
-}
+# set_default() {
+#   for (( i=0 ; i<${#BINS[@]} ; i++ )); do
+#     if test ${BINS[$i]} = $1; then
+#       DEFAULT=$i
+#     fi
+#   done
+# }
 
 for dir in ${VERSIONS_DIR[@]}; do
   test -d $dir || mkdir -p $dir
@@ -153,7 +148,6 @@ display_help() {
 
   Environments:
     n [COMMAND] [args]            Uses default env (node)
-    n io [COMMAND]                Sets env as io
     n project [COMMAND]           Uses custom env-variables to use non-official sources
 
   Commands:
@@ -161,7 +155,6 @@ display_help() {
     n                              Output versions installed
     n latest                       Install or activate the latest node release
     n -a x86 latest                As above but force 32 bit architecture
-    n stable                       Install or activate the latest stable node release
     n lts                          Install or activate the latest LTS node release
     n <version>                    Install node <version>
     n use <version> [args ...]     Execute node <version> with [args ...]
@@ -169,19 +162,8 @@ display_help() {
     n rm <version ...>             Remove the given version(s)
     n prune                        Remove all versions except the current version
     n --latest                     Output the latest node version available
-    n --stable                     Output the latest stable node version available
     n --lts                        Output the latest LTS node version available
     n ls                           Output the versions of node available
-
-  (iojs):
-    n io latest                    Install or activate the latest iojs release
-    n io -a x86 latest             As above but force 32 bit architecture
-    n io <version>                 Install iojs <version>
-    n io use <version> [args ...]  Execute iojs <version> with [args ...]
-    n io bin <version>             Output bin path for <version>
-    n io rm <version ...>          Remove the given version(s)
-    n io --latest                  Output the latest iojs version available
-    n io ls                        Output the versions of iojs available
 
   Options:
 
@@ -197,6 +179,7 @@ display_help() {
     use     as
     list    ls
     -       rm
+    stable  lts
 
 EOF
 }
@@ -262,19 +245,11 @@ check_current_version() {
     for bin in ${BINS[@]}; do
       if diff &> /dev/null \
         $BASE_VERSIONS_DIR/$bin/$current/bin/node \
-        $(which node) ; then
+        $(command -v node) ; then
         active=$bin/$current
       fi
     done
   fi
-}
-
-#
-# Check the operation is supported for io.
-#
-
-check_io_supported() {
-  test $DEFAULT -eq 1 && abort "$1 not supported for io.js"
 }
 
 #
@@ -285,7 +260,9 @@ versions_paths() {
   find $BASE_VERSIONS_DIR -maxdepth 2 -type d \
     | sed 's|'$BASE_VERSIONS_DIR'/||g' \
     | egrep "/[0-9]+\.[0-9]+\.[0-9]+$" \
-    | sort -k 1,1 -k 2,2n -k 3,3n -t .
+    | sed 's|/|.|' \
+    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -t . \
+    | sed 's|\.|/|'
 }
 
 #
@@ -484,7 +461,14 @@ activate() {
   check_current_version
   if test "$version" != "$active"; then
     local dir=$BASE_VERSIONS_DIR/$version
-    for subdir in bin lib include share; do
+    # Remove old npm to avoid potential issues with simple overwrite.
+    if test -d "$dir/lib/node_modules/npm"; then
+      if test -d "$N_PREFIX/lib/node_modules/npm"; then
+        rm -rf "$N_PREFIX/lib/node_modules/npm"
+      fi
+    fi
+    # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
+    for subdir in lib bin include share; do
       if test -L "$N_PREFIX/$subdir"; then
         find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
       else
@@ -505,10 +489,10 @@ install_latest() {
 
 #
 # Install latest stable version.
+# (See additional comments for display_latest_stable_version)
 #
 
 install_stable() {
-  check_io_supported "stable"
   install $(display_latest_stable_version)
 }
 
@@ -517,7 +501,6 @@ install_stable() {
 #
 
 install_lts() {
-  check_io_supported "lts"
   install $(display_latest_lts_version)
 }
 
@@ -613,11 +596,10 @@ remove_versions() {
 prune_versions() {
   check_current_version
   for version in $(versions_paths); do
-    if [ $version != $active ]
+    if [ "$version" != "$active" ]
     then
       echo $version
       rm -rf ${BASE_VERSIONS_DIR[$DEFAULT]}/$version
-      shift
     fi
   done
 }
@@ -697,15 +679,15 @@ display_latest_version() {
 
 #
 # Display the latest stable release version.
+# Note: Stable is no longer used by nodejs to identify versions,
+# so this could be considered deprecated. To avoid breaking
+# existing usages and minimise code churn in meantime,
+# return the lts version.
+# lts is the version recommended for most users.
 #
 
 display_latest_stable_version() {
-  check_io_supported "--stable"
-  $GET 2> /dev/null ${MIRROR[$DEFAULT]} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
+  display_latest_lts_version
 }
 
 #
@@ -713,7 +695,6 @@ display_latest_stable_version() {
 #
 
 display_latest_lts_version() {
-  check_io_supported "--lts"
   local folder_name=$($GET 2> /dev/null ${MIRROR[$DEFAULT]} \
     | egrep "</a>" \
     | egrep -o 'latest-[a-z]{2,}' \
@@ -772,8 +753,7 @@ else
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
       --lts) display_latest_lts_version; exit ;;
-      io) set_default $1 ;; # set bin and continue
-      project) DEFAULT=2 ;;
+      project) DEFAULT=1 ;;
       -a|--arch) shift; set_arch $1;; # set arch and continue
       bin|which) display_bin_path_for_version $2; exit ;;
       as|use) shift; execute_with_version $@; exit ;;

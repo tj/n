@@ -27,7 +27,7 @@ Alternatively, you can clone this repo and
 to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
 Once installed, `n` installs `node` versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ `node`/`iojs` version is installed directly in `N_PREFIX`.
-To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
+To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME` or add `export N_PREFIX=$HOME` to your shell initialization file.
 
 Additionally, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
 
@@ -35,33 +35,29 @@ Additionally, consider third-party installer [n-install](https://github.com/mkle
 
 sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest stable `node` version.
 
-
 As a result, both `n` itself and all `node` versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
 
 ### Installing/Activating Versions
 
-Simply execute `n <version>` to install a version of `node`. If `<version` has already been installed (via `n`), `n` will activate that version.
+Simply execute `n <version>` to install a version of `node`. If `<version>` has already been installed (via `n`), `n` will activate that version.
+A leading v is optional, and a partial version number installs the newest matching version.
 
-    $ n 0.8.14
-    $ n 0.8.17
-    $ n 0.9.6
+    $ n 4.9.1
+    $ n 10
+    $ n v8.11.3
 
-Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter or the right arrow key to select. Use ^C (control + C) to exit the selection screen.
+Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter to select. Use `q` or ^C (control + C) to exit the selection screen.
 If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows.
 
     $ n
 
-      0.8.14
-    ο 0.8.17
-      0.9.6
+      node/4.9.1
+    ο node/8.11.3
+      node/10.15.0
 
 Use or install the latest official release:
 
     $ n latest
-
-Use or install the stable official release:
-
-    $ n stable
 
 Use or install the latest LTS official release:
 
@@ -117,14 +113,12 @@ Output can also be obtained from `n --help`.
 
     Environments:
      n [COMMAND] [args]            Uses default env (node)
-     n io [COMMAND]                Sets env as io
 
     Commands:
 
       n                              Output versions installed
       n latest                       Install or activate the latest node release
       n -a x86 latest                As above but force 32 bit architecture
-      n stable                       Install or activate the latest stable node release
       n lts                          Install or activate the latest LTS node release
       n <version>                    Install node <version>
       n use <version> [args ...]     Execute node <version> with [args ...]
@@ -132,21 +126,9 @@ Output can also be obtained from `n --help`.
       n rm <version ...>             Remove the given version(s)
       n prune                        Remove all versions except the current version
       n --latest                     Output the latest node version available
-      n --stable                     Output the latest stable node version available
       n --lts                        Output the latest LTS node version available
       n ls                           Output the versions of node available
       n lsi                          Output installed versions of node and iojs
-
-    (iojs):
-
-      n io latest                    Install or activate the latest iojs release
-      n io -a x86 latest             As above but force 32 bit architecture
-      n io <version>                 Install iojs <version>
-      n io use <version> [args ...]  Execute iojs <version> with [args ...]
-      n io bin <version>             Output bin path for <version>
-      n io rm <version ...>          Remove the given version(s)
-      n io --latest                  Output the latest iojs version available
-      n io ls                        Output the versions of iojs available
 
     Options:
 
@@ -163,25 +145,26 @@ Output can also be obtained from `n --help`.
       list       ls
       installed  lsi
       -          rm
+      stable     lts
 
 ## Custom source
 
-If you would like to use a project other than the official Node.js or io.js projects, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
+If you would like to use a project other than the official Node.js project, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
 
-For example, to grab the latest io.js version but name it "foo" instead,
+For example, to grab the latest io.js version:
 
-      PROJECT_NAME="foo" PROJECT_URL="https://iojs.org/dist/" n project latest
+      PROJECT_NAME="iojs" PROJECT_URL="https://iojs.org/dist/" n project latest
 
 Required Variables:
 
-* `PROJECT_NAME`: The name the project will be stored under
-* `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the io.js/Node.js repos
+- `PROJECT_NAME`: The name the project will be stored under
+- `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the Node.js repos
 
 Optional Variables:
 
-* `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
-* `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
-* `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the Node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
+- `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
+- `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
+- `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the Node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
 
 ## Custom architecture
 
@@ -191,10 +174,6 @@ Download and use latest 32 bit version of `node`:
 
     $ n --arch x86 latest
 
-Download and use latest 32 bit version of `iojs`:
-
-    $ n io --arch x86 latest
-
 Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo systems (x86 image is no longer available but x64 runs fine):
 
     $ n --arch x64 lts
@@ -203,7 +182,7 @@ Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo sys
 
 `n` installs versions to `/usr/local/n/versions` by default. Here, it can see what versions are currently installed and activate previously installed versions accordingly when `n <version>` is invoked again.
 
-Activated versions are then installed to the prefix `/usr/local`, which may be altered via the __`N_PREFIX`__ environment variable.
+Activated versions are then installed to the prefix `/usr/local`, which may be altered via the **`N_PREFIX`** environment variable.
 
 To alter where `n` operates, simply `export N_PREFIX`.
 
@@ -213,9 +192,9 @@ If you are searching for the latest version of `n` below 2.x.x, check out the br
 
 ## Core Team
 
-* Nimit Kalra – [@qw3rtman](https://github.com/qw3rtman)
-* Ted Gaydos – [@tedgaydos](https://github.com/tedgaydos)
-* Travis Webb – [@tjwebb](https://github.com/tjwebb)
+- Nimit Kalra – [@qw3rtman](https://github.com/qw3rtman)
+- Ted Gaydos – [@tedgaydos](https://github.com/tedgaydos)
+- Travis Webb – [@tjwebb](https://github.com/tjwebb)
 
 Please Read [Contributing Docs](https://github.com/tj/n/blob/master/.github/CONTRIBUTING.md)
 
