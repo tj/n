@@ -188,14 +188,6 @@ To alter where `n` operates, simply `export N_PREFIX`.
 
 If you are searching for the latest version of `n` below 2.x.x, check out the branch `1.x.x`.
 
-## Core Team
-
-* Nimit Kalra – [@qw3rtman](https://github.com/qw3rtman)
-* Ted Gaydos – [@tedgaydos](https://github.com/tedgaydos)
-* Travis Webb – [@tjwebb](https://github.com/tjwebb)
-
-Please Read [Contributing Docs](https://github.com/tj/n/blob/master/.github/CONTRIBUTING.md)
-
 ## License
 
 (The MIT License)

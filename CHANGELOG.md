@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Removed
+
+- gitter badge from README, as gitter chatroom inactive
+- inactive Core Team from README
+
 ## [3.0.0] (2019-03-29)
 
 ### Added
