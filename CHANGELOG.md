@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - gitter badge from README, as gitter chatroom inactive
 - inactive Core Team from README
+- instructions for scripted install of npm from README, which should no longer be needed and not working on Mac [#536][]
 
 ## [3.0.0] (2019-03-29)
 
@@ -56,6 +57,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#529]: https://github.com/tj/n/issues/529
 [#531]: https://github.com/tj/n/issues/531
 [#532]: https://github.com/tj/n/issues/532
+[#536]: https://github.com/tj/n/issues/536
 [#541]: https://github.com/tj/n/issues/541
 [#548]: https://github.com/tj/n/issues/548
 
