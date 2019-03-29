@@ -35,6 +35,9 @@
   "bin": {
     "n": "./bin/n"
   },
+  "files": [
+    "bin/n"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/tj/n.git"
