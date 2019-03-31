@@ -11,17 +11,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- install instruction using homebrew (macOS) [#534][]
+- install instruction using Homebrew (macOS) [#534]
 
 ### Fixed
 
-- lts lookup on node mirrors which don't purge old versions (e.g. taobao) [#512][]
+- lts lookup on node mirrors which don't purge old versions (e.g. taobao) [#512]
+- hide cursor while selecting version from menu [#528]
 
 ### Removed
 
 - gitter badge from README, as gitter chatroom inactive
 - inactive Core Team from README
-- instructions for scripted install of npm from README, which should no longer be needed and not working on Mac [#536][]
+- instructions for scripted install of npm from README, which should no longer be needed and not working on Mac [#536]
 
 ## [3.0.0] (2019-03-29)
 
@@ -63,6 +64,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#516]: https://github.com/tj/n/issues/516
 [#518]: https://github.com/tj/n/issues/518
 [#521]: https://github.com/tj/n/issues/521
+[#528]: https://github.com/tj/n/issues/528
 [#529]: https://github.com/tj/n/issues/529
 [#531]: https://github.com/tj/n/issues/531
 [#532]: https://github.com/tj/n/issues/532
