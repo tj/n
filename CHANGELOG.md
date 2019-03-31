@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Added
+
+- install instruction using homebrew (macOS)
+
 ### Fixed
 
 - lts lookup on node mirrors which don't purge old versions (e.g. taobao) [#512][]
