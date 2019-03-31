@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Fixed
+
+- lts lookup on node mirrors which don't purge old versions (e.g. taobao) [#512][]
+
 ### Removed
 
 - gitter badge from README, as gitter chatroom inactive
@@ -51,6 +55,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
 [#467]: https://github.com/tj/n/issues/467
+[#512]: https://github.com/tj/n/issues/512
 [#516]: https://github.com/tj/n/issues/516
 [#518]: https://github.com/tj/n/issues/518
 [#521]: https://github.com/tj/n/issues/521
