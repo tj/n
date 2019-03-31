@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - install instruction using Homebrew (macOS) [#534]
+- Table of Contents to README [#466]
 
 ### Fixed
 
@@ -59,6 +60,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#400]: https://github.com/tj/n/issues/400
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
+[#466]: https://github.com/tj/n/issues/466
 [#467]: https://github.com/tj/n/issues/467
 [#512]: https://github.com/tj/n/issues/512
 [#516]: https://github.com/tj/n/issues/516

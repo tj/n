@@ -11,19 +11,17 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 (Unfortunately `n` is not supported on Windows.)
 
-## Table of Contents
-
-* [Installation](#installation)
-  * [Installing/Activating Versions](#installingactivating-versions)
-  * [Removing Versions](#removing-versions)
-  * [Binary Usage](#binary-usage)
-  * [Working with `npm`](#working-with-npm)
-* [Usage](#usage)
-* [Custom source](#custom-source)
-* [Custom architecture](#custom-architecture)
-* [Additional Details](#additional-details)
-* [Core Team](#core-team)
-* [License](#license)
+- [`n` – Interactively Manage Your Node.js Versions](#n-%E2%80%93-interactively-manage-your-nodejs-versions)
+    - [Installation](#installation)
+        - [Third Party Installers](#third-party-installers)
+    - [Installing/Activating Node Versions](#installingactivating-node-versions)
+    - [Removing Versions](#removing-versions)
+    - [Binary Usage](#binary-usage)
+    - [Usage](#usage)
+    - [Custom source](#custom-source)
+    - [Custom architecture](#custom-architecture)
+    - [Additional Details](#additional-details)
+    - [License](#license)
 
 ## Installation
 
