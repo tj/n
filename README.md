@@ -29,6 +29,10 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 Once installed, `n` installs `node` versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ `node`/`iojs` version is installed directly in `N_PREFIX`.
 To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME ` or add `export N_PREFIX=$HOME` to your shell initialization file.
 
+On macOS with [Homebrew](https://brew.sh/) you can install the [`n` formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb). Does not require installing `node` first.
+
+    brew install n
+
 Additionally, consider third-party installer [n-install](https://github.com/mklement0/n-install), which allows installation directly from GitHub; for instance,
 
     curl -L https://git.io/n-install | bash
