@@ -190,8 +190,6 @@ Activated versions are then installed to the prefix `/usr/local`, which may be a
 
 To alter where `n` operates, simply `export N_PREFIX`.
 
-`n` does not work on Windows at the moment. Pull Requests are appreciated.
-
 If you are searching for the latest version of `n` below 2.x.x, check out the branch `1.x.x`.
 
 ## License
