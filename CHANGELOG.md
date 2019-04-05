@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [3.0.1] (2019-04-05)
 
 ### Added
 
@@ -77,5 +77,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- reference links for releases -->
 
-[3.0.0]: https://github.com/tj/n/compare/v2.1.12...3.0.0
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[3.0.1]: https://github.com/tj/n/compare/v3.0.0...v3.0.1
+[3.0.0]: https://github.com/tj/n/compare/v2.1.12...v3.0.0
