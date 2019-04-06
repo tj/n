@@ -194,6 +194,28 @@ To alter where `n` operates, simply `export N_PREFIX`.
 
 If you are searching for the latest version of `n` below 2.x.x, check out the branch `1.x.x`.
 
+## Permission denied
+
+when `n` reports a permission error the first time it is run. The underlying reason this happens is because `n` is checking its cache folders exist every time it is run.
+
+Assuming you want to do node installs to `/usr/local/` (which is the default for `n`):
+
+If you will use `sudo` when you run installs, simplest is just run `sudo n` once and it will create the necessary folders as a side-effect. After doing that, you can run read-only commands like `n` and `n --lts` without sudo.
+
+If you do not wish to use `sudo` for installs and are in control of the computer, you can take ownership of the cache folder and install locations. (This ownership change also allows npm installs of global packages without using sudo.)
+
+```bash
+# make cache folder (if missing) and take ownership
+sudo mkdir -p /usr/local/n
+sudo chown -R $(whoami) /usr/local/n
+# take ownership of node install destination folders
+sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+# no longer need sudo as you own the folders
+n lts
+```
+
+(see [#416](https://github.com/tj/n/issues/416#issuecomment-417808320))
+
 ## License
 
 (The MIT License)
