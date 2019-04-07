@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.2] (2019-04-07)
 
-## Fixed
+### Added
+
+- instructions to avoid need for `sudo` when installing to `/usr/local`  [#416] [#562]
+
+### Fixed
 
 - permission denied errors when running read-only commands without sudo [#416]
 
@@ -81,6 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#536]: https://github.com/tj/n/issues/536
 [#541]: https://github.com/tj/n/issues/541
 [#548]: https://github.com/tj/n/issues/548
+[#562]: https://github.com/tj/n/issues/562
 
 <!-- reference links for releases -->
 
