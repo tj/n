@@ -84,22 +84,6 @@ ACTIVATE=true
 ARCH=
 
 #
-# set_default <BIN_NAME>
-#
-
-# set_default() {
-#   for (( i=0 ; i<${#BINS[@]} ; i++ )); do
-#     if test ${BINS[$i]} = $1; then
-#       DEFAULT=$i
-#     fi
-#   done
-# }
-
-for dir in ${VERSIONS_DIR[@]}; do
-  test -d $dir || mkdir -p $dir
-done
-
-#
 # set_arch <arch> to override $(uname -a)
 #
 
