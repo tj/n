@@ -1,0 +1,22 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+tab_width = 2
+trim_trailing_whitespace = true
+
+# Tab indentation (no size specified)
+[{Makefile,makefile}]
+indent_style = tab
+
+[*.md]
+# indent 4 for code blocks
+indent_size = 4
+# preserve trailing space for line breaks
+trim_trailing_whitespace = false
