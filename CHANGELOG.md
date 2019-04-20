@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- internal: improve shell script based on ShellCheck suggestions [#465]
+
 ## [3.0.2] (2019-04-07)
 
 ### Added
@@ -73,6 +77,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#416]: https://github.com/tj/n/issues/416
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
+[#465]: https://github.com/tj/n/issues/465
 [#466]: https://github.com/tj/n/issues/466
 [#467]: https://github.com/tj/n/issues/467
 [#512]: https://github.com/tj/n/issues/512
