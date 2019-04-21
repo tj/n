@@ -500,7 +500,7 @@ install() {
       | grep -E "^$version" \
       | tail -n1)"
 
-    test "$version" || abort "invalid version ${1#v}"
+    test "$version" || abort "invalid version '${1#v}'"
   fi
 
   local dir="${VERSIONS_DIR[$DEFAULT]}/$version"
@@ -518,7 +518,7 @@ install() {
   log install "${BINS[$DEFAULT]}-v$version"
 
   local url="$(tarball_url "$version")"
-  is_ok "$url" || is_oss_ok "$url" || abort "invalid version $version"
+  is_ok "$url" || is_oss_ok "$url" || abort "invalid version '$version'"
 
   log mkdir "$dir"
   if ! mkdir -p "$dir"; then
@@ -603,7 +603,7 @@ display_bin_path_for_version() {
   if test -f "$bin"; then
     printf "%s\n" "$bin"
   else
-    abort "$1 is not installed"
+    abort "'$1' is not installed"
   fi
 }
 
@@ -634,7 +634,7 @@ execute_with_version() {
   if test -f "$bin"; then
     exec "$bin" "$@"
   else
-    abort "$version is not installed"
+    abort "'$version' is not installed"
   fi
 }
 

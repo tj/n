@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - internal: improve shell script based on ShellCheck suggestions, quoting variables use etc [#187] [#465]
+- put single quote marks around parameters to clarify error messages [#485]
 
 ## [3.0.2] (2019-04-07)
 
@@ -86,6 +87,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#465]: https://github.com/tj/n/issues/465
 [#466]: https://github.com/tj/n/issues/466
 [#467]: https://github.com/tj/n/issues/467
+[#485]: https://github.com/tj/n/issues/485
 [#512]: https://github.com/tj/n/issues/512
 [#516]: https://github.com/tj/n/issues/516
 [#518]: https://github.com/tj/n/issues/518
