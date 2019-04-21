@@ -50,7 +50,7 @@ sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/lo
 
 ### Third Party Installers
 
-On macOS with [Homebrew](https://brew.sh/) you can install the [`n` formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
+On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
 
     brew install n
 
