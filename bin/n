@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2155
+# Disabled "Declare and assign separately to avoid masking return values": https://github.com/koalaman/shellcheck/wiki/SC2155
 
 #
 # Setup.
@@ -21,7 +23,7 @@ log() {
 #
 
 abort() {
-  printf "\n  \033[31mError: $*\033[0m\n\n" && exit 1
+  printf "\n  \033[31mError: %s\033[0m\n\n" "$*" && exit 1
 }
 
 #
@@ -248,9 +250,9 @@ display_versions_with_selected() {
   echo
   for version in $(versions_paths); do
     if test "$version" = "$selected"; then
-      printf "  \033[36mο\033[0m $version\033[0m\n"
+      printf "  \033[36mο\033[0m %s\033[0m\n" "$version"
     else
-      printf "    \e[2m$version\e[22m\n"
+      printf "    \e[2m%s\e[22m\n" "$version"
     fi
   done
   echo
@@ -599,7 +601,7 @@ display_bin_path_for_version() {
 
   local bin="${VERSIONS_DIR[$DEFAULT]}/$version/bin/node"
   if test -f "$bin"; then
-    printf "$bin\n"
+    printf "%s\n" "$bin"
   else
     abort "$1 is not installed"
   fi
@@ -698,12 +700,12 @@ display_remote_versions() {
   local bin="${BINS[$DEFAULT]}"
   for v in $versions; do
     if test "$active" = "$bin/$v"; then
-      printf "  \033[36mο\033[0m $v \033[0m\n"
+      printf "  \033[36mο\033[0m %s \033[0m\n" "$v"
     else
       if test -d "$BASE_VERSIONS_DIR/$bin/$v"; then
-        printf "    $v \033[0m\n"
+        printf "    %s \033[0m\n" "$v"
       else
-        printf "    \e[2m$v\e[22m\n"
+        printf "    \e[2m%s\e[22m\n" "$v"
       fi
     fi
   done
@@ -730,8 +732,8 @@ else
       project) DEFAULT=1 ;;
       -a|--arch) shift; set_arch "$1";; # set arch and continue
       bin|which) display_bin_path_for_version "$2"; exit ;;
-      as|use) shift; execute_with_version $@; exit ;;
-      rm|-) shift; remove_versions $@; exit ;;
+      as|use) shift; execute_with_version "$@"; exit ;;
+      rm|-) shift; remove_versions "$@"; exit ;;
       prune) prune_versions; exit ;;
       latest) install_latest; exit ;;
       stable) install_stable; exit ;;
