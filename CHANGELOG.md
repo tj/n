@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- remove trailing space from `bin` output [#456]
+
 ### Changed
 
 - internal: improve shell script based on ShellCheck suggestions, quoting variables use etc [#187] [#465]
@@ -78,6 +82,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#416]: https://github.com/tj/n/issues/416
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
+[#456]: https://github.com/tj/n/issues/456
 [#465]: https://github.com/tj/n/issues/465
 [#466]: https://github.com/tj/n/issues/466
 [#467]: https://github.com/tj/n/issues/467

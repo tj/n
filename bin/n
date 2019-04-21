@@ -599,7 +599,7 @@ display_bin_path_for_version() {
 
   local bin="${VERSIONS_DIR[$DEFAULT]}/$version/bin/node"
   if test -f "$bin"; then
-    printf "$bin \n"
+    printf "$bin\n"
   else
     abort "$1 is not installed"
   fi
