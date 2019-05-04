@@ -1,0 +1,16 @@
+version: '2'
+services:
+  ubuntu-curl:
+    extends:
+      file: ./docker-base.yml
+      service: testbed
+    build:
+      context: dockerfiles
+      dockerfile: Dockerfile-ubuntu-curl
+  ubuntu-wget:
+    extends:
+      file: ./docker-base.yml
+      service: testbed
+    build:
+      context: dockerfiles
+      dockerfile: Dockerfile-ubuntu-wget

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+BIN_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+echo ""
+echo "To make use of proxy server:"
+echo "   export https_proxy=\"$(hostname):8080\""
+echo "   export http_proxy=\"$(hostname):8080\""
+echo "   export CURL_HOME=$(dirname "${BIN_DIRECTORY}")/config"
+echo ""
+
+echo "Launching proxy server..."
+mitmdump --server-replay-nopop --server-replay proxy~~.dump

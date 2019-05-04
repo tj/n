@@ -1,0 +1,20 @@
+version: '2'
+# Define base service to specify the mounts and environment variables
+services:
+  testbed:
+    volumes:
+      # make locally installed  bats available in container (based on bats/install.sh)
+      - ../node_modules/bats/bin/bats:/usr/local/bin/bats
+      - ../node_modules/bats/libexec/bats-core:/usr/local/libexec/bats-core
+      - ../node_modules/bats/man/bats.1:/usr/local/share/man/man1"
+      - ../node_modules/bats/man/bats.7:/usr/local/share/man/man7"
+      # the bats tests
+      - ./tests:/mnt/tests
+      # the n script
+      - ../bin/n:/usr/local/bin/n
+      # override curl settings to allow insecure connection in case using proxy
+      - ./config/.curlrc:/root/.curlrc
+    environment:
+      # pass through proxy settings to allow caching proxy
+      - http_proxy
+      - https_proxy

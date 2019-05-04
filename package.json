@@ -42,6 +42,12 @@
     "type": "git",
     "url": "git://github.com/tj/n.git"
   },
+  "scripts": {
+    "test": "test/bin/run-all-tests"
+  },
+  "devDependencies": {
+    "bats": "^1.1.0"
+  },
   "preferGlobal": true,
   "os": [
     "!win32"

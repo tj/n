@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+BIN_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+services=( ubuntu-curl ubuntu-wget )
+
+cd "$(dirname "${BIN_DIRECTORY}")" || exit 2
+for service in "${services[@]}" ; do
+  echo "${service}"
+  docker-compose run --rm "${service}" "bats" "/mnt/tests"
+  echo ""
+done
+
+uname -s
+../node_modules/.bin/bats tests

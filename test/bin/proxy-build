@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Unoffical bash safe mode
+set -euo pipefail
+BIN_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+waitproxy() {
+    while ! nc -z localhost 8080 ; do sleep 1 ; done
+}
+
+if nc -z localhost 8080; then
+  echo "Error: port 8080 already in use. Is mitmdump already running?"
+  pgrep -f -l mitmdump
+  exit 2
+fi
+
+echo "Launching proxy..."
+mitmdump -w proxy~~.dump &> /dev/null &
+mitm_process="$!"
+echo "Waiting for proxy..."
+waitproxy
+
+echo "Recording downloads..."
+
+source tests/shared-functions.bash
+unset_n_env
+setup_tmp_prefix
+install_dummy_node
+
+# Hack curl to avoid certificate issues with proxy
+readonly CURL_HOME="$(dirname "${BIN_DIRECTORY}")/config"
+export CURL_HOME
+
+# Go through proxy so it can record traffic, http for taobao redirects
+http_proxy="$(hostname):8080"
+export http_proxy
+https_proxy="$(hostname):8080"
+export https_proxy
+
+# native
+tests/install-reference-versions.bash
+# linux
+docker-compose run ubuntu-curl /mnt/tests/install-reference-versions.bash
+
+rm -rf "${TMP_PREFIX_DIR}"
+echo "Stopping proxy"
+kill "${mitm_process}"
+
