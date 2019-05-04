@@ -114,6 +114,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[4.0.0]: https://github.com/tj/n/compare/v3.0.2...v4.0.0
 [3.0.2]: https://github.com/tj/n/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/tj/n/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/tj/n/compare/v2.1.12...v3.0.0
