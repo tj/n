@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased]
+## [4.0.0]
+
+Only minor functional changes, but technically could break scripts relying on specific behaviour.
 
 ### Fixed
 
 - remove trailing space from `bin` output [#456]
+
+### Added
+
+- development tests [#545]
 
 ### Changed
 
@@ -99,6 +105,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#534]: https://github.com/tj/n/issues/534
 [#536]: https://github.com/tj/n/issues/536
 [#541]: https://github.com/tj/n/issues/541
+[#545]: https://github.com/tj/n/issues/545
 [#548]: https://github.com/tj/n/issues/548
 [#562]: https://github.com/tj/n/issues/562
 
