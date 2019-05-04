@@ -23,6 +23,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 
 - internal: improve shell script based on ShellCheck suggestions, quoting variables use etc [#187] [#465]
 - put single quote marks around parameters to clarify error messages [#485]
+- update terminology to be more careful with current/latest [#522]
 
 ## [3.0.2] (2019-04-07)
 
@@ -98,6 +99,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#516]: https://github.com/tj/n/issues/516
 [#518]: https://github.com/tj/n/issues/518
 [#521]: https://github.com/tj/n/issues/521
+[#522]: https://github.com/tj/n/issues/522
 [#528]: https://github.com/tj/n/issues/528
 [#529]: https://github.com/tj/n/issues/529
 [#531]: https://github.com/tj/n/issues/531

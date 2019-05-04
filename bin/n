@@ -152,14 +152,14 @@ display_help() {
     n use <version> [args ...]     Execute node <version> with [args ...]
     n bin <version>                Output bin path for <version>
     n rm <version ...>             Remove the given version(s)
-    n prune                        Remove all versions except the current version
+    n prune                        Remove all versions except the active version
     n --latest                     Output the latest node version available
     n --lts                        Output the latest LTS node version available
     n ls                           Output the versions of node available
 
   Options:
 
-    -V, --version   Output current version of n
+    -V, --version   Output version of n
     -h, --help      Display help information
     -q, --quiet     Disable curl output (if available)
     -d, --download  Download only
