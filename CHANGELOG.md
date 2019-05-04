@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased]
+
 ## [4.0.0]
 
 Only minor functional changes, but technically could break scripts relying on specific behaviour.
