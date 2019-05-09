@@ -155,22 +155,13 @@ Output can also be obtained from `n --help`.
 
 ## Custom source
 
-If you would like to use a project other than the official Node.js project, you can use the special `n project [command]` which allows you to control the behavior of `n` using environment variables.
+If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `NODE_MIRROR`.
+The most common example is users in China can define:
 
-For example, to grab the latest io.js version:
+```
+export NODE_MIRROR=https://npm.taobao.org/mirrors/node
+```
 
-      PROJECT_NAME="iojs" PROJECT_URL="https://iojs.org/dist/" n project latest
-
-Required Variables:
-
-- `PROJECT_NAME`: The name the project will be stored under
-- `PROJECT_URL`: The location to download the project from. Note, this must follow the same format as the Node.js repos
-
-Optional Variables:
-
-- `HTTP_USER`: The username if the `PROJECT_URL` is protected by basic authentication
-- `HTTP_PASSWORD`: The password if the `PROJECT_URL` is protected by basic authentication
-- `PROJECT_VERSION_CHECK`: Many custom projects keep the same version number as the Node.js release they are based on, and maintain their own separate version in process. This allows you to define a JavaScript variable that will be used to check for the version of the process, for example: `process.versions.node`
 
 ## Custom architecture
 

@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- describe `NODE_MIRROR` in `README`
+
+### Removed
+
+- `PROJECT_NAME` and `PROJECT_URL` from `README`. First step to deprecating `n project`. Open an issue if you still need this!
+
 ## [4.0.0]
 
 Only minor functional changes, but technically could break scripts relying on specific behaviour.
