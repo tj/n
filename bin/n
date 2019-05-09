@@ -156,6 +156,7 @@ display_help() {
     n --latest                     Output the latest node version available
     n --lts                        Output the latest LTS node version available
     n ls                           Output the versions of node available
+    n uninstall                    Remove the installed node and npm
 
   Options:
 
@@ -713,6 +714,51 @@ display_remote_versions() {
 }
 
 #
+# Synopsis: delete_with_echo target
+#
+
+function delete_with_echo() {
+  if [[ -e "$1" ]]; then
+    echo "$1"
+    rm -rf "$1"
+  fi
+}
+
+#
+# Synopsis: uninstall_installed
+# Uninstall the installed node and npm (leaving alone the cache),
+# so undo install, and may expose possible system installed versions.
+#
+
+uninstall_installed() {
+  # npm: https://docs.npmjs.com/misc/removing-npm
+  #   rm -rf /usr/local/{lib/node{,/.npm,_modules},bin,share/man}/npm*
+  # node: https://stackabuse.com/how-to-uninstall-node-js-from-mac-osx/
+  # Doing it by hand rather than scanning cache, so still works if cache deleted first.
+  # This covers tarballs for at least node 4 through 10.
+
+  while true; do
+      read -p "Do you wish to delete node and npm from ${N_PREFIX}? " yn
+      case $yn in
+          [Yy]* ) make install; break;;
+          [Nn]* ) exit;;
+          * ) echo "Please answer yes or no.";;
+      esac
+  done
+
+  echo "Uninstalling node and npm"
+  delete_with_echo "${N_PREFIX}/bin/node"
+  delete_with_echo "${N_PREFIX}/bin/npm"
+  delete_with_echo "${N_PREFIX}/bin/npx"
+  delete_with_echo "${N_PREFIX}/include/node"
+  delete_with_echo "${N_PREFIX}/lib/dtrace/node.d"
+  delete_with_echo "${N_PREFIX}/lib/node_modules/npm"
+  delete_with_echo "${N_PREFIX}/share/doc/node"
+  delete_with_echo "${N_PREFIX}/share/man/man1/node.1"
+  delete_with_echo "${N_PREFIX}/share/systemtap/tapset/node.stp"
+}
+
+#
 # Handle arguments.
 #
 
@@ -739,6 +785,7 @@ else
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
+      uninstall) uninstall_installed ;;
       *) install "$1"; exit ;;
     esac
     shift

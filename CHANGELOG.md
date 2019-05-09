@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- 'n uninstall` to remove node and npm
 - describe `NODE_MIRROR` in `README`
 
 ### Removed

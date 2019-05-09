@@ -89,13 +89,19 @@ Use or install the latest LTS official release:
 
 ## Removing Versions
 
-Remove some versions:
+Remove some cached versions:
 
     n rm 0.9.4 v0.10.0
 
-Removing all versions except the current version:
+Removing all cached versions except the current version:
 
     n prune
+
+Remove the installed node and npm (does not affect the cached version). This can be useful
+to revert to the system version of node (if in a different location), or if you no longer
+wish to use node and npm.
+
+    n uninstall
 
 ## Binary Usage
 
