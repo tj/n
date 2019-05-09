@@ -158,10 +158,9 @@ Output can also be obtained from `n --help`.
 If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `NODE_MIRROR`.
 The most common example is users in China can define:
 
-```
+```bash
 export NODE_MIRROR=https://npm.taobao.org/mirrors/node
 ```
-
 
 ## Custom architecture
 
