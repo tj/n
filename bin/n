@@ -740,12 +740,13 @@ uninstall_installed() {
   while true; do
       read -p "Do you wish to delete node and npm from ${N_PREFIX}? " yn
       case $yn in
-          [Yy]* ) make install; break;;
+          [Yy]* ) break;;
           [Nn]* ) exit;;
           * ) echo "Please answer yes or no.";;
       esac
   done
 
+  echo ""
   echo "Uninstalling node and npm"
   delete_with_echo "${N_PREFIX}/bin/node"
   delete_with_echo "${N_PREFIX}/bin/npm"
