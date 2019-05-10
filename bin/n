@@ -738,7 +738,7 @@ uninstall_installed() {
   # This covers tarballs for at least node 4 through 10.
 
   while true; do
-      read -p "Do you wish to delete node and npm from ${N_PREFIX}? " yn
+      read -r -p "Do you wish to delete node and npm from ${N_PREFIX}? " yn
       case $yn in
           [Yy]* ) break ;;
           [Nn]* ) exit ;;
