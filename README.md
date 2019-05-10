@@ -64,7 +64,7 @@ As a result, both `n` itself and all `node` versions it manages are hosted insid
 ## Installing/Activating Node Versions
 
 Simply execute `n <version>` to install a version of `node`. If `<version>` has already been installed (via `n`), `n` will activate that version.
-A leading v is optional, and a partial version number installs the newest matching version.
+A leading `v` is optional, and a partial version number installs the newest matching version.
 
     n 4.9.1
     n 10
