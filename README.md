@@ -99,7 +99,7 @@ Removing all cached versions except the current version:
 
 Remove the installed node and npm (does not affect the cached version). This can be useful
 to revert to the system version of node (if in a different location), or if you no longer
-wish to use node and npm.
+wish to use node and npm, or are switching to a different way of managing them.
 
     n uninstall
 
