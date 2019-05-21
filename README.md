@@ -17,7 +17,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Installing/Activating Node Versions](#installingactivating-node-versions)
     - [Removing Versions](#removing-versions)
     - [Binary Usage](#binary-usage)
-    - [Usage](#usage)
+    - [Help](#help)
     - [Custom source](#custom-source)
     - [Custom architecture](#custom-architecture)
     - [Additional Details](#additional-details)
@@ -119,7 +119,7 @@ Flags also work here:
 
     n as 0.9.4 --debug some.js
 
-## Usage
+## Help
 
 Output can also be obtained from `n --help`.
 
@@ -182,7 +182,7 @@ Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo sys
 
 ## Additional Details
 
-`n` installs versions to `/usr/local/n/versions` by default. Here, it can see what versions are currently installed and activate previously installed versions accordingly when `n <version>` is invoked again.
+`n` caches downloaded versions to `/usr/local/n/versions` by default. Here, it can see what versions are currently cached and activate when `n <version>` is invoked again.
 
 Activated versions are then installed to the prefix `/usr/local`, which may be altered via the __`N_PREFIX`__ environment variable.
 
