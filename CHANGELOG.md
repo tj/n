@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- log message after install from cache (previously silent)
+- extra logging after install if the active and installed node locations are different
+  
+### Changed
+
+- log message for installing using menu now same format as `npm install` message
+- reinstalling active node version does reinstall (previously silently did nothing)
+- updates to GitHub templates and guidelines for contributing et al
+
 ## [4.1.0]
 
 ### Added
