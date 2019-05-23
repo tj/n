@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - log message after install from cache (previously silent)
 - extra logging after install if the active and installed node locations are different
+- support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors)
+- suppress progress and colour if not interactive tty
   
 ### Changed
 
-- log message for installing using menu now same format as `npm install` message
 - reinstalling active node version does reinstall (previously silently did nothing)
+- log message for installing using menu now same format as `npm install` message
 - updates to GitHub templates and guidelines for contributing et al
 
 ## [4.1.0]

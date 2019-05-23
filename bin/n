@@ -15,7 +15,7 @@ BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
 #
 
 log() {
-  printf "  \033[36m%10s\033[0m : \e[2m%s\e[22m\033[0m\n" "$1" "$2"
+  printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}${SGR_RESET}\n" "$1" "$2"
 }
 
 #
@@ -23,7 +23,7 @@ log() {
 #
 
 abort() {
-  printf "\n  \033[31mError: %s\033[0m\n\n" "$*" && exit 1
+  printf "\n  ${SGR_RED}Error: %s${SGR_RESET}\n\n" "$*" && exit 1
 }
 
 #
@@ -81,9 +81,39 @@ test -z "$GET" && abort "curl or wget required"
 #
 
 DEFAULT=0
-QUIET=true
+if [[ -t 1 ]]; then
+  QUIET=false
+else
+  QUIET=true
+fi
 ACTIVATE=true
 ARCH=
+
+# ANSI escape codes
+# https://en.wikipedia.org/wiki/ANSI_escape_code
+# http://no-color.org
+# https://bixense.com/clicolors
+
+USE_COLOR="true"
+if [[ -n "${CLICOLOR_FORCE+defined}" && "${CLICOLOR_FORCE}" != "0" ]]; then
+  USE_COLOR="true"
+elif [[ -n "${NO_COLOR+defined}" || "${CLICOLOR}" = "0" || ! -t 1 ]]; then
+  USE_COLOR="false"
+fi
+readonly USE_COLOR
+# Select Graphic Rendition codes
+if [[ "${USE_COLOR}" = "true" ]]; then
+  # KISS and use codes rather than tput, avoid dealing with missing tput or TERM.
+  readonly SGR_RESET="\033[0m"
+  readonly SGR_FAINT="\033[2m"
+  readonly SGR_RED="\033[31m"
+  readonly SGR_CYAN="\033[36m"
+else
+  readonly SGR_RESET=
+  readonly SGR_FAINT=
+  readonly SGR_RED=
+  readonly SGR_CYAN=
+fi
 
 #
 # set_arch <arch> to override $(uname -a)
@@ -178,7 +208,7 @@ EOF
 }
 
 err_no_installed_print_help() {
-  printf "\n  \033[31mError: no installed version\033[0m\n"
+  printf "\n  ${SGR_RED}Error: no installed version${SGR_RESET}\n"
   display_help
   exit 1
 }
@@ -251,9 +281,9 @@ display_versions_with_selected() {
   echo
   for version in $(versions_paths); do
     if test "$version" = "$selected"; then
-      printf "  \033[36mο\033[0m %s\033[0m\n" "$version"
+      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$version"
     else
-      printf "    \e[2m%s\e[22m\n" "$version"
+      printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$version"
     fi
   done
   echo
@@ -705,12 +735,12 @@ display_remote_versions() {
   local bin="${BINS[$DEFAULT]}"
   for v in $versions; do
     if test "$active" = "$bin/$v"; then
-      printf "  \033[36mο\033[0m %s \033[0m\n" "$v"
+      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$v"
     else
       if test -d "$BASE_VERSIONS_DIR/$bin/$v"; then
-        printf "    %s \033[0m\n" "$v"
+        printf "    %s\n" "$v"
       else
-        printf "    \e[2m%s\e[22m\n" "$v"
+        printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$v"
       fi
     fi
   done
@@ -766,6 +796,8 @@ uninstall_installed() {
 #
 # Handle arguments.
 #
+
+[[ "${QUIET}" = "true" ]] && set_quiet
 
 if test $# -eq 0; then
   test -z "$(versions_paths)" && err_no_installed_print_help
