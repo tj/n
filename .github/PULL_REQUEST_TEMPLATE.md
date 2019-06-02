@@ -1,25 +1,25 @@
-# Pull Request Template:
+# Pull Request
 
-### Describe what you did
- _i.e. bumped version number up in bin/n_
+<!--
+The text in these markdown comments is instructions that will not appear in the displayed pull request.
+-->
 
-### How you did it
+## Problem
 
-_i.e. bumped version number up in bin/n_
+<!--
+What problem are you solving? Include issue numbers if it has been reported. 
+Show the broken output if appropriate.
+-->
 
-### How to verify it doesn't effect the functionality of n
+## Solution
 
-_i.e. n --version output: 2.1.4_
+<!--
+How did you solve the problem? 
+Show the fixed output if appropriate.
+-->
 
-### If this solves an issue, please put issue in PR notes.
+## ChangeLog
 
-_i.e. n --version output: 2.1.4 solves issue #453_
-
-
-### If this solves an issue, please include the output of issue that had problems and then the fixed output from the same command.
-
-
-
-### Squash any unnecessary commits to keep history clean as possible
-
-###  Place description for the changelog in PR so we can tally all changes for any future release
+<!--
+Optional. Suggest a line for adding to the CHANGELOG to summarise your change.
+-->

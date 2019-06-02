@@ -4,15 +4,17 @@
 
 Before opening up an issue, please search for previous reports.
 
+New issues are welcome, whether questions or suggestions or reporting bugs.
+You are also welcome to contribute by adding helpful comments on an existing issue.
+
 ## Pull Requests
 
-If you want to contribute to code and/or docs, please fork this repo.
+Pull Requests will be considered. Please open an issue to discuss your idea before requesting big changes.
 
-If your PR solves an issue, please provide issue number in your commit or in your PR notes.
+Please submit pull requests against the `develop` branch. The template will prompt you for the details,
+such as what problem you are solving, and relevant issue numbers.
 
-_e.g. Avoid exception when version missing. Solves issue #435_
-
-Leave version number unchanged, that is decided when the release is being prepared.
+Don't change the version number or CHANGELOG, as they are updated by maintainers as the release is being prepared.
 
 ## Code of Conduct
 

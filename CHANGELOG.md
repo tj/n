@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   
 ### Changed
 
-- reinstalling active node version does reinstall (previously silently did nothing)
+- reinstalling active node version always does reinstall (previously silently did nothing)
 - log message for installing using menu now same format as `npm install` message
 - updates to GitHub templates and guidelines for contributing et al
 
