@@ -18,9 +18,9 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Removing Versions](#removing-versions)
     - [Binary Usage](#binary-usage)
     - [Help](#help)
-    - [Custom source](#custom-source)
-    - [Custom architecture](#custom-architecture)
-    - [Additional Details](#additional-details)
+    - [Custom Source](#custom-source)
+    - [Custom Architecture](#custom-architecture)
+    - [Optional Environment Variables](#optional-environment-variables)
 
 ## Installation
 
@@ -34,8 +34,7 @@ Alternatively, you can clone this repo and
 
 to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
-Once installed, `n` installs `node` versions to subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; the _active_ `node` version is installed directly in `N_PREFIX`.
-To change the default to, say, `$HOME`, prefix later calls to `n` with `N_PREFIX=$HOME` or add `export N_PREFIX=$HOME` to your shell initialization file.
+Once installed, `n` caches `node` versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ `node` version is installed directly in `N_PREFIX`.
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is recommended you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
@@ -159,7 +158,7 @@ Output can also be obtained from `n --help`.
       -       rm
       stable  lts
 
-## Custom source
+## Custom Source
 
 If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `NODE_MIRROR`.
 The most common example is users in China can define:
@@ -168,7 +167,7 @@ The most common example is users in China can define:
 export NODE_MIRROR=https://npm.taobao.org/mirrors/node
 ```
 
-## Custom architecture
+## Custom Architecture
 
 By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
 
@@ -180,10 +179,14 @@ Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo sys
 
     n --arch x64 lts
 
-## Additional Details
+## Optional Environment Variables
 
-`n` caches downloaded versions to `/usr/local/n/versions` by default. Here, it can see what versions are currently cached and activate when `n <version>` is invoked again.
+The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
+To change the location to say `$HOME/.n`, add lines like the following to your shell initialization file:
 
-Activated versions are then installed to the prefix `/usr/local`, which may be altered via the __`N_PREFIX`__ environment variable.
+    export N_PREFIX=$HOME/.n
+    export PATH=$N_PREFIX/bin:$PATH
 
-To alter where `n` operates, simply `export N_PREFIX`.
+In brief:
+- `NODE_MIRROR`: See [Custom source](#custom-source)
+- support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
