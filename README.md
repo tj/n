@@ -86,6 +86,8 @@ Use or install the latest LTS official release:
 
     n lts
 
+(If the active node version does not change after install, try opening a new shell in case seeing a stale version.)
+
 ## Removing Versions
 
 Remove some cached versions:
