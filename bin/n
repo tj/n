@@ -533,7 +533,7 @@ install() {
       | grep -E -v '^0\.[0-7]\.' \
       | grep -E -v '^0\.8\.[0-5]$' \
       | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-      | grep -E "^$version" \
+      | grep -E "^$version\." \
       | tail -n1)"
 
     test "$version" || abort "invalid version '${1#v}'"
