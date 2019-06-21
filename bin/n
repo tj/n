@@ -525,7 +525,7 @@ install_lts() {
 install() {
   local version=${1#v}
 
-  local dots="${version//[^.]*/}"
+  local dots="${version//[^.]/}"
   if test ${#dots} -lt 2; then
     version="$($GET 2> /dev/null "${MIRROR[DEFAULT]}" \
       | grep -E "</a>" \
