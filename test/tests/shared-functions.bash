@@ -98,6 +98,7 @@ function display_remote_version() {
   # (Add display_compatible_file_field when n does similar check!)
   ${fetch} "https://nodejs.org/dist/index.tab" \
     | tail -n +2 \
+    | cut -f 1,3,10 \
     | grep -E "${match}" \
     | awk "NR==1" \
     | cut -f -1
