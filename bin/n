@@ -6,7 +6,7 @@
 # Setup.
 #
 
-VERSION="5.0.0-next.0"
+VERSION="5.0.0"
 N_PREFIX="${N_PREFIX-/usr/local}"
 BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
 

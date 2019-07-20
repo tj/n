@@ -13,16 +13,16 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 A prerelease of `n` `v5` is available to try. You can install it with `npm i -g n@next` or run without installing with `npx n@next`. [Release notes](https://github.com/tj/n/releases/tag/v5.0.0-next.0).
 
-- [`n` – Interactively Manage Your Node.js Versions](#n-%E2%80%93-interactively-manage-your-nodejs-versions)
-    - [Installation](#installation)
-        - [Third Party Installers](#third-party-installers)
-    - [Installing/Activating Node Versions](#installingactivating-node-versions)
-    - [Removing Versions](#removing-versions)
-    - [Binary Usage](#binary-usage)
-    - [Help](#help)
-    - [Custom Source](#custom-source)
-    - [Custom Architecture](#custom-architecture)
-    - [Optional Environment Variables](#optional-environment-variables)
+- [`n` – Interactively Manage Your Node.js Versions](#n-%E2%80%93-Interactively-Manage-Your-Nodejs-Versions)
+    - [Installation](#Installation)
+        - [Third Party Installers](#Third-Party-Installers)
+    - [Installing/Activating Node Versions](#InstallingActivating-Node-Versions)
+    - [Removing Versions](#Removing-Versions)
+    - [Binary Usage](#Binary-Usage)
+    - [Help](#Help)
+    - [Custom Source](#Custom-Source)
+    - [Custom Architecture](#Custom-Architecture)
+    - [Optional Environment Variables](#Optional-Environment-Variables)
 
 ## Installation
 
@@ -167,9 +167,7 @@ Output can also be obtained from `n --help`.
 If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `NODE_MIRROR`.
 The most common example is users in China can define:
 
-```bash
-export NODE_MIRROR=https://npm.taobao.org/mirrors/node
-```
+    export NODE_MIRROR=https://npm.taobao.org/mirrors/node
 
 ## Custom Architecture
 
@@ -191,6 +189,11 @@ To change the location to say `$HOME/.n`, add lines like the following to your s
     export N_PREFIX=$HOME/.n
     export PATH=$N_PREFIX/bin:$PATH
 
+By default `n` downloads archives from the mirror site which have been compressed with `gzip`. You can switch to using the `xz` compressed archives by defining `N_USE_XZ`.
+
+    export N_USE_XZ=true
+
 In brief:
+
 - `NODE_MIRROR`: See [Custom source](#custom-source)
 - support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [5.0.0-0] Prerelease
+## [5.0.0] (2019-07-20)
 
 ### Added
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - extra logging after install if the active and installed node locations are different
 - support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors)
 - suppress progress and colour if not interactive tty
+- define `N_USE_XZ` to download `.xz` compressed archives instead of `.gz` archives
   
 ### Changed
 
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - log message for installing using menu now same format as `npm install` message
 - updates to GitHub templates and guidelines for contributing et al
 
-## [4.1.0]
+## [4.1.0] (2019-05-10)
 
 ### Added
 
@@ -33,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `PROJECT_NAME` and `PROJECT_URL` from `README`. First step to deprecating `n project`. Open an issue if you still need this!
 
-## [4.0.0]
+## [4.0.0] (2019-05-05)
 
 Only minor functional changes, but technically could break scripts relying on specific behaviour.
 
