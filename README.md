@@ -11,8 +11,6 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 (Note: `n` is not supported natively on Windows.)
 
-A prerelease of `n` `v5` is available to try. You can install it with `npm i -g n@next` or run without installing with `npx n@next`. [Release notes](https://github.com/tj/n/releases/tag/v5.0.0-next.0).
-
 - [`n` – Interactively Manage Your Node.js Versions](#n-%E2%80%93-Interactively-Manage-Your-Nodejs-Versions)
     - [Installation](#Installation)
         - [Third Party Installers](#Third-Party-Installers)

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+## [5.0.1] (2019-07-20)
+
+### Changed
+
+- removed reference to prerelease version of v5.0.0 from README
+
 ## [5.0.0] (2019-07-20)
 
 ### Added
