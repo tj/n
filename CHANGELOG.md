@@ -143,7 +143,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
-[5.0.0-0]: https://github.com/tj/n/compare/v4.1.0...v5.0.0-0
+[5.0.0]: https://github.com/tj/n/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/tj/n/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/tj/n/compare/v3.0.2...v4.0.0
 [3.0.2]: https://github.com/tj/n/compare/v3.0.1...v3.0.2
