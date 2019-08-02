@@ -6,7 +6,7 @@
 # Setup.
 #
 
-VERSION="5.0.2-0"
+VERSION="5.0.2"
 N_PREFIX="${N_PREFIX-/usr/local}"
 BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
 
@@ -287,6 +287,7 @@ display_versions_with_selected() {
     fi
   done
   echo
+  printf "Use up/down arrow keys to select a version, return key to install, q to quit"
 }
 
 #
