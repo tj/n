@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - improve reliability of downloads from custom node mirrors, including removing broken `is_oss_ok` ([#560])
 - restrict downloads to versions with architecture available ([#463])
 
-## Removed
+### Removed
 
 - **Breaking** support for `PROJECT_NAME` and `PROJECT_URL` for custom downloads ([#342])
 
