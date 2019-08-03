@@ -15,7 +15,25 @@ log() {
 #
 
 abort() {
-  printf "\n  ${SGR_RED}Error: %s${SGR_RESET}\n\n" "$*" && exit 1
+  >&2 printf "\n  ${SGR_RED}Error: %s${SGR_RESET}\n\n" "$*" && exit 1
+}
+
+#
+# Synopsis: trace message ...
+# Debugging output to stderr, not used in production code.
+#
+
+function trace() {
+  >&2 printf "trace: %s\n" "$*"
+}
+
+#
+# Synopsis: echo_red message ...
+# Highlight message in colour (on stdout).
+#
+
+function echo_red() {
+  printf "${SGR_RED}%s${SGR_RESET}\n" "$*"
 }
 
 #
@@ -23,8 +41,11 @@ abort() {
 #
 
 VERSION="6.0.0-0"
+
 N_PREFIX="${N_PREFIX-/usr/local}"
-BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
+N_PREFIX=${N_PREFIX%/}
+readonly N_PREFIX
+readonly CACHE_DIR=$N_PREFIX/n/versions
 
 N_NODE_MIRROR=${N_NODE_MIRROR:-${NODE_MIRROR:-https://nodejs.org/dist}}
 N_NODE_MIRROR=${N_NODE_MIRROR%/}
@@ -68,6 +89,9 @@ elif [ -n "$HTTP_PASSWORD" ]; then
   abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
 fi
 
+# Set by set_active_node
+g_active_node=
+
 ACTIVATE=true
 ARCH=
 
@@ -107,6 +131,18 @@ set_arch() {
   else
     abort "missing -a|--arch value"
   fi
+}
+
+#
+# Synopsis: set_insecure
+# Globals modified:
+# - CURL_OPTIONS
+# - WGET_OPTIONS
+#
+
+function set_insecure() {
+  CURL_OPTIONS+=( "--insecure" )
+  WGET_OPTIONS+=( "--no-check-certificate" )
 }
 
 #
@@ -219,63 +255,81 @@ handle_sigtstp() {
 display_help() {
   cat <<-EOF
 
-  Usage: n [options] [COMMAND] [args]
+Usage: n [options] [COMMAND] [args]
 
-  Commands:
+Commands:
 
-    n                              Output versions installed
-    n latest                       Install or activate the latest node release
-    n -a x86 latest                As above but force 32 bit architecture
-    n lts                          Install or activate the latest LTS node release
-    n <version>                    Install node <version>
-    n use <version> [args ...]     Execute node <version> with [args ...]
-    n bin <version>                Output bin path for <version>
-    n rm <version ...>             Remove the given version(s)
-    n prune                        Remove all versions except the active version
-    n --latest                     Output the latest node version available
-    n --lts                        Output the latest LTS node version available
-    n ls                           Output the versions of node available
-    n uninstall                    Remove the installed node and npm
+  n                              Display downloaded node versions and install selection
+  n latest                       Install the latest node release (downloading if necessary)
+  n lts                          Install the latest LTS node release (downloading if necessary)
+  n <version>                    Install node <version> (downloading if necessary)
+  n run <version> [args ...]     Execute downloaded node <version> with [args ...]
+  n which <version>              Output path for downloaded node <version>
+  n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
+  n rm <version ...>             Remove the given downloaded version(s)
+  n prune                        Remove all downloaded versions except the installed version
+  n --latest                     Output the latest node version available
+  n --lts                        Output the latest LTS node version available
+  n ls                           Output downloaded versions
+  n ls-remote [version]          Output matching versions available for download
+  n uninstall                    Remove the installed node and npm
 
-  Options:
+Options:
 
-    -V, --version   Output version of n
-    -h, --help      Display help information
-    -q, --quiet     Disable curl output (if available)
-    -d, --download  Download only
-    -a, --arch      Override system architecture
+  -V, --version   Output version of n
+  -h, --help      Display help information
+  -q, --quiet     Disable curl output (if available)
+  -d, --download  Download only
+  -a, --arch      Override system architecture
+  --all           ls-remote displays all matches instead of last 20
+  --insecure      Turn off certificate checking for https requests (may be needed from behind a proxy server)
 
-  Aliases:
+Aliases:
 
-    which   bin
-    use     as
-    list    ls
-    -       rm
-    stable  lts
+  which: bin
+  run: use, as
+  ls: list
+  lsr: ls-remote
+  rm: -
+  lts: stable
+  latest: current
+
+Versions:
+
+  Numeric version numbers can be complete or incomplete, with an optional leading 'v'.
+  Versions can also be specified by label, or codename,
+  and other downloadable releases by <remote-folder>/<version>
+
+    4.9.1, 8, v6.1    Numeric versions
+    lts               Newest Long Term Support official release
+    latest, current   Newest official release
+    boron, carbon     Codenames for release streams
+    and nightly, chakracore-release/latest, rc/10 et al
 
 EOF
 }
 
 err_no_installed_print_help() {
-  printf "\n  ${SGR_RED}Error: no installed version${SGR_RESET}\n"
   display_help
-  exit 1
+  abort "no downloaded versions yet, see above help for commands"
 }
 
 #
-# Output version after selected.
+# Synopsis: next_version_installed selected_version
+# Output version after selected (which may be blank under some circumstances).
 #
 
-next_version_installed() {
-  list_versions_installed | grep "$selected" -A 1 | tail -n 1
+function next_version_installed() {
+  display_cache_versions | grep "$1" -A 1 | tail -n 1
 }
 
 #
-# Output version before selected.
+# Synopsis: prev_version_installed selected_version
+# Output version before selected  (which may be blank under some circumstances).
 #
 
-prev_version_installed() {
-  list_versions_installed | grep "$selected" -B 1 | head -n 1
+function prev_version_installed() {
+  display_cache_versions | grep "$1" -B 1 | head -n 1
 }
 
 #
@@ -287,19 +341,26 @@ display_n_version() {
 }
 
 #
-# Check for installed version, and populate $active
+# Synopsis: set_active_node
+# Checks cached downloads for a binary matching the active node.
+# Globals modified:
+# - g_active_node
 #
 
-check_current_version() {
-  command -v node &> /dev/null
-  if test $? -eq 0; then
-    local current=$(node --version)
-    current=${current#v}
-    for bin in "${BINS[@]}"; do
+function set_active_node() {
+  g_active_node=
+  local node_path="$(command -v node)"
+  if [[ -x "${node_path}" ]]; then
+    local installed_version=$(node --version)
+    installed_version=${installed_version#v}
+    for dir in "${CACHE_DIR}"/*/ ; do
+      local folder_name="${dir%/}"
+      folder_name="${folder_name##*/}"
       if diff &> /dev/null \
-        "$BASE_VERSIONS_DIR/$bin/$current/bin/node" \
-        "$(command -v node)" ; then
-        active="$bin/$current"
+        "${CACHE_DIR}/${folder_name}/${installed_version}/bin/node" \
+        "${node_path}" ; then
+        g_active_node="${folder_name}/${installed_version}"
+        break
       fi
     done
   fi
@@ -309,10 +370,10 @@ check_current_version() {
 # Display sorted versions directories paths.
 #
 
-versions_paths() {
-  find "$BASE_VERSIONS_DIR" -maxdepth 2 -type d \
-    | sed 's|'"$BASE_VERSIONS_DIR"'/||g' \
-    | grep -E "/[0-9]+\.[0-9]+\.[0-9]+$" \
+display_versions_paths() {
+  find "$CACHE_DIR" -maxdepth 2 -type d \
+    | sed 's|'"$CACHE_DIR"'/||g' \
+    | grep -E "/[0-9]+\.[0-9]+\.[0-9]+" \
     | sed 's|/|.|' \
     | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -t . \
     | sed 's|\.|/|'
@@ -325,7 +386,7 @@ versions_paths() {
 display_versions_with_selected() {
   selected="$1"
   echo
-  for version in $(versions_paths); do
+  for version in $(display_versions_paths); do
     if test "$version" = "$selected"; then
       printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$version"
     else
@@ -337,12 +398,12 @@ display_versions_with_selected() {
 }
 
 #
-# List installed versions.
+# Synopsis: display_cache_versions
 #
 
-list_versions_installed() {
-  for version in $(versions_paths); do
-    echo "$version"
+function display_cache_versions() {
+  for folder_and_version in $(display_versions_paths); do
+    echo "${folder_and_version}"
   done
 }
 
@@ -350,11 +411,13 @@ list_versions_installed() {
 # Display current node --version and others installed.
 #
 
-display_versions() {
+menu_select_cache_versions() {
   enter_fullscreen
-  check_current_version
+  set_active_node
+  local selected="${g_active_node}"
+
   clear
-  display_versions_with_selected "$active"
+  display_versions_with_selected "${selected}"
 
   trap handle_sigint INT
   trap handle_sigtstp SIGTSTP
@@ -374,22 +437,26 @@ display_versions() {
           case "$arrow" in
             $UP)
               clear
-              display_versions_with_selected "$(prev_version_installed)"
+              selected="$(prev_version_installed "${selected}")"
+              display_versions_with_selected "${selected}"
               ;;
             $DOWN)
               clear
-              display_versions_with_selected "$(next_version_installed)"
+              selected="$(next_version_installed "${selected}")"
+              display_versions_with_selected "${selected}"
               ;;
           esac
         fi
         ;;
       "k")
         clear
-        display_versions_with_selected "$(prev_version_installed)"
+        selected="$(prev_version_installed "${selected}")"
+        display_versions_with_selected "${selected}"
         ;;
       "j")
         clear
-        display_versions_with_selected "$(next_version_installed)"
+        selected="$(next_version_installed "${selected}")"
+        display_versions_with_selected "${selected}"
         ;;
       "q")
         clear
@@ -399,7 +466,7 @@ display_versions() {
       "")
         # enter key returns empty string
         leave_fullscreen
-        activate "$selected"
+        [[ -n "${selected}" ]] && activate "${selected}"
         exit
         ;;
     esac
@@ -412,77 +479,6 @@ display_versions() {
 
 erase_line() {
   printf "\033[1A\033[2K"
-}
-
-#
-# Check if the HEAD response of <url> is 200.
-#
-is_ok() {
-  if command -v curl > /dev/null; then
-    $GET -Is "$1" | head -n 1 | grep 200 > /dev/null
-  else
-    $GET -S --spider 2>&1 "$1" | head -n 1 | grep 200 > /dev/null
-  fi
-}
-
-#
-# Check if the OSS(Object Storage Service) mirror is ok.
-#
-is_oss_ok() {
-  if command -v curl > /dev/null; then
-    if $GET -Is $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok $GET -Is $1 | grep Location | awk -F ': ' '{print $2}'
-    else
-      $GET -Is $1 | head -n 1 | grep 200 > /dev/null
-    fi
-  else
-    if $GET -S --spider 2>&1 $1 | head -n 1 | grep 302 > /dev/null; then
-      is_oss_ok $GET -S --spider 2>&1 $1 | grep Location | awk -F ': ' '{print $2}'
-    else
-      $GET -S --spider 2>&1 $1 | head -n 1 | grep 200 > /dev/null
-    fi
-  fi
-}
-
-#
-# Determine tarball url for <version>
-#
-
-tarball_url() {
-  local version=$1
-  local uname="$(uname -a)"
-  local arch=x86
-  local os=
-  local ext=gz
-
-  # from nave(1)
-  case "$uname" in
-    Linux*) os=linux ;;
-    Darwin*) os=darwin ;;
-    SunOS*) os=sunos ;;
-  esac
-
-  case "$uname" in
-    *x86_64*) arch=x64 ;;
-    *armv6l*) arch=armv6l ;;
-    *armv7l*) arch=armv7l ;;
-    *arm64*) arch=arm64 ;;
-    *aarch64*) arch=arm64 ;;
-  esac
-
-  if [ "${arch}" = "armv6l" ] && [ "${BIN_NAME[$DEFAULT]}" = node ]; then
-    local semver=${version//./ }
-    local major="$(echo "$semver" | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
-    local minor="$(echo "$semver" | awk '{print $2}' | grep -o -E '[0-9]+' | head -1 | sed -e 's/^0\+//')"
-    [[ "$major" -eq "" && "$minor" -lt 12 ]] && arch=arm-pi
-  fi
-
-  [ -n "$ARCH" ] && arch="$ARCH"
-
-  [ -n "$N_USE_XZ" ] && ext="xz"
-
-  echo "${MIRROR[$DEFAULT]}v${version}/${BIN_NAME[$DEFAULT]}-v${version}-${os}-${arch}.tar.${ext}"
-
 }
 
 #
@@ -516,7 +512,7 @@ disable_pax_mprotect() {
 
 activate() {
   local version="$1"
-  local dir=$BASE_VERSIONS_DIR/$version
+  local dir="$CACHE_DIR/$version"
   # Remove old npm to avoid potential issues with simple overwrite.
   if test -d "$dir/lib/node_modules/npm"; then
     if test -d "$N_PREFIX/lib/node_modules/npm"; then
@@ -539,33 +535,15 @@ activate() {
     log "installed" "$("${installed_node}" --version) to ${installed_node}"
     log "active" "$("${active_node}" --version) at ${active_node}"
   else
-    log "installed" "$("${installed_node}" --version)"
+    local npm_version_str=""
+    local installed_npm="${N_PREFIX}/bin/npm"
+    local active_npm="$(command -v npm)"
+    if [[ -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" = "${installed_npm}" ]]; then
+      npm_version_str=" (with npm $(npm --version))"
+    fi
+
+    log "installed" "$("${installed_node}" --version)${npm_version_str}"
   fi
-}
-
-#
-# Install latest version.
-#
-
-install_latest() {
-  install "$(display_latest_version)"
-}
-
-#
-# Install latest stable version.
-# (See additional comments for display_latest_stable_version)
-#
-
-install_stable() {
-  install "$(display_latest_stable_version)"
-}
-
-#
-# Install latest LTS version.
-#
-
-install_lts() {
-  install "$(display_latest_lts_version)"
 }
 
 #
@@ -573,23 +551,13 @@ install_lts() {
 #
 
 install() {
-  local version=${1#v}
+  [[ -z "$1" ]] && abort "version required"
+  local version
+  version="$(display_latest_resolved_version "$1")" || return 2
+  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  update_mirror_settings_for_version "$1"
 
-  local dots="${version//[^.]/}"
-  if test ${#dots} -lt 2; then
-    version="$($GET 2> /dev/null "${MIRROR[DEFAULT]}" \
-      | grep -E "</a>" \
-      | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
-      | grep -E -v '^0\.[0-7]\.' \
-      | grep -E -v '^0\.8\.[0-5]$' \
-      | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-      | grep -E "^$version\." \
-      | tail -n1)"
-
-    test "$version" || abort "invalid version '${1#v}'"
-  fi
-
-  local dir="${VERSIONS_DIR[$DEFAULT]}/$version"
+  local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
 
   if test -n "$N_USE_XZ"; then
     local tarflag="-Jx"
@@ -600,36 +568,33 @@ install() {
   if test -d "$dir"; then
     if [[ ! -e "$dir/n.lock" ]] ; then
       if "$ACTIVATE" ; then
-        activate "${BINS[$DEFAULT]}/$version"
+        activate "${g_mirror_folder_name}/${version}"
       fi
       exit
     fi
   fi
 
   echo
-  log installing "${BINS[$DEFAULT]}-v$version"
+  log installing "${g_mirror_folder_name}-v$version"
 
   local url="$(tarball_url "$version")"
-  is_ok "$url" || is_oss_ok "$url" || abort "invalid version '$version'"
+  is_ok "${url}" || abort "download preflight failed for '$version' (${url})"
 
   log mkdir "$dir"
-  if ! mkdir -p "$dir"; then
-    abort "sudo required"
-  else
-    touch "$dir/n.lock"
-  fi
+  mkdir -p "$dir" || abort "sudo required (or change ownership, or define N_PREFIX)"
+  touch "$dir/n.lock"
 
-  cd "$dir"
+  cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  $GET "$url" | tar "$tarflag" --strip-components=1
+  do_get "${url}" | tar "$tarflag" --strip-components=1
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
   disable_pax_mprotect bin/node
 
   if "$ACTIVATE" ; then
-    activate "${BINS[$DEFAULT]}/$version"
+    activate "${g_mirror_folder_name}/$version"
   fi
   echo
 }
@@ -640,6 +605,21 @@ install() {
 
 set_quiet() {
   command -v curl > /dev/null && CURL_OPTIONS+=( "--silent" ) && GET_SHOWS_PROGRESS="false"
+}
+
+#
+# Synopsis: do_get [option...] url
+# Call curl or wget with combination of global and passed options.
+#
+
+function do_get() {
+  if command -v curl &> /dev/null; then
+    curl "${CURL_OPTIONS[@]}" "$@"
+  elif command -v wget &> /dev/null; then
+    wget "${WGET_OPTIONS[@]}" "$@"
+  else
+    abort "curl or wget command required"
+  fi
 }
 
 #
@@ -660,164 +640,106 @@ function do_get_index() {
 }
 
 #
-# Remove <version ...>
+# Synopsis: remove_versions version ...
 #
 
-remove_versions() {
-  test -z "$1" && abort "version(s) required"
-  while test $# -ne 0; do
-    local version=${1#v}
-    rm -rf "${VERSIONS_DIR[$DEFAULT]}/$version"
+function remove_versions() {
+  [[ -z "$1" ]] && abort "version(s) required"
+  while [[ $# -ne 0 ]]; do
+    local version
+    version="$(display_latest_resolved_version "$1")" || break
+    if [[ -n "${version}" ]]; then
+      update_mirror_settings_for_version "$1"
+      local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
+      if [[ -s "${dir}" ]]; then
+        rm -rf "${dir}"
+      else
+        echo "$1 (${version}) not in downloads cache"
+      fi
+    else
+      echo "No version found for '$1'"
+    fi
     shift
   done
 }
 
 #
-# Prune non-active versions
+# Synopsis: prune_cache
 #
 
-prune_versions() {
-  check_current_version
-  for version in $(versions_paths); do
-    if [ "$version" != "$active" ]
-    then
-      echo "$version"
-      rm -rf "${BASE_VERSIONS_DIR[$DEFAULT]}/$version"
+function prune_cache() {
+  set_active_node
+
+  for folder_and_version in $(display_versions_paths); do
+    if [[ "${folder_and_version}" != "${g_active_node}" ]]; then
+      echo "${folder_and_version}"
+      rm -rf "${CACHE_DIR:?}/${folder_and_version}"
     fi
   done
 }
 
 #
-# Output bin path for <version>
+# Synopsis: find_cached_version version
+# Finds cache directory for resolved version.
+# Globals modified:
+# - g_cached_version
+
+function find_cached_version() {
+  [[ -z "$1" ]] && abort "version required"
+  local version
+  version="$(display_latest_resolved_version "$1")" || exit 1
+  [[ -n "${version}" ]] || abort "no version found for '$1'"
+
+  update_mirror_settings_for_version "$1"
+  g_cached_version="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
+  [[ -d "${g_cached_version}" ]] || abort "'$1' (${version}) not in downloads cache"
+}
+
+
+#
+# Synopsis: display_bin_path_for_version version
 #
 
-display_bin_path_for_version() {
-  test -z "$1" && abort "version required"
-  local version=${1#v}
+function display_bin_path_for_version() {
+  find_cached_version "$1"
+  echo "${g_cached_version}/bin/node"
+}
 
-  if [ "$version" = "latest" ]; then
-    version="$(display_latest_version)"
-  fi
+#
+# Synopsis: run_with_version version [args...]
+# Run the given <version> of node with [args ..]
+#
 
-  if [ "$version" = "stable" ]; then
-    version="$(display_latest_stable_version)"
-  fi
+function run_with_version() {
+  find_cached_version "$1"
+  shift # remove version from parameters
+  exec "${g_cached_version}/bin/node" "$@"
+}
 
-  if [ "$version" = "lts" ]; then
-    version="$(display_latest_lts_version)"
-  fi
+#
+# Synopsis: exec_with_version <version> command [args...]
+# Modify the path to include <version> and execute command.
+#
 
-  local bin="${VERSIONS_DIR[$DEFAULT]}/$version/bin/node"
-  if test -f "$bin"; then
-    printf "%s\n" "$bin"
+function exec_with_version() {
+  find_cached_version "$1"
+  shift # remove version from parameters
+  PATH="${g_cached_version}/bin:$PATH" exec "$@"
+}
+
+#
+# Synopsis: is_ok url
+# Check the HEAD response of <url>.
+#
+
+function is_ok() {
+  # Note: both curl and wget can follow redirects, as present on some mirrors (e.g. https://npm.taobao.org/mirrors/node).
+  # The output is complicated with redirects, so keep it simple and use command status rather than parse output.
+  if command -v curl &> /dev/null; then
+    do_get --silent --head "$1" > /dev/null || return 1
   else
-    abort "'$1' is not installed"
+    do_get --spider "$1" &> /dev/null || return 1
   fi
-}
-
-#
-# Execute the given <version> of node with [args ...]
-#
-
-execute_with_version() {
-  test -z "$1" && abort "version required"
-  local version=${1#v}
-
-  if [ "$version" = "latest" ]; then
-    version="$(display_latest_version)"
-  fi
-
-  if [ "$version" = "stable" ]; then
-    version="$(display_latest_stable_version)"
-  fi
-
-  if [ "$version" = "lts" ]; then
-    version="$(display_latest_lts_version)"
-  fi
-
-  local bin="${VERSIONS_DIR[$DEFAULT]}/$version/bin/node"
-
-  shift # remove version
-
-  if test -f "$bin"; then
-    exec "$bin" "$@"
-  else
-    abort "'$version' is not installed"
-  fi
-}
-
-#
-# Display the latest release version.
-#
-
-display_latest_version() {
-  $GET 2> /dev/null "${MIRROR[$DEFAULT]}" \
-    | grep -E "</a>" \
-    | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | grep -E -v '^0\.[0-7]\.' \
-    | grep -E -v '^0\.8\.[0-5]$' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
-}
-
-#
-# Display the latest stable release version.
-# Note: Stable is no longer used by nodejs to identify versions,
-# so this could be considered deprecated. To avoid breaking
-# existing usages and minimise code churn in meantime,
-# return the lts version.
-# lts is the version recommended for most users.
-#
-
-display_latest_stable_version() {
-  display_latest_lts_version
-}
-
-#
-# Display the latest lts release version.
-#
-
-display_latest_lts_version() {
-  local folder_name="$($GET 2> /dev/null "${MIRROR[$DEFAULT]}" \
-    | grep -E "</a>" \
-    | grep -E -o 'latest-[a-z]{2,}' \
-    | sort \
-    | tail -n1)"
-
-  $GET 2> /dev/null "${MIRROR[$DEFAULT]}/$folder_name/" \
-    | grep -E "</a>" \
-    | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
-}
-
-#
-# Display the versions available.
-#
-
-display_remote_versions() {
-  check_current_version
-  local versions=""
-  versions="$($GET 2> /dev/null "${MIRROR[$DEFAULT]}" \
-    | grep -E "</a>" \
-    | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | awk '{ print "  " $1 }')"
-
-  echo
-  local bin="${BINS[$DEFAULT]}"
-  for v in $versions; do
-    if test "$active" = "$bin/$v"; then
-      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$v"
-    else
-      if test -d "$BASE_VERSIONS_DIR/$bin/$v"; then
-        printf "    %s\n" "$v"
-      else
-        printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$v"
-      fi
-    fi
-  done
-  echo
 }
 
 #
@@ -850,6 +772,7 @@ function display_tarball_platform() {
       ;;
   esac
   # (arch unlikely to be right for SunOS and AIX. Investigate further if/when anyone asks!)
+  [ -n "$ARCH" ] && arch="$ARCH"
 
   echo "${os}-${arch}"
 }
@@ -865,6 +788,33 @@ function display_compatible_file_field {
     compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
   fi
   echo "${compatible_file_field}"
+}
+
+#
+# Synopsis: tarball_url version
+#
+
+function tarball_url() {
+  local version="$1"
+  local ext=gz
+  [ -n "$N_USE_XZ" ] && ext="xz"
+  echo "${g_mirror_url}/v${version}/node-v${version}-$(display_tarball_platform).tar.${ext}"
+}
+
+#
+# Synopsis: display_latest_resolved_version version
+#
+
+function display_latest_resolved_version() {
+  local version=${1#node/}
+  if is_exact_numeric_version "${version}"; then
+    # Just numbers, already resolved, no need to lookup first.
+    version="${version#v}"
+    echo "${version}"
+  else
+    # Complicated recognising exact version, KISS and awlays lookup for now.
+    N_MAX_REMOTE_MATCHES=1 display_remote_versions "$1"
+  fi
 }
 
 #
@@ -899,7 +849,7 @@ function display_match_limit(){
 # Synopsis: display_remote_versions version
 #
 
-function display_remote_versions2() {
+function display_remote_versions() {
   local version="$1"
   update_mirror_settings_for_version "${version}"
   local match='.'
@@ -1007,33 +957,222 @@ uninstall_installed() {
 }
 
 #
+# Synopsis: show_permission_suggestions
+#
+
+function show_permission_suggestions() {
+  echo "Suggestions:"
+  echo "- run n with sudo, or"
+  echo "- define N_PREFIX to a writeable location, or"
+}
+
+#
+# Synopsis: show_diagnostics
+# Show environment and check for common problems.
+#
+
+function show_diagnostics() {
+  echo "This information is to help you diagnose issues, and useful when reporting an issue."
+  echo "Note: some output may contain passwords. Redact before sharing."
+
+  printf "\n\n# Command Locations and Versions\n"
+
+  printf "\n## bash\n"
+  command -v bash && bash --version
+
+  printf "\n## n\n"
+  command -v n && n --version
+
+  printf "\n## node\n"
+  if command -v node &> /dev/null; then
+    command -v node && node --version
+    node -e 'if (process.versions.v8) console.log("JavaScript engine: v8"); if (process.versions.chakracore) console.log("JavaScript engine: chakracore")'
+
+    printf "\n## npm\n"
+    command -v npm && npm --version
+  fi
+
+  printf "\n## tar\n"
+  if command -v tar &> /dev/null; then
+    command -v tar && tar --version
+  else
+    echo_red "tar not found. Needed for extracting downloads."
+  fi
+
+  printf "\n## curl or wget\n"
+  if command -v curl &> /dev/null; then
+    command -v curl && curl --version
+  elif command -v wget &> /dev/null; then
+    command -v wget && wget --version
+  else
+    echo_red "Neither curl nor wget found. Need one of them for downloads."
+  fi
+
+  printf "\n## uname\n"
+  uname -a
+
+
+  printf "\n\n# Settings\n"
+
+  printf "\n\n## n\n"
+  echo "node mirror: ${N_NODE_MIRROR}"
+  echo "node downloads mirror: ${N_NODE_DOWNLOAD_MIRROR}"
+  echo "install destination: ${N_PREFIX}"
+  [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
+  echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
+
+  printf "\n\n## Proxy\n"
+  # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
+  # shellcheck disable=SC2154
+  [[ -n "${http_proxy}" ]] && echo "http_proxy: ${http_proxy}"
+  # shellcheck disable=SC2154
+  [[ -n "${https_proxy}" ]] && echo "https_proxy: ${https_proxy}"
+  if command -v curl &> /dev/null; then
+    # curl supports lower case and upper case!
+    # shellcheck disable=SC2154
+    [[ -n "${all_proxy}" ]] && echo "all_proxy: ${all_proxy}"
+    [[ -n "${ALL_PROXY}" ]] && echo "ALL_PROXY: ${ALL_PROXY}"
+    [[ -n "${HTTP_PROXY}" ]] && echo "HTTP_PROXY: ${HTTP_PROXY}"
+    [[ -n "${HTTPS_PROXY}" ]] && echo "HTTPS_PROXY: ${HTTPS_PROXY}"
+    if [[ -e "${CURL_HOME}/.curlrc" ]]; then
+       echo "have \$CURL_HOME/.curlrc"
+    elif [[ -e "${HOME}/.curlrc" ]]; then
+      echo "have \$HOME/.curlrc"
+    fi
+  elif command -v wget &> /dev/null; then
+    if [[ -e "${WGETRC}" ]]; then
+      echo "have \$WGETRC"
+    elif [[ -e "${HOME}/.wgetrc" ]]; then
+      echo "have \$HOME/.wgetrc"
+    fi
+  fi
+
+  printf "\n\n# Checks\n"
+
+  printf "\nChecking n install destination is in PATH...\n"
+  local install_bin="${N_PREFIX}/bin"
+  local path_wth_guards=":${PATH}:"
+  if [[ "${path_wth_guards}" =~ :${install_bin}/?: ]]; then
+    printf "good\n"
+  else
+    echo_red "'${install_bin}' is not in PATH"
+  fi
+  if command -v node &> /dev/null; then
+    printf "\nChecking n install destination priority in PATH...\n"
+    local node_dir="$(dirname "$(command -v node)")"
+
+    local index=0
+    local path_entry
+    local path_entries
+    local install_bin_index=0
+    local node_index=999
+    IFS=':' read -ra path_entries <<< "${PATH}"
+    for path_entry in "${path_entries[@]}"; do
+      (( index++ ))
+      [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
+      [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
+    done
+    if [[ "${node_index}" -lt "${install_bin_index}" ]]; then
+      echo_red "There is a version of node installed which will be found in PATH before the n installed version."
+    else
+      printf "good\n"
+    fi
+  fi
+
+  printf "\nChecking permissions for cache folder...\n"
+  # Most likely problem is ownership rather than than permissions as such.
+  local cache_root="${N_PREFIX}/n"
+  if [[ -e "${N_PREFIX}" && ! -w "${N_PREFIX}" && ! -e "${cache_root}" ]]; then
+    echo_red "You do not have write permission to create: ${cache_root}"
+    show_permission_suggestions
+    echo "- make a folder you own:"
+    echo "      sudo mkdir -p \"${cache_root}\""
+    echo "      sudo chown $(whoami) \"${cache_root}\""
+  elif [[ -e "${cache_root}" && ! -w "${cache_root}" ]]; then
+    echo_red "You do not have write permission to: ${cache_root}"
+    show_permission_suggestions
+    echo "- change folder ownership to yourself:"
+    echo "      sudo chown -R $(whoami) \"${cache_root}\""
+  elif [[ ! -e "${cache_root}" ]]; then
+    echo "Cache folder does not exist: ${cache_root}"
+    echo "This is normal if you have not done an install yet, as cache is only created when needed."
+  elif [[ -e "${CACHE_DIR}" && ! -w "${CACHE_DIR}" ]]; then
+    echo_red "You do not have write permission to: ${CACHE_DIR}"
+    show_permission_suggestions
+    echo "- change folder ownership to yourself:"
+    echo "      sudo chown -R $(whoami) \"${CACHE_DIR}\""
+  else
+    echo "good"
+  fi
+
+  if [[ -e "${N_PREFIX}" ]]; then
+    # Most likely problem is ownership rather than than permissions as such.
+    printf "\nChecking permissions for install folders...\n"
+    local install_writeable="true"
+    for subdir in bin lib include share; do
+      if [[ -e "${N_PREFIX}/${subdir}" && ! -w "${N_PREFIX}/${subdir}" ]]; then
+        install_writeable="false"
+        echo_red "You do not have write permission to: ${N_PREFIX}/${subdir}"
+        break
+      fi
+    done
+    if [[ "${install_writeable}" = "true" ]]; then
+      echo "good"
+    else
+      show_permission_suggestions
+      echo "- change folder ownerships to yourself:"
+      echo "      (cd \"${N_PREFIX}\" && sudo chown -R $(whoami) bin lib include share)"
+    fi
+  fi
+
+  printf "\nChecking mirror is reachable...\n"
+  if is_ok "${N_NODE_MIRROR}/"; then
+    printf "good\n"
+  else
+    echo_red "mirror not reachable"
+    printf "Showing failing command and output\n"
+    if command -v curl &> /dev/null; then
+      ( set -x; do_get --head "${N_NODE_MIRROR}/" )
+    else
+      ( set -x; do_get --spider "${N_NODE_MIRROR}/" )
+    printf "\n"
+   fi
+  fi
+}
+
+#
 # Handle arguments.
 #
 
 if test $# -eq 0; then
-  test -z "$(versions_paths)" && err_no_installed_print_help
-  display_versions
+  test -z "$(display_versions_paths)" && err_no_installed_print_help
+  menu_select_cache_versions
 else
   while test $# -ne 0; do
     case "$1" in
+      --all) N_MAX_REMOTE_MATCHES=32000 ;;
       -V|--version) display_n_version ;;
       -h|--help|help) display_help; exit ;;
       -q|--quiet) set_quiet ;;
       -d|--download) ACTIVATE=false ;;
-      --latest) display_latest_version; exit ;;
-      --stable) display_latest_stable_version; exit ;;
-      --lts) NVH_MAX_REMOTE_MATCHES=1 display_remote_versions2 lts; exit ;;
+      --insecure) set_insecure ;;
+      --latest) display_remote_versions latest; exit ;;
+      --stable) display_remote_versions lts; exit ;; # [sic] old terminology
+      --lts) display_remote_versions lts; exit ;;
       -a|--arch) shift; set_arch "$1";; # set arch and continue
       bin|which) display_bin_path_for_version "$2"; exit ;;
-      as|use) shift; execute_with_version "$@"; exit ;;
+      run|as|use) shift; run_with_version "$@"; exit ;;
+      exec) shift; exec_with_version "$@" ;;
+      doctor) show_diagnostics ;;
       rm|-) shift; remove_versions "$@"; exit ;;
-      prune) prune_versions; exit ;;
-      latest) install_latest; exit ;;
-      stable) install_stable; exit ;;
-      lts) install_lts; exit ;;
-      ls|list) display_remote_versions; exit ;;
-      lsr|ls-remote|list-remote) shift; display_remote_versions2 "$1" ;;
+      prune) prune_cache; exit ;;
+      latest) install latest; exit ;;
+      stable) install stable; exit ;;
+      lts) install lts; exit ;;
+      ls|list) display_versions_paths ;;
+      lsr|ls-remote|list-remote) shift; display_remote_versions "$1" ;;
       uninstall) uninstall_installed ;;
+      i|install) shift; install "$1"; exit ;;
       *) install "$1"; exit ;;
     esac
     shift

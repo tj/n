@@ -11,16 +11,17 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 
 (Note: `n` is not supported natively on Windows.)
 
-- [`n` – Interactively Manage Your Node.js Versions](#n-%E2%80%93-Interactively-Manage-Your-Nodejs-Versions)
-    - [Installation](#Installation)
-        - [Third Party Installers](#Third-Party-Installers)
-    - [Installing/Activating Node Versions](#InstallingActivating-Node-Versions)
-    - [Removing Versions](#Removing-Versions)
-    - [Binary Usage](#Binary-Usage)
-    - [Help](#Help)
-    - [Custom Source](#Custom-Source)
-    - [Custom Architecture](#Custom-Architecture)
-    - [Optional Environment Variables](#Optional-Environment-Variables)
+- [`n` – Interactively Manage Your Node.js Versions](#n-%e2%80%93-interactively-manage-your-nodejs-versions)
+    - [Installation](#installation)
+        - [Third Party Installers](#third-party-installers)
+    - [Installing Node Versions](#installing-node-versions)
+    - [Specifying Node Versions](#specifying-node-versions)
+    - [Removing Versions](#removing-versions)
+    - [Using Downloaded Node Versions Without Reinstalling](#using-downloaded-node-versions-without-reinstalling)
+    - [Miscellaneous](#miscellaneous)
+    - [Custom Source](#custom-source)
+    - [Custom Architecture](#custom-architecture)
+    - [Optional Environment Variables](#optional-environment-variables)
 
 ## Installation
 
@@ -36,15 +37,13 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 
 Once installed, `n` caches `node` versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ `node` version is installed directly in `N_PREFIX`.
 
-To avoid requiring `sudo` for `n` and `npm` global installs, it is recommended you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
+To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
-```bash
-# make cache folder (if missing) and take ownership
-sudo mkdir -p /usr/local/n
-sudo chown -R $(whoami) /usr/local/n
-# take ownership of node install destination folders
-sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
-```
+    # make cache folder (if missing) and take ownership
+    sudo mkdir -p /usr/local/n
+    sudo chown -R $(whoami) /usr/local/n
+    # take ownership of node install destination folders
+    sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
 
 ### Third Party Installers
 
@@ -60,17 +59,14 @@ n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME
 
 As a result, both `n` itself and all `node` versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
 
-## Installing/Activating Node Versions
+## Installing Node Versions
 
-Simply execute `n <version>` to install a version of `node`. If `<version>` has already been installed (via `n`), `n` will activate that version.
-A leading `v` is optional, and a partial version number installs the newest matching version.
+Simply execute `n <version>` to download and install a version of `node`. If `<version>` has already been downloaded, `n` will install from its cache.
 
-    n 4.9.1
-    n 10
-    n v8.11.3
+    n 10.16.0
+    n lts
 
-Execute `n` on its own to view your currently installed versions. Use the up and down arrow keys to navigate and press enter to select. Use `q` or ^C (control + C) to exit the selection screen.
-If you like vim key bindings during the selection of node versions, you can use `j` and `k` to navigate up or down without using arrows.
+Execute `n` on its own to view your downloaded versions, and install the selected version.
 
     $ n
 
@@ -78,15 +74,37 @@ If you like vim key bindings during the selection of node versions, you can use 
     ο node/8.11.3
       node/10.15.0
 
-Use or install the latest official release:
+    Use up/down arrow keys to select a version, return key to install, q to quit
 
-    n latest
+(You can also use `j` and `k` to navigate up or down without using arrows.)
 
-Use or install the latest LTS official release:
+If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
-    n lts
+## Specifying Node Versions
 
-(If the active node version does not change after install, try opening a new shell in case seeing a stale version.)
+There are a variety of ways of specifying the target node version for `n` commands. Most commands use the latest matching version, and  `n ls-remote` lists multiple matching versions.
+
+Numeric version numbers can be complete or incomplete, with an optional leading `v`.
+
+- `4.9.1`
+- `8`: 8.x.y versions
+- `v6.1`: 6.1.x versions
+
+There are labels for two especially useful versions:
+
+- `lts`: newest Long Term Support official release
+- `latest`, `current`: newest official release
+
+There is support for release streams:
+
+- `argon`, `boron`, `carbon`: codenames for LTS release streams
+
+The last form is for specifying [other releases](https://nodejs.org/download) available using the name of the remote download folder optionally followed by the complete or incomplete version.
+
+- `chakracore-release/latest`
+- `nightly`
+- `test/v11.0.0-test20180528`
+- `rc/10`
 
 ## Removing Versions
 
@@ -104,68 +122,52 @@ wish to use node and npm, or are switching to a different way of managing them.
 
     n uninstall
 
-## Binary Usage
+## Using Downloaded Node Versions Without Reinstalling
 
-When running multiple versions of `node`, we can target
-them directly by asking `n` for the binary path:
+There are three commands for working directly with your downloaded versions of `node`, without reinstalling.
 
-    $ n bin 0.9.4
-    /usr/local/n/versions/0.9.4/bin/node
+You can show the path to the downloaded version:
 
-Or by using a specific version through `n`'s `use` sub-command:
+    $ n which 6.14.3
+    /usr/local/n/versions/6.14.3/bin/node
 
-    n use 0.9.4 some.js
+Or run a downloaded `node` version with the `n run` command:
 
-Flags also work here:
+    n run 8.11.3 --debug some.js
 
-    n as 0.9.4 --debug some.js
+Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded `node` version.
+(NB: this `npm` will be working with a different and empty global node_modules directory, and you should not install global
+modules this way.)
 
-## Help
+    n exec 10 my-script --fast test
 
-Output can also be obtained from `n --help`.
+## Miscellaneous
 
-    Usage: n [options/env] [COMMAND] [args]
+Command line help can be obtained from `n --help`.
 
-    Environments:
-     n [COMMAND] [args]            Uses default env (node)
+List matching remote versions available for download:
 
-    Commands:
+    n ls-remote lts
+    n ls-remote latest
+    n lsr 10
+    n --all lsr
 
-      n                              Output versions installed
-      n latest                       Install or activate the latest node release
-      n -a x86 latest                As above but force 32 bit architecture
-      n lts                          Install or activate the latest LTS node release
-      n <version>                    Install node <version>
-      n use <version> [args ...]     Execute node <version> with [args ...]
-      n bin <version>                Output bin path for <version>
-      n rm <version ...>             Remove the given version(s)
-      n prune                        Remove all versions except the active version
-      n --latest                     Output the latest node version available
-      n --lts                        Output the latest LTS node version available
-      n ls                           Output the versions of node available
+List downloaded versions in cache:
 
-    Options:
+    nvh ls
 
-      -V, --version   Output version of n
-      -h, --help      Display help information
-      -q, --quiet     Disable curl output (if available)
-      -d, --download  Download only
-      -a, --arch      Override system architecture
+Display diagnostics to help resolve problems:
 
-    Aliases:
-
-      which   bin
-      use     as
-      list    ls
-      -       rm
-      stable  lts
+    nvh doctor
 
 ## Custom Source
 
-If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `NODE_MIRROR`.
+If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
 The most common example is users in China can define:
 
-    export NODE_MIRROR=https://npm.taobao.org/mirrors/node
+    export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
+
+There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout as the default <https://nodejs.org/download>
 
 ## Custom Architecture
 
@@ -193,5 +195,7 @@ By default `n` downloads archives from the mirror site which have been compresse
 
 In brief:
 
-- `NODE_MIRROR`: See [Custom source](#custom-source)
+- `N_NODE_MIRROR`: See [Custom source](#custom-source)
+- `N_NODE_DOWNLOAD_MIRROR`: See [Custom source](#custom-source)
 - support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
+- `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions

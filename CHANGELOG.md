@@ -9,13 +9,35 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [6.0.0] (date goes here)
 
+### Added
+
+- version specified using release stream codenames, like `argon` ([#423])
+- version specified using nightly et al ([#376])
+- `n exec` for running arbitrary command with node and npm in `PATH` ([#185])
+- `n run` with legacy aliases of `as` and `use`
+- `n lsr` for listing matching remote versions, limited to 20 by default ([#383])
+- `n doctor` for displaying diagnostic information
+- `n install` for people used to other products with this command
+- `--insecure` to disable curl/wget certificate checks
+- npm version to installed message ([#210] [#484] [#574])
+  
 ### Changed
 
-- wget now checks certificates (secure by default, same as curl setup). (#475 #509 )
+- **Breaking** wget now checks certificates (secure by default, same as curl setup). (#475 #509)
+- failure messages go to stderr instead of stdout
+- prefixed `N_NODE_MIRROR` to eventually replace `NODE_MIRROR`
+- **Breaking** `n ls` now lists local download versions (rather than remote versions)
+- lookup available versions using `index.tab` rather than screen-scraping (#560)
+
+### Fixed
+
+- download errors display informative message, instead of just `Invalid version` ([#482] [#492] et al)
+- improve reliability of downloads from custom node mirrors, including removing broken `is_oss_ok` ([#560])
+- restrict downloads to versions with architecture available ([#463])
 
 ## Removed
 
-- support for `PROJECT_NAME` and `PROJECT_URL` for custom downloads (#342)
+- **Breaking** support for `PROJECT_NAME` and `PROJECT_URL` for custom downloads ([#342])
 
 ## [5.0.2] (2019-08-02)
 
@@ -128,22 +150,32 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for issues and pull requests -->
 
 [#169]: https://github.com/tj/n/issues/169
+[#185]: https://github.com/tj/n/issues/185
 [#187]: https://github.com/tj/n/issues/187
+[#210]: https://github.com/tj/n/issues/210
 [#292]: https://github.com/tj/n/issues/292
 [#327]: https://github.com/tj/n/issues/327
 [#331]: https://github.com/tj/n/issues/331
 [#335]: https://github.com/tj/n/issues/335
+[#342]: https://github.com/tj/n/issues/342
 [#367]: https://github.com/tj/n/issues/367
+[#376]: https://github.com/tj/n/issues/376
+[#383]: https://github.com/tj/n/issues/383
 [#391]: https://github.com/tj/n/issues/391
 [#400]: https://github.com/tj/n/issues/400
 [#416]: https://github.com/tj/n/issues/416
+[#423]: https://github.com/tj/n/issues/423
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
 [#456]: https://github.com/tj/n/issues/456
+[#463]: https://github.com/tj/n/issues/463
 [#465]: https://github.com/tj/n/issues/465
 [#466]: https://github.com/tj/n/issues/466
 [#467]: https://github.com/tj/n/issues/467
+[#482]: https://github.com/tj/n/issues/482
+[#484]: https://github.com/tj/n/issues/484
 [#485]: https://github.com/tj/n/issues/485
+[#492]: https://github.com/tj/n/issues/492
 [#512]: https://github.com/tj/n/issues/512
 [#516]: https://github.com/tj/n/issues/516
 [#518]: https://github.com/tj/n/issues/518
@@ -158,7 +190,9 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#541]: https://github.com/tj/n/issues/541
 [#545]: https://github.com/tj/n/issues/545
 [#548]: https://github.com/tj/n/issues/548
+[#560]: https://github.com/tj/n/issues/560
 [#562]: https://github.com/tj/n/issues/562
+[#574]: https://github.com/tj/n/issues/574
 
 <!-- reference links for releases -->
 
