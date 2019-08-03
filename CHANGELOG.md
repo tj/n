@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `n doctor` for displaying diagnostic information
 - `n install` for people used to other products with this command
 - `--insecure` to disable curl/wget certificate checks
-- npm version to installed message ([#210] [#484] [#574])
+- added npm version to installed message ([#210] [#484] [#574])
   
 ### Changed
 
