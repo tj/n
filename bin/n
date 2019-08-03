@@ -3,14 +3,6 @@
 # Disabled "Declare and assign separately to avoid masking return values": https://github.com/koalaman/shellcheck/wiki/SC2155
 
 #
-# Setup.
-#
-
-VERSION="5.0.3-0"
-N_PREFIX="${N_PREFIX-/usr/local}"
-BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
-
-#
 # Log <type> <msg>
 #
 
@@ -27,65 +19,55 @@ abort() {
 }
 
 #
-# All Bin (node+custom) configurations
+# Setup and state
 #
 
-BINS=("node")
-MIRROR=("${NODE_MIRROR-https://nodejs.org/dist/}")
-BIN_NAME=("node")
-VERSIONS_DIR=("$BASE_VERSIONS_DIR/node")
+VERSION="6.0.0-0"
+N_PREFIX="${N_PREFIX-/usr/local}"
+BASE_VERSIONS_DIR="$N_PREFIX/n/versions"
 
-if [ -n "$PROJECT_NAME" ]; then
-  BINS+=("$PROJECT_NAME")
-  BIN_NAME+=("$PROJECT_NAME")
-  if [ -z "$PROJECT_URL" ]; then
-    abort "Must specify PROJECT_URL when supplying PROJECT_NAME"
-  fi
-  MIRROR+=("${PROJECT_URL}")
-  VERSIONS_DIR+=("$BASE_VERSIONS_DIR/$PROJECT_NAME")
+N_NODE_MIRROR=${N_NODE_MIRROR:-${NODE_MIRROR:-https://nodejs.org/dist}}
+N_NODE_MIRROR=${N_NODE_MIRROR%/}
+readonly N_NODE_MIRROR
+
+N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR:-https://nodejs.org/download}
+N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR%/}
+readonly N_NODE_DOWNLOAD_MIRROR
+
+N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
+# modified by update_mirror_settings_for_version
+g_mirror_url=${N_NODE_MIRROR}
+g_mirror_folder_name="node"
+
+# Options for curl and wget.
+# Defining commands in variables is fraught (http://mywiki.wooledge.org/BashFAQ/050)
+# but we can follow the simple case and store arguments in an array.
+
+GET_SHOWS_PROGRESS="false"
+# --location to follow redirects
+# --fail to avoid happily downloading error page from web server for 404 et al
+# --show-error to show why failed (on stderr)
+CURL_OPTIONS=( "--location" "--fail" "--show-error" )
+if [[ -t 1 ]]; then
+  CURL_OPTIONS+=( "--progress-bar" )
+  command -v curl &> /dev/null && GET_SHOWS_PROGRESS="true"
+else
+  CURL_OPTIONS+=( "--silent" )
 fi
+WGET_OPTIONS=( "-q" "-O-" )
 
-#
-# Ensure we have curl or wget support.
-#
-
-CURL_PARAMS=( "-L"
-              "-#")
-
-WGET_PARAMS=( "--no-check-certificate"
-              "-q"
-              "-O-")
-
+# Legacy support using unprefixed env. No longer documented in README.
 if [ -n "$HTTP_USER" ];then
   if [ -z "$HTTP_PASSWORD" ]; then
     abort "Must specify HTTP_PASSWORD when supplying HTTP_USER"
   fi
-  CURL_PARAMS+=("-u $HTTP_USER:$HTTP_PASSWORD")
-  WGET_PARAMS+=("--http-password=$HTTP_PASSWORD"
+  CURL_OPTIONS+=("-u $HTTP_USER:$HTTP_PASSWORD")
+  WGET_OPTIONS+=("--http-password=$HTTP_PASSWORD"
                 "--http-user=$HTTP_USER")
 elif [ -n "$HTTP_PASSWORD" ]; then
   abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
 fi
 
-GET=
-
-# wget support
-command -v wget > /dev/null && GET="wget ${WGET_PARAMS[*]}"
-
-command -v curl > /dev/null && GET="curl ${CURL_PARAMS[*]}" && QUIET=false
-
-test -z "$GET" && abort "curl or wget required"
-
-#
-# State
-#
-
-DEFAULT=0
-if [[ -t 1 ]]; then
-  QUIET=false
-else
-  QUIET=true
-fi
 ACTIVATE=true
 ARCH=
 
@@ -128,6 +110,77 @@ set_arch() {
 }
 
 #
+# Synopsis: update_mirror_settings_for_version version
+# e.g. <nightly/latest> means using download mirror and folder is nightly
+# Globals modified:
+# - g_mirror_url
+# - g_mirror_folder_name
+#
+
+function update_mirror_settings_for_version() {
+  if is_download_folder "$1" ; then
+    g_mirror_folder_name="$1"
+    g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+  elif is_download_version "$1"; then
+    [[ "$1" =~ ^([^/]+)/(.*) ]]
+    local remote_folder="${BASH_REMATCH[1]}"
+    g_mirror_folder_name="${remote_folder}"
+    g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+  fi
+}
+
+#
+# Synopsis: is_lts_codename version
+#
+
+function is_lts_codename() {
+  # https://github.com/nodejs/Release/blob/master/CODENAMES.md
+  # e.g. argon, Boron
+  [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron)$ ]]
+}
+
+#
+# Synopsis: is_download_folder version
+#
+
+function is_download_folder() {
+  # e.g. nightly
+  [[ "$1" =~ ^(chakracore-nightly|chakracore-rc|chakracore-release|next-nightly|nightly|rc|release|test|v8-canary)$ ]]
+}
+
+#
+# Synopsis: is_download_version version
+#
+
+function is_download_version() {
+  # e.g. nightly/, nightly/latest, nightly/v11
+  if [[ "$1" =~ ^([^/]+)/(.*) ]]; then
+    local remote_folder="${BASH_REMATCH[1]}"
+    is_download_folder "${remote_folder}"
+    return
+  fi
+  return 2
+}
+
+#
+# Synopsis: is_numeric_version version
+#
+
+function is_numeric_version() {
+  # e.g. 6, v7.1, 8.11.3
+  [[ "$1" =~ ^[v]{0,1}[0-9]+(\.[0-9]+){0,2}$ ]]
+}
+
+#
+# Synopsis: is_exact_numeric_version version
+#
+
+function is_exact_numeric_version() {
+  # e.g. 6, v7.1, 8.11.3
+  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+$ ]]
+}
+
+#
 # Functions used when showing versions installed
 #
 
@@ -166,11 +219,7 @@ handle_sigtstp() {
 display_help() {
   cat <<-EOF
 
-  Usage: n [options/env] [COMMAND] [args]
-
-  Environments:
-    n [COMMAND] [args]            Uses default env (node)
-    n project [COMMAND]           Uses custom env-variables to use non-official sources
+  Usage: n [options] [COMMAND] [args]
 
   Commands:
 
@@ -245,9 +294,6 @@ check_current_version() {
   command -v node &> /dev/null
   if test $? -eq 0; then
     local current=$(node --version)
-    if [ -n "$PROJECT_VERSION_CHECK" ]; then
-      current="$(node -p "$PROJECT_VERSION_CHECK || process.exit(1)" || node --version)"
-    fi
     current=${current#v}
     for bin in "${BINS[@]}"; do
       if diff &> /dev/null \
@@ -577,7 +623,7 @@ install() {
 
   log fetch "$url"
   $GET "$url" | tar "$tarflag" --strip-components=1
-  [ "$QUIET" == false ] && erase_line
+  [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
   disable_pax_mprotect bin/node
@@ -593,7 +639,24 @@ install() {
 #
 
 set_quiet() {
-  command -v curl > /dev/null && GET="$GET -s" && QUIET=true
+  command -v curl > /dev/null && CURL_OPTIONS+=( "--silent" ) && GET_SHOWS_PROGRESS="false"
+}
+
+#
+# Synopsis: do_get_index [option...] url
+# Call curl or wget with combination of global and passed options,
+# with options tweaked to be more suitable for getting index.
+#
+
+function do_get_index() {
+  if command -v curl &> /dev/null; then
+    # --silent to suppress progress et al
+    curl --silent --compressed "${CURL_OPTIONS[@]}" "$@"
+  elif command -v wget &> /dev/null; then
+    wget "${WGET_OPTIONS[@]}" "$@"
+  else
+    abort "curl or wget command required"
+  fi
 }
 
 #
@@ -758,6 +821,146 @@ display_remote_versions() {
 }
 
 #
+# Synopsis: display_tarball_platform
+#
+
+function display_tarball_platform() {
+  # https://en.wikipedia.org/wiki/Uname
+
+  local os="unexpected_os"
+  local uname_a="$(uname -a)"
+  case "${uname_a}" in
+    Linux*) os="linux" ;;
+    Darwin*) os="darwin" ;;
+    SunOS*) os="sunos" ;;
+    AIX*) os="aix" ;;
+    CYGWIN*) >&2 echo_red "Cygwin is not supported by n" ;;
+    MINGW*) >&2 echo_red "Git BASH (MSYS) is not supported by n" ;;
+  esac
+
+  local arch="unexpected_arch"
+  local uname_m="$(uname -m)"
+  case "${uname_m}" in
+    x86_64) arch=x64 ;;
+    i386 | i686) arch="x86" ;;
+    aarch64) arch=arm64 ;;
+    *)
+      # e.g. armv6l, armv7l, arm64
+      arch="${uname_m}"
+      ;;
+  esac
+  # (arch unlikely to be right for SunOS and AIX. Investigate further if/when anyone asks!)
+
+  echo "${os}-${arch}"
+}
+
+#
+# Synopsis: display_compatible_file_field
+# display <file> for current platform, as per <file> field in index.tab, which is different than actual download
+#
+
+function display_compatible_file_field {
+  local compatible_file_field="$(display_tarball_platform)"
+  if [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
+    compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
+  fi
+  echo "${compatible_file_field}"
+}
+
+#
+# Synopsis: display_remote_index
+# index.tab reference: https://github.com/nodejs/nodejs-dist-indexer
+# Index fields are: version	date	files	npm	v8	uv	zlib	openssl	modules	lts security
+# KISS and just return fields we currently care about: version files lts
+#
+
+display_remote_index() {
+  local index_url="${g_mirror_url}/index.tab"
+  echo "index_url is ${index_url}"
+  # tail to remove header line
+  do_get_index "${index_url}" | tail -n +2 | cut -f 1,3,10
+  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+    # Reminder: abort will only exit subshell, but consistent error display
+    abort "failed to download version index (${index_url})"
+  fi
+}
+
+#
+# Synopsis: display_match_limit limit
+#
+
+function display_match_limit(){
+  if [[ "$1" -gt 1 && "$1" -lt 32000 ]]; then
+    echo "Listing remote... Displaying $1 matches (use --all to see all)."
+  fi
+}
+
+#
+# Synopsis: display_remote_versions version
+#
+
+function display_remote_versions2() {
+  local version="$1"
+  update_mirror_settings_for_version "${version}"
+  local match='.'
+  local match_count="${N_MAX_REMOTE_MATCHES}"
+  if [[ -z "${version}" ]]; then
+    match='.'
+  elif [[ "${version}" = "lts" ]]; then
+    match_count=1
+    # Codename is last field, first one with a name is newest lts
+    match="${TAB_CHAR}[a-zA-Z]+\$"
+  elif [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+    match_count=1
+    match='.'
+  elif is_numeric_version "${version}"; then
+    version="v${version#v}"
+    # Avoid restriction message if exact version
+    is_exact_numeric_version "${version}" && match_count=1
+    # Quote any dots in version so they are literal for expression
+    match="${version//\./\.}"
+    # Avoid 1.2 matching 1.23
+    match="^${match}[^0-9]"
+  elif is_lts_codename "${version}"; then
+    # Capitalise (could alternatively make grep case insensitive)
+    codename="$(echo "${version:0:1}" | tr '[:lower:]' '[:upper:]')${version:1}"
+    # Codename is last field
+    match="${TAB_CHAR}${codename}\$"
+  elif is_download_folder "${version}"; then
+    match='.'
+  elif is_download_version "${version}"; then
+    version="${version#${g_mirror_folder_name}/}"
+    if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+      match_count=1
+      match='.'
+    else
+      version="v${version#v}"
+      match="${version//\./\.}"
+      match="^${match}" # prefix
+      if is_numeric_version "${version}"; then
+        # Exact numeric match
+        match="${match}[^0-9]"
+      fi
+    fi
+  else
+    abort "invalid version '$1'"
+  fi
+  display_match_limit "${match_count}"
+
+  # Implementation notes:
+  # - using awk rather than head so do not close pipe early on curl
+  # - restrict search to compatible files as not always available, or not at same time
+  # - return status of curl command (i.e. PIPESTATUS[0])
+  display_remote_index \
+    | grep -E "$(display_compatible_file_field)" \
+    | grep -E "${match}" \
+    | awk "NR<=${match_count}" \
+    | cut -f 1 \
+    | grep -E -o '[^v].*'
+  return "${PIPESTATUS[0]}"
+}
+
+#
 # Synopsis: delete_with_echo target
 #
 
@@ -807,8 +1010,6 @@ uninstall_installed() {
 # Handle arguments.
 #
 
-[[ "${QUIET}" = "true" ]] && set_quiet
-
 if test $# -eq 0; then
   test -z "$(versions_paths)" && err_no_installed_print_help
   display_versions
@@ -821,8 +1022,7 @@ else
       -d|--download) ACTIVATE=false ;;
       --latest) display_latest_version; exit ;;
       --stable) display_latest_stable_version; exit ;;
-      --lts) display_latest_lts_version; exit ;;
-      project) DEFAULT=1 ;;
+      --lts) NVH_MAX_REMOTE_MATCHES=1 display_remote_versions2 lts; exit ;;
       -a|--arch) shift; set_arch "$1";; # set arch and continue
       bin|which) display_bin_path_for_version "$2"; exit ;;
       as|use) shift; execute_with_version "$@"; exit ;;
@@ -832,6 +1032,7 @@ else
       stable) install_stable; exit ;;
       lts) install_lts; exit ;;
       ls|list) display_remote_versions; exit ;;
+      lsr|ls-remote|list-remote) shift; display_remote_versions2 "$1" ;;
       uninstall) uninstall_installed ;;
       *) install "$1"; exit ;;
     esac
