@@ -7,26 +7,12 @@
 
 function unset_n_env(){
   unset N_PREFIX
-
-  # Undocumented [sic]
   unset NODE_MIRROR
-
-  # Documented under "custom source", but PROJECT and HTTP implemented as independent
-  unset PROJECT_NAME
-  unset PROJECT_URL
-  unset PROJECT_VERSION_CHECK
+  unset N_NODE_MIRROR
+  unset N_NODE_DOWNLOAD_MIRROR
+  unset N_MAX_REMOTE_MATCHES
   unset HTTP_USER
   unset HTTP_PASSWORD
-}
-
-
-# Create a dummy version of node so `n install` will always activate (and not be affected by possible system version of node).
-
-function install_dummy_node() {
-  local prefix="${N_PREFIX-/usr/local}"
-  mkdir -p "${prefix}/bin"
-  echo "echo vDummy" > "${prefix}/bin/node"
-  chmod a+x "${prefix}/bin/node"
 }
 
 
@@ -74,32 +60,37 @@ function display_compatible_file_field() {
 
 # display_remote_version <version>
 # Limited support for using index.tab to resolve version into a number.
-# Return version number, including leading v.
+# Return version number, without leading v.
 
 function display_remote_version() {
   # ToDo: support NODE_MIRROR
 
   local fetch
   if command -v curl &> /dev/null; then
-    fetch="curl --silent --location --fail"
+    fetch="curl --silent --location --fail --compressed"
   else
     # insecure to match current n implementation
     fetch="wget -q -O- --no-check-certificate"
   fi
 
+  local TAB_CHAR=$'\t'
   local match='xxx'
-  if [[ "$1" = "lts" ]]; then
-    match='[^-]$'
+  local mirror="${N_NODE_MIRROR:-https://nodejs.org/dist}"
+  if [[ "$1" = "lts" || "$1" = "stable" ]]; then
+    match="^([^${TAB_CHAR}]+${TAB_CHAR}){9}[^-]"
   elif [[ "$1" = "latest" ]]; then
     match='.'
+  elif [[ "$1" = "nightly" ]]; then
+    match='.'
+    mirror="${N_NODE_DOWNLOAD_MIRROR:-https://nodejs.org/download}/nightly"
   fi
 
   # Using awk rather than head so do not close pipe early on curl
-  # (Add display_compatible_file_field when n does similar check!)
-  ${fetch} "https://nodejs.org/dist/index.tab" \
+  ${fetch} "${mirror}/index.tab" \
     | tail -n +2 \
-    | cut -f 1,3,10 \
+    | grep "$(display_compatible_file_field)" \
     | grep -E "${match}" \
+    | cut -f -1 \
     | awk "NR==1" \
-    | cut -f -1
+    | grep -E -o '[^v].*'
 }

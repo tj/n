@@ -21,7 +21,6 @@ function setup() {
   [ ! -d "${N_PREFIX}/lib" ]
   [ ! -d "${N_PREFIX}/shared" ]
 
-  install_dummy_node
   n ${TARGET_VERSION}
 
   # Cached version

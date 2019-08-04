@@ -18,6 +18,16 @@ function setup() {
 }
 
 
+@test "n --stable" {
+  run n --stable
+  [ "${status}" -eq 0 ]
+  local expected_version
+  expected_version="$(display_remote_version lts)"
+  expected_version="${expected_version#v}"
+  [ "${output}" = "${expected_version}" ]
+}
+
+
 @test "n --latest" {
   run n --latest
   [ "${status}" -eq 0 ]

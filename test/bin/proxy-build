@@ -24,7 +24,6 @@ echo "Recording downloads..."
 source tests/shared-functions.bash
 unset_n_env
 setup_tmp_prefix
-install_dummy_node
 
 # Hack curl to avoid certificate issues with proxy
 readonly CURL_HOME="$(dirname "${BIN_DIRECTORY}")/config"
@@ -36,10 +35,10 @@ export http_proxy
 https_proxy="$(hostname):8080"
 export https_proxy
 
+# linux. Use wget first so cache uncompressed index.tab and works with both wget and curl.
+docker-compose run ubuntu-wget /mnt/tests/install-reference-versions.bash
 # native
 tests/install-reference-versions.bash
-# linux
-docker-compose run ubuntu-curl /mnt/tests/install-reference-versions.bash
 
 rm -rf "${TMP_PREFIX_DIR}"
 echo "Stopping proxy"

@@ -11,3 +11,5 @@ curl --location --fail https://nodejs.org/dist/index.tab &> /dev/null
 n --download 4
 n --download lts
 n --download latest
+n --download nightly/latest
+NVH_NODE_MIRROR=https://npm.taobao.org/mirrors/node n --download 6.11

@@ -6,7 +6,6 @@ load shared-functions
 function setup() {
   unset_n_env
   setup_tmp_prefix
-  install_dummy_node
 }
 
 
