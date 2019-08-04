@@ -1,6 +1,6 @@
-# n-test
+# Tests
 
-Prototype and develop a set of automated tests for `n`.
+Automated tests for `n`.
 
 ## Setup
 
