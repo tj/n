@@ -12,8 +12,9 @@ services:
       - ./tests:/mnt/tests
       # the n script
       - ../bin/n:/usr/local/bin/n
-      # override curl settings to allow insecure connection in case using proxy
+      # override settings to allow insecure connection in case using mitm proxy
       - ./config/.curlrc:/root/.curlrc
+      - ./config/.wgetrc:/root/.wgetrc
     environment:
       # pass through proxy settings to allow caching proxy
       - http_proxy
