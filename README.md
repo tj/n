@@ -177,10 +177,6 @@ Download and use latest 32 bit version of `node`:
 
     n --arch x86 latest
 
-Download and use 64 bit LTS version of `node` for older Mac Intel Core 2 Duo systems (x86 image is no longer available but x64 runs fine):
-
-    n --arch x64 lts
-
 ## Optional Environment Variables
 
 The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
