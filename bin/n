@@ -856,7 +856,7 @@ function display_remote_versions() {
   local match_count="${N_MAX_REMOTE_MATCHES}"
   if [[ -z "${version}" ]]; then
     match='.'
-  elif [[ "${version}" = "lts" ]]; then
+  elif [[ "${version}" = "lts" || "${version}" = "stable" ]]; then
     match_count=1
     # Codename is last field, first one with a name is newest lts
     match="${TAB_CHAR}[a-zA-Z]+\$"
