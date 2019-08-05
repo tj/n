@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `n run` with legacy aliases of `as` and `use`
 - `n lsr` for listing matching remote versions, limited to 20 by default ([#383])
 - `n doctor` for displaying diagnostic information
-- `n install` for people used to other products with this command
+- `n install` for people used to other products with this command ([#524])
 - `--insecure` to disable curl/wget certificate checks
 - added npm version to installed message ([#210] [#484] [#574])
   
@@ -181,6 +181,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#518]: https://github.com/tj/n/issues/518
 [#521]: https://github.com/tj/n/issues/521
 [#522]: https://github.com/tj/n/issues/522
+[#524]: https://github.com/tj/n/issues/524
 [#528]: https://github.com/tj/n/issues/528
 [#529]: https://github.com/tj/n/issues/529
 [#531]: https://github.com/tj/n/issues/531
