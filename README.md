@@ -154,11 +154,11 @@ List matching remote versions available for download:
 
 List downloaded versions in cache:
 
-    nvh ls
+    n ls
 
 Display diagnostics to help resolve problems:
 
-    nvh doctor
+    n doctor
 
 ## Custom Source
 
