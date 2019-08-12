@@ -1162,16 +1162,16 @@ else
       -a|--arch) shift; set_arch "$1";; # set arch and continue
       bin|which) display_bin_path_for_version "$2"; exit ;;
       run|as|use) shift; run_with_version "$@"; exit ;;
-      exec) shift; exec_with_version "$@" ;;
-      doctor) show_diagnostics ;;
+      exec) shift; exec_with_version "$@"; exit ;;
+      doctor) show_diagnostics; exit ;;
       rm|-) shift; remove_versions "$@"; exit ;;
       prune) prune_cache; exit ;;
       latest) install latest; exit ;;
       stable) install stable; exit ;;
       lts) install lts; exit ;;
-      ls|list) display_versions_paths ;;
-      lsr|ls-remote|list-remote) shift; display_remote_versions "$1" ;;
-      uninstall) uninstall_installed ;;
+      ls|list) display_versions_paths; exit ;;
+      lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
+      uninstall) uninstall_installed; exit ;;
       i|install) shift; install "$1"; exit ;;
       *) install "$1"; exit ;;
     esac
