@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [6.0.1] (date goes here)
+## [6.0.1] (2019-08-20)
+
+### Fixed
+
+- allow options to come after commands, especially `nvh lsr --all`
 
 ## [6.0.0] (2019-08-16)
 
@@ -200,6 +204,8 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.0.1]: https://github.com/tj/n/compare/v6.0.0...v6.0.1
+[6.0.0]: https://github.com/tj/n/compare/v5.0.2...v6.0.0
 [5.0.2]: https://github.com/tj/n/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/tj/n/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/tj/n/compare/v4.1.0...v5.0.0

@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.0.1-0"
+VERSION="6.0.1"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -1144,22 +1144,39 @@ function show_diagnostics() {
 # Handle arguments.
 #
 
+# First pass. Process the options so they can come before or after commands,
+# particularly for `n lsr --all` and `n install --arch x686`
+# which feel pretty natural.
+
+unprocessed_args=()
+
+while [[ $# -ne 0 ]]; do
+  case "$1" in
+    --all) N_MAX_REMOTE_MATCHES=32000 ;;
+    -V|--version) display_n_version ;;
+    -h|--help|help) display_help; exit ;;
+    -q|--quiet) set_quiet ;;
+    -d|--download) ACTIVATE=false ;;
+    --insecure) set_insecure ;;
+    --latest) display_remote_versions latest; exit ;;
+    --stable) display_remote_versions lts; exit ;; # [sic] old terminology
+    --lts) display_remote_versions lts; exit ;;
+    -a|--arch) shift; set_arch "$1";; # set arch and continue
+    exec) unprocessed_args=("$@"); break ;;
+    run|as|use) unprocessed_args=("$@"); break ;;
+    *) unprocessed_args+=( "$1" ) ;;
+  esac
+  shift
+done
+
+set -- "${unprocessed_args[@]}"
+
 if test $# -eq 0; then
   test -z "$(display_versions_paths)" && err_no_installed_print_help
   menu_select_cache_versions
 else
   while test $# -ne 0; do
     case "$1" in
-      --all) N_MAX_REMOTE_MATCHES=32000 ;;
-      -V|--version) display_n_version ;;
-      -h|--help|help) display_help; exit ;;
-      -q|--quiet) set_quiet ;;
-      -d|--download) ACTIVATE=false ;;
-      --insecure) set_insecure ;;
-      --latest) display_remote_versions latest; exit ;;
-      --stable) display_remote_versions lts; exit ;; # [sic] old terminology
-      --lts) display_remote_versions lts; exit ;;
-      -a|--arch) shift; set_arch "$1";; # set arch and continue
       bin|which) display_bin_path_for_version "$2"; exit ;;
       run|as|use) shift; run_with_version "$@"; exit ;;
       exec) shift; exec_with_version "$@"; exit ;;
