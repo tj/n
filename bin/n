@@ -261,10 +261,12 @@ Commands:
 
   n                              Display downloaded node versions and install selection
   n latest                       Install the latest node release (downloading if necessary)
+  n latest_installed             Get the latest installed node version
   n lts                          Install the latest LTS node release (downloading if necessary)
   n <version>                    Install node <version> (downloading if necessary)
   n run <version> [args ...]     Execute downloaded node <version> with [args ...]
   n which <version>              Output path for downloaded node <version>
+  n which latest_installed       Output path for latest available downloaded node
   n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
   n rm <version ...>             Remove the given downloaded version(s)
   n prune                        Remove all downloaded versions except the installed version
@@ -338,6 +340,16 @@ function prev_version_installed() {
 
 display_n_version() {
   echo "$VERSION" && exit 0
+}
+
+#
+# Get the latest locally installed version
+#
+latest_version_installed() {
+  # version=$(list_versions_installed | grep "$selected" -A 1 | tail -n 1)
+  version=$(display_versions_paths | grep "$selected" -A 1 | tail -n 1)
+  IFS='/'; read -ra versions <<< "$version"
+  echo "${versions[1]}"
 }
 
 #
@@ -807,6 +819,9 @@ function tarball_url() {
 
 function display_latest_resolved_version() {
   local version=${1#node/}
+  if [ $version == 'latest_installed' ]; then
+    version=$(latest_version_installed)
+  fi
   if is_exact_numeric_version "${version}"; then
     # Just numbers, already resolved, no need to lookup first.
     version="${version#v}"
@@ -1189,6 +1204,7 @@ else
       ls|list) display_versions_paths; exit ;;
       lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
       uninstall) uninstall_installed; exit ;;
+      latest_installed) latest_version_installed; exit;;
       i|install) shift; install "$1"; exit ;;
       *) install "$1"; exit ;;
     esac
