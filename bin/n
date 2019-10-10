@@ -384,17 +384,22 @@ display_versions_paths() {
 #
 
 display_versions_with_selected() {
+  set_active_node
   selected="$1"
   echo
   for version in $(display_versions_paths); do
+    installed=""
+    if test "$version" = "$g_active_node"; then
+      installed=" [active]"
+    fi
     if test "$version" = "$selected"; then
-      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$version"
+      printf "  ${SGR_CYAN}ο${SGR_RESET} %s${SGR_RED}%s${SGR_RESET}\n" "$version" "$installed"
     else
-      printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$version"
+      printf "    ${SGR_FAINT}%s${SGR_RESET}${SGR_RED}%s${SGR_RESET}\n" "$version" "$installed"
     fi
   done
   echo
-  printf "Use up/down arrow keys to select a version, return key to install, q to quit"
+  printf "Use up/down arrow keys to select a version, return key to install, d to remove (only inactive versions), q to quit"
 }
 
 #
@@ -447,6 +452,11 @@ menu_select_cache_versions() {
               ;;
           esac
         fi
+        ;;
+      "d")
+        clear
+        [[ -n "${selected}" && "${selected}" != "${g_active_node}" ]] && remove_versions "${selected}"
+        display_versions_with_selected "${g_active_node}"
         ;;
       "k")
         clear
