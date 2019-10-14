@@ -399,7 +399,7 @@ display_versions_with_selected() {
     fi
   done
   echo
-  printf "Use up/down arrow keys to select a version, return key to install, d to remove (only inactive versions), q to quit"
+  printf "Use up/down arrow keys to select a version, return key to install, d to delete (only inactive versions), q to quit"
 }
 
 #
