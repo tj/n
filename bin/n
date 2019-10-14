@@ -384,18 +384,13 @@ display_versions_paths() {
 #
 
 display_versions_with_selected() {
-  set_active_node
   selected="$1"
   echo
   for version in $(display_versions_paths); do
-    installed=""
-    if test "$version" = "$g_active_node"; then
-      installed=" [active]"
-    fi
     if test "$version" = "$selected"; then
-      printf "  ${SGR_CYAN}ο${SGR_RESET} %s${SGR_RED}%s${SGR_RESET}\n" "$version" "$installed"
+      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$version"
     else
-      printf "    ${SGR_FAINT}%s${SGR_RESET}${SGR_RED}%s${SGR_RESET}\n" "$version" "$installed"
+      printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$version"
     fi
   done
   echo
@@ -455,8 +450,18 @@ menu_select_cache_versions() {
         ;;
       "d")
         clear
-        [[ -n "${selected}" && "${selected}" != "${g_active_node}" ]] && remove_versions "${selected}"
-        display_versions_with_selected "${g_active_node}"
+        after_delete_selection="$(find_selection_after_delete "${selected}")"
+        [[ -n "${selected}" ]] && remove_versions "${selected}"
+        
+        if [ "${after_delete_selection}" == "${selected}" ]; then
+          # If selection stays the same, it means that there is no version installed left.
+          clear
+          leave_fullscreen
+          echo "All versions have been deleted."
+          exit
+        fi
+
+        display_versions_with_selected "${after_delete_selection}"
         ;;
       "k")
         clear
@@ -481,6 +486,16 @@ menu_select_cache_versions() {
         ;;
     esac
   done
+}
+
+find_selection_after_delete() {
+  selected="$1"
+  result=""
+  next="$(next_version_installed "${selected}")"
+  prev="$(prev_version_installed "${selected}")"
+  [[ "${next}" == ${selected}  ]] && result="${prev}" || result="${next}"
+
+  echo "${result}"
 }
 
 #
