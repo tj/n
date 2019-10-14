@@ -488,6 +488,10 @@ menu_select_cache_versions() {
   done
 }
 
+#
+# Return either, and in this order, the next, the previous or the current version
+#
+
 find_selection_after_delete() {
   selected="$1"
   result=""
