@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.1.0] (2019-10-25)
+
+### Added
+
+- deletion of cached versions from menu using 'd' ([#590])
 
 ## [6.0.1] (2019-08-20)
 
@@ -202,10 +206,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#560]: https://github.com/tj/n/issues/560
 [#562]: https://github.com/tj/n/issues/562
 [#574]: https://github.com/tj/n/issues/574
+[#590]: https://github.com/tj/n/issues/590
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.1.0]: https://github.com/tj/n/compare/v6.0.1...v6.1.0
 [6.0.1]: https://github.com/tj/n/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/tj/n/compare/v5.0.2...v6.0.0
 [5.0.2]: https://github.com/tj/n/compare/v5.0.1...v5.0.2

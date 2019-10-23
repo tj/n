@@ -74,7 +74,7 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
     ο node/8.11.3
       node/10.15.0
 
-    Use up/down arrow keys to select a version, return key to install, q to quit
+    Use up/down arrow keys to select a version, return key to install, d to delete, q to quit
 
 (You can also use `j` and `k` to navigate up or down without using arrows.)
 
