@@ -394,7 +394,7 @@ display_versions_with_selected() {
     fi
   done
   echo
-  printf "Use up/down arrow keys to select a version, return key to install, q to quit"
+  printf "Use up/down arrow keys to select a version, return key to install, d to delete, q to quit"
 }
 
 #
@@ -448,6 +448,21 @@ menu_select_cache_versions() {
           esac
         fi
         ;;
+      "d")
+        clear
+        after_delete_selection="$(find_selection_after_delete "${selected}")"
+        [[ -n "${selected}" ]] && remove_versions "${selected}"
+        
+        if [ "${after_delete_selection}" == "${selected}" ]; then
+          # If selection stays the same, it means that there is no version installed left.
+          clear
+          leave_fullscreen
+          echo "All versions have been deleted."
+          exit
+        fi
+
+        display_versions_with_selected "${after_delete_selection}"
+        ;;
       "k")
         clear
         selected="$(prev_version_installed "${selected}")"
@@ -471,6 +486,20 @@ menu_select_cache_versions() {
         ;;
     esac
   done
+}
+
+#
+# Return either, and in this order, the next, the previous or the current version
+#
+
+find_selection_after_delete() {
+  selected="$1"
+  result=""
+  next="$(next_version_installed "${selected}")"
+  prev="$(prev_version_installed "${selected}")"
+  [[ "${next}" == ${selected}  ]] && result="${prev}" || result="${next}"
+
+  echo "${result}"
 }
 
 #
