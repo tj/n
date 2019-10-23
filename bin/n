@@ -384,7 +384,7 @@ display_versions_paths() {
 #
 
 display_versions_with_selected() {
-  selected="$1"
+  local selected="$1"
   echo
   for version in $(display_versions_paths); do
     if test "$version" = "$selected"; then
@@ -432,7 +432,7 @@ menu_select_cache_versions() {
       $ESCAPE_SEQ)
         # Handle ESC sequences followed by other characters, i.e. arrow keys
         read -rsn 1 -t 1 tmp
-        if  [[ "$tmp" == "[" ]]; then
+        if [[ "$tmp" == "[" ]]; then
           read -rsn 1 -t 1 arrow
           case "$arrow" in
             $UP)
@@ -449,19 +449,25 @@ menu_select_cache_versions() {
         fi
         ;;
       "d")
-        clear
-        after_delete_selection="$(find_selection_after_delete "${selected}")"
-        [[ -n "${selected}" ]] && remove_versions "${selected}"
-        
-        if [ "${after_delete_selection}" == "${selected}" ]; then
-          # If selection stays the same, it means that there is no version installed left.
+        if [[ -n "${selected}" ]]; then
           clear
-          leave_fullscreen
-          echo "All versions have been deleted."
-          exit
-        fi
+          # Note: prev/next is constrained to min/max
+          local after_delete_selection="$(next_version_installed "${selected}")"
+          if [[ "${after_delete_selection}" == "${selected}"  ]]; then
+            after_delete_selection="$(prev_version_installed "${selected}")"
+          fi
+          remove_versions "${selected}"
 
-        display_versions_with_selected "${after_delete_selection}"
+          if [[ "${after_delete_selection}" == "${selected}" ]]; then
+            clear
+            leave_fullscreen
+            echo "All downloaded versions have been deleted from cache."
+            exit
+          fi
+
+          selected="${after_delete_selection}"
+          display_versions_with_selected "${selected}"
+        fi
         ;;
       "k")
         clear
@@ -486,20 +492,6 @@ menu_select_cache_versions() {
         ;;
     esac
   done
-}
-
-#
-# Return either, and in this order, the next, the previous or the current version
-#
-
-find_selection_after_delete() {
-  selected="$1"
-  result=""
-  next="$(next_version_installed "${selected}")"
-  prev="$(prev_version_installed "${selected}")"
-  [[ "${next}" == ${selected}  ]] && result="${prev}" || result="${next}"
-
-  echo "${result}"
 }
 
 #
