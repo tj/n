@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- allow options to come after commands, especially `nvh lsr --all`
+- allow options to come after commands, especially `n lsr --all`
 
 ## [6.0.0] (2019-08-16)
 
