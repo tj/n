@@ -608,7 +608,7 @@ install() {
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  do_get "${url}" | tar "$tarflag" --strip-components=1
+  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
