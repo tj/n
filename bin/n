@@ -45,7 +45,7 @@ VERSION="6.0.1"
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
 readonly N_PREFIX
-readonly CACHE_DIR=$N_PREFIX/sharen/versions
+readonly CACHE_DIR=$N_PREFIX/share/versions
 
 N_NODE_MIRROR=${N_NODE_MIRROR:-${NODE_MIRROR:-https://nodejs.org/dist}}
 N_NODE_MIRROR=${N_NODE_MIRROR%/}
