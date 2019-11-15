@@ -29,12 +29,6 @@ Since you probably already have `node`, the easiest way to install `n` is throug
 
     npm install -g n
 
-Alternatively, you can clone this repo and
-
-    make install
-
-to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
-
 Once installed, `n` caches `node` versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ `node` version is installed directly in `N_PREFIX`.
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
@@ -44,6 +38,20 @@ To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you
     sudo chown -R $(whoami) /usr/local/n
     # take ownership of node install destination folders
     sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+
+-----
+
+If `npm` is not yet available, one way to bootstrap an install:
+
+    curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
+    bash n lts
+    # Now node and npm are available
+
+Alternatively, you can clone this repo and
+
+    make install
+
+to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
 ### Third Party Installers
 

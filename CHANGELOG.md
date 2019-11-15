@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Added
+
+- in README describe raw download of `n` to bootstrap install of node and npm
+
 ## [6.1.1] (2019-11-10)
 
 ### Fixed
