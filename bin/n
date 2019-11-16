@@ -1008,31 +1008,31 @@ function show_diagnostics() {
   echo "This information is to help you diagnose issues, and useful when reporting an issue."
   echo "Note: some output may contain passwords. Redact before sharing."
 
-  printf "\n\n# Command Locations and Versions\n"
+  printf "\n\nCOMMAND LOCATIONS AND VERSIONS\n"
 
-  printf "\n## bash\n"
+  printf "\nbash\n"
   command -v bash && bash --version
 
-  printf "\n## n\n"
+  printf "\nn\n"
   command -v n && n --version
 
-  printf "\n## node\n"
+  printf "\nnode\n"
   if command -v node &> /dev/null; then
     command -v node && node --version
     node -e 'if (process.versions.v8) console.log("JavaScript engine: v8"); if (process.versions.chakracore) console.log("JavaScript engine: chakracore")'
 
-    printf "\n## npm\n"
+    printf "\nnpm\n"
     command -v npm && npm --version
   fi
 
-  printf "\n## tar\n"
+  printf "\ntar\n"
   if command -v tar &> /dev/null; then
     command -v tar && tar --version
   else
     echo_red "tar not found. Needed for extracting downloads."
   fi
 
-  printf "\n## curl or wget\n"
+  printf "\ncurl or wget\n"
   if command -v curl &> /dev/null; then
     command -v curl && curl --version
   elif command -v wget &> /dev/null; then
@@ -1041,20 +1041,20 @@ function show_diagnostics() {
     echo_red "Neither curl nor wget found. Need one of them for downloads."
   fi
 
-  printf "\n## uname\n"
+  printf "\nuname\n"
   uname -a
 
 
-  printf "\n\n# Settings\n"
+  printf "\n\nSETTINGS\n"
 
-  printf "\n\n## n\n"
+  printf "\nn\n"
   echo "node mirror: ${N_NODE_MIRROR}"
   echo "node downloads mirror: ${N_NODE_DOWNLOAD_MIRROR}"
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
 
-  printf "\n\n## Proxy\n"
+  printf "\nProxy\n"
   # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
   # shellcheck disable=SC2154
   [[ -n "${http_proxy}" ]] && echo "http_proxy: ${http_proxy}"
@@ -1080,7 +1080,7 @@ function show_diagnostics() {
     fi
   fi
 
-  printf "\n\n# Checks\n"
+  printf "\n\nCHECKS\n"
 
   printf "\nChecking n install destination is in PATH...\n"
   local install_bin="${N_PREFIX}/bin"
