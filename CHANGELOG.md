@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
+## [6.1.2] (2019-11-16)
+
+### Added
+
+- advice to reset command hash when node location changes ([#170] [#381] [#451] [#588])
+- in README describe raw download of `n` to bootstrap install of node and npm
+
 ## [6.1.1] (2019-11-10)
 
 ### Fixed
@@ -168,6 +175,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for issues and pull requests -->
 
 [#169]: https://github.com/tj/n/issues/169
+[#170]: https://github.com/tj/n/issues/170
 [#185]: https://github.com/tj/n/issues/185
 [#187]: https://github.com/tj/n/issues/187
 [#210]: https://github.com/tj/n/issues/210
@@ -178,6 +186,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#342]: https://github.com/tj/n/issues/342
 [#367]: https://github.com/tj/n/issues/367
 [#376]: https://github.com/tj/n/issues/376
+[#381]: https://github.com/tj/n/issues/381
 [#383]: https://github.com/tj/n/issues/383
 [#391]: https://github.com/tj/n/issues/391
 [#400]: https://github.com/tj/n/issues/400
@@ -185,6 +194,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#423]: https://github.com/tj/n/issues/423
 [#441]: https://github.com/tj/n/issues/441
 [#448]: https://github.com/tj/n/issues/448
+[#451]: https://github.com/tj/n/issues/451
 [#456]: https://github.com/tj/n/issues/456
 [#463]: https://github.com/tj/n/issues/463
 [#465]: https://github.com/tj/n/issues/465
@@ -212,12 +222,14 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#560]: https://github.com/tj/n/issues/560
 [#562]: https://github.com/tj/n/issues/562
 [#574]: https://github.com/tj/n/issues/574
+[#588]: https://github.com/tj/n/issues/588
 [#590]: https://github.com/tj/n/issues/590
 [#593]: https://github.com/tj/n/issues/593
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.1.2]: https://github.com/tj/n/compare/v6.0.1...v6.1.2
 [6.1.1]: https://github.com/tj/n/compare/v6.0.0...v6.1.1
 [6.1.0]: https://github.com/tj/n/compare/v6.0.1...v6.1.0
 [6.0.1]: https://github.com/tj/n/compare/v6.0.0...v6.0.1

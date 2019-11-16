@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.1.1"
+VERSION="6.1.2"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -534,6 +534,8 @@ disable_pax_mprotect() {
 activate() {
   local version="$1"
   local dir="$CACHE_DIR/$version"
+  local original_node="$(command -v node)"
+
   # Remove old npm to avoid potential issues with simple overwrite.
   if test -d "$dir/lib/node_modules/npm"; then
     if test -d "$N_PREFIX/lib/node_modules/npm"; then
@@ -553,6 +555,7 @@ activate() {
 
   local active_node="$(command -v node)"
   if [[ -e "${active_node}" && -e "${installed_node}" && "${active_node}" != "${installed_node}" ]]; then
+    # Installed and active are different which might be a PATH problem. List both to give user some clues.
     log "installed" "$("${installed_node}" --version) to ${installed_node}"
     log "active" "$("${active_node}" --version) at ${active_node}"
   else
@@ -564,6 +567,14 @@ activate() {
     fi
 
     log "installed" "$("${installed_node}" --version)${npm_version_str}"
+
+    # Extra tips for changed location.
+    if [[ -e "${active_node}" && -e "${original_node}" && "${active_node}" != "${original_node}" ]]; then
+      printf '\nNote: the node command changed location and the old location may be remembered in your current shell.\n'
+      log old "${original_node}"
+      log new "${active_node}"
+      printf 'To reset the command location hash either start a new shell, or execute PATH="$PATH"\n'
+    fi
   fi
 }
 
