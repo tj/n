@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.1.2"
+VERSION="6.1.3-0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -573,6 +573,7 @@ activate() {
       printf '\nNote: the node command changed location and the old location may be remembered in your current shell.\n'
       log old "${original_node}"
       log new "${active_node}"
+      # shellcheck disable=SC2016
       printf 'To reset the command location hash either start a new shell, or execute PATH="$PATH"\n'
     fi
   fi
