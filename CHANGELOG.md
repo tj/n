@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Changed
+
+- simplified layout for `n doctor` output
+
 ## [6.1.2] (2019-11-16)
 
 ### Added
