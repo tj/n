@@ -571,6 +571,8 @@ activate() {
     # Extra tips for changed location.
     if [[ -e "${active_node}" && -e "${original_node}" && "${active_node}" != "${original_node}" ]]; then
       printf '\nNote: the node command changed location and the old location may be remembered in your current shell.\n'
+      log old "${original_node}"
+      log new "${active_node}"
       printf 'To reset the command location hash either start a new shell, or execute PATH="$PATH"\n'
     fi
   fi
