@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.1.3] (2019-11-23)
+
+### Added
+
+- added How It Works to README
 
 ### Changed
 
@@ -235,6 +239,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.1.3]: https://github.com/tj/n/compare/v6.0.2...v6.1.3
 [6.1.2]: https://github.com/tj/n/compare/v6.0.1...v6.1.2
 [6.1.1]: https://github.com/tj/n/compare/v6.0.0...v6.1.1
 [6.1.0]: https://github.com/tj/n/compare/v6.0.1...v6.1.0

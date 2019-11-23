@@ -22,6 +22,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Custom Source](#custom-source)
     - [Custom Architecture](#custom-architecture)
     - [Optional Environment Variables](#optional-environment-variables)
+    - [How It Works](#how-it-works)
 
 ## Installation
 
@@ -203,3 +204,12 @@ In brief:
 - `N_NODE_DOWNLOAD_MIRROR`: See [Custom source](#custom-source)
 - support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
+
+## How It Works
+
+`n` downloads a prebuilt `node` package and installs to a single prefix (e.g. `/usr/local`). This overwrites the previous version. The `bin` folder in this location should be in your `PATH` (e.g. `/usr/local/bin`).
+
+The downloads are kept in a cache folder to be used for reinstalls. The downloads are also available for limited use using `n which` and `n run` and `n exec`.
+
+The global `npm` packages are not changed by the install, with the
+exception of `npm` itself which is part of the `node` install.
