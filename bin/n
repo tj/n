@@ -55,6 +55,18 @@ N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR:-https://nodejs.org/download}
 N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR%/}
 readonly N_NODE_DOWNLOAD_MIRROR
 
+# Using xz instead of gzip is enabled by default, if xz compatibility checks pass.
+# User may set N_USE_XZ to 0 to disable, or set to anything else to enable.
+# May also be overridden by command line flags.
+
+# Normalise external values to true/false
+if [[ "${N_USE_XZ}" = "0" ]]; then
+  N_USE_XZ="false"
+elif [[ -n "${N_USE_XZ+defined}" ]]; then
+  N_USE_XZ="true"
+fi
+# Not setting to readonly. Overriden by CLI flags, and update_xz_settings_for_version.
+
 N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
 # modified by update_mirror_settings_for_version
 g_mirror_url=${N_NODE_MIRROR}
@@ -162,6 +174,23 @@ function update_mirror_settings_for_version() {
     local remote_folder="${BASH_REMATCH[1]}"
     g_mirror_folder_name="${remote_folder}"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+  fi
+}
+
+#
+# Synopsis: update_xz_settings_for_version version
+# Globals modified:
+# - N_USE_XZ
+#
+
+function update_xz_settings_for_version() {
+  # tarballs in xz format were available in later version of iojs, but KISS and only use xz from v4.
+  if [[ "${N_USE_XZ}" = "true" ]]; then
+    local resolved_major_version
+    resolved_major_version="$(echo "${1#v}" | cut -d '.' -f '1')"
+    if [[ "${resolved_major_version}" -lt 4 ]]; then
+      N_USE_XZ="false"
+    fi
   fi
 }
 
@@ -276,13 +305,14 @@ Commands:
 
 Options:
 
-  -V, --version   Output version of n
-  -h, --help      Display help information
-  -q, --quiet     Disable curl output (if available)
-  -d, --download  Download only
-  -a, --arch      Override system architecture
-  --all           ls-remote displays all matches instead of last 20
-  --insecure      Turn off certificate checking for https requests (may be needed from behind a proxy server)
+  -V, --version         Output version of n
+  -h, --help            Display help information
+  -q, --quiet           Disable curl output (if available)
+  -d, --download        Download only
+  -a, --arch            Override system architecture
+  --all                 ls-remote displays all matches instead of last 20
+  --insecure            Turn off certificate checking for https requests (may be needed from behind a proxy server)
+  --use-xz/--no-use-xz  Override automatic detection of xz support and enable/disable use of xz compressed node downloads.
 
 Aliases:
 
@@ -589,10 +619,11 @@ install() {
   version="$(display_latest_resolved_version "$1")" || return 2
   [[ -n "${version}" ]] || abort "no version found for '$1'"
   update_mirror_settings_for_version "$1"
+  update_xz_settings_for_version "${version}"
 
   local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
 
-  if test -n "$N_USE_XZ"; then
+  if test "$N_USE_XZ" = "true"; then
     local tarflag="-Jx"
   else
     local tarflag="-zx"
@@ -776,6 +807,25 @@ function is_ok() {
 }
 
 #
+# Synopsis: can_use_xz
+# Test system to see if xz decompression is supported by tar.
+#
+
+function can_use_xz() {
+  # Be conservative and only enable if xz is likely to work. Unfortunately we can't directly query tar itself.
+  # For research, see https://github.com/shadowspawn/nvh/issues/8
+  local uname_s="$(uname -s)"
+  if [[ "${uname_s}" = "Linux" ]] && command -v xz &> /dev/null ; then
+    # tar on linux is likely to support xv if it is available separately
+    return 0
+  elif [[ "${uname_s}" = "Darwin" && "$(sw_vers -productVersion | cut -d '.' -f 2)" -gt "8" ]]; then
+    # tar on recent Darwin has xv support built-in
+    return 0
+  fi
+  return 2 # not supported
+}
+
+#
 # Synopsis: display_tarball_platform
 #
 
@@ -830,7 +880,7 @@ function display_compatible_file_field {
 function tarball_url() {
   local version="$1"
   local ext=gz
-  [ -n "$N_USE_XZ" ] && ext="xz"
+  [ "$N_USE_XZ" = "true" ] && ext="xz"
   echo "${g_mirror_url}/v${version}/node-v${version}-$(display_tarball_platform).tar.${ext}"
 }
 
@@ -1191,6 +1241,8 @@ while [[ $# -ne 0 ]]; do
     -q|--quiet) set_quiet ;;
     -d|--download) ACTIVATE=false ;;
     --insecure) set_insecure ;;
+    --use-xz) N_USE_XZ="true" ;;
+    --no-use-xz) N_USE_XZ="false" ;;
     --latest) display_remote_versions latest; exit ;;
     --stable) display_remote_versions lts; exit ;; # [sic] old terminology
     --lts) display_remote_versions lts; exit ;;
@@ -1201,6 +1253,11 @@ while [[ $# -ne 0 ]]; do
   esac
   shift
 done
+
+if [[ -z "${N_USE_XZ+defined}" ]]; then
+  N_USE_XZ="true" # Default to using xz
+  can_use_xz || N_USE_XZ="false"
+fi
 
 set -- "${unprocessed_args[@]}"
 
