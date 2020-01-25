@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased] (date goes here)
+
+### Added
+
+- Downloads now default to using tarballs compressed by `xz` over `gzip`, if `xz` support detected. (#606, #607)
+
 ## [6.1.3] (2019-11-23)
 
 ### Added
@@ -235,6 +241,8 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#588]: https://github.com/tj/n/issues/588
 [#590]: https://github.com/tj/n/issues/590
 [#593]: https://github.com/tj/n/issues/593
+[#606]: https://github.com/tj/n/issues/606
+[#607]: https://github.com/tj/n/issues/607
 
 <!-- reference links for releases -->
 
