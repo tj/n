@@ -816,10 +816,10 @@ function can_use_xz() {
   # For research, see https://github.com/shadowspawn/nvh/issues/8
   local uname_s="$(uname -s)"
   if [[ "${uname_s}" = "Linux" ]] && command -v xz &> /dev/null ; then
-    # tar on linux is likely to support xv if it is available separately
+    # tar on linux is likely to support xz if it is available as a command
     return 0
   elif [[ "${uname_s}" = "Darwin" && "$(sw_vers -productVersion | cut -d '.' -f 2)" -gt "8" ]]; then
-    # tar on recent Darwin has xv support built-in
+    # tar on recent Darwin has xz support built-in
     return 0
   fi
   return 2 # not supported
