@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.2.1-0"
+VERSION="6.3.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -307,6 +307,7 @@ Options:
 
   -V, --version         Output version of n
   -h, --help            Display help information
+  -p, --preserve        Preserve npm and npx during install of node (requires rsync)
   -q, --quiet           Disable curl output (if available)
   -d, --download        Download only
   -a, --arch            Override system architecture
@@ -567,14 +568,16 @@ activate() {
   local original_node="$(command -v node)"
 
   # Remove old npm to avoid potential issues with simple overwrite.
-  if test -d "$dir/lib/node_modules/npm"; then
+  if [[ -z "${N_PRESERVE_NPM}" && -d "$dir/lib/node_modules/npm" ]]; then
     if test -d "$N_PREFIX/lib/node_modules/npm"; then
       rm -rf "$N_PREFIX/lib/node_modules/npm"
     fi
   fi
   # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
   for subdir in lib bin include share; do
-    if test -L "$N_PREFIX/$subdir"; then
+    if [[ -n "${N_PRESERVE_NPM}" ]]; then
+      rsync --recursive --archive --keep-dirlinks --exclude=npm --exclude=npx "${dir}/${subdir}" "${N_PREFIX}"
+    elif test -L "$N_PREFIX/$subdir"; then
       find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
     else
       cp -fR "$dir/$subdir" "$N_PREFIX"
@@ -592,7 +595,7 @@ activate() {
     local npm_version_str=""
     local installed_npm="${N_PREFIX}/bin/npm"
     local active_npm="$(command -v npm)"
-    if [[ -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" = "${installed_npm}" ]]; then
+    if [[ -z "${N_PRESERVE_NPM}" && -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" = "${installed_npm}" ]]; then
       npm_version_str=" (with npm $(npm --version))"
     fi
 
@@ -1091,9 +1094,15 @@ function show_diagnostics() {
     echo_red "Neither curl nor wget found. Need one of them for downloads."
   fi
 
+  printf "\nrsync:\n"
+  if command -v rsync &> /dev/null; then
+    command -v rsync && rsync --version
+  else
+    printf "rsync not found. (Needed for preserving npm during install.)\n"
+  fi
+
   printf "\nuname\n"
   uname -a
-
 
   printf "\n\nSETTINGS\n"
 
@@ -1103,6 +1112,7 @@ function show_diagnostics() {
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
+   [[ -n "${N_PRESERVE_NPM}" ]] && echo "installs preserve npm by default"
 
   printf "\nProxy\n"
   # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
@@ -1241,6 +1251,8 @@ while [[ $# -ne 0 ]]; do
     -q|--quiet) set_quiet ;;
     -d|--download) ACTIVATE=false ;;
     --insecure) set_insecure ;;
+    -p|--preserve) N_PRESERVE_NPM="true" ;;
+    --no-preserve) N_PRESERVE_NPM="" ;;
     --use-xz) N_USE_XZ="true" ;;
     --no-use-xz) N_USE_XZ="false" ;;
     --latest) display_remote_versions latest; exit ;;

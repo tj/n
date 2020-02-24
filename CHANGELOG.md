@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.3.0] (2020-02-24)
+
+### Added
+
+- `--preserve` to preserve npm and npx during install of node ([#587])
 
 ## [6.2.0] (2020-01-29)
 
@@ -240,6 +244,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#560]: https://github.com/tj/n/issues/560
 [#562]: https://github.com/tj/n/issues/562
 [#574]: https://github.com/tj/n/issues/574
+[#587]: https://github.com/tj/n/issues/587
 [#588]: https://github.com/tj/n/issues/588
 [#590]: https://github.com/tj/n/issues/590
 [#593]: https://github.com/tj/n/issues/593
@@ -249,6 +254,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.3.0]: https://github.com/tj/n/compare/v6.2.0...v6.3.0
 [6.2.0]: https://github.com/tj/n/compare/v6.1.3...v6.2.0
 [6.1.3]: https://github.com/tj/n/compare/v6.0.2...v6.1.3
 [6.1.2]: https://github.com/tj/n/compare/v6.0.1...v6.1.2

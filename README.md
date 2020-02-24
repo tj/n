@@ -18,6 +18,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Specifying Node Versions](#specifying-node-versions)
     - [Removing Versions](#removing-versions)
     - [Using Downloaded Node Versions Without Reinstalling](#using-downloaded-node-versions-without-reinstalling)
+    - [Preserving npm](#preserving-npm)
     - [Miscellaneous](#miscellaneous)
     - [Custom Source](#custom-source)
     - [Custom Architecture](#custom-architecture)
@@ -150,6 +151,28 @@ modules this way.)
 
     n exec 10 my-script --fast test
 
+## Preserving npm
+
+A `node` install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve` (requires rsync):
+
+    $ npm install -g npm@latest
+    ...
+    $ npm --version
+    6.13.7
+    $ n -p 8
+       installed : v8.17.0
+    $ npm --version
+    6.13.7
+
+You can make this the default by setting `N_PRESERVE_NPM` to a non-empty string.
+
+    export N_PRESERVE_NPM=1
+
+You can be explicit to get the desired behaviour whatever the environment variable:
+
+    n --preserve nightly
+    n --no-preserve latest
+
 ## Miscellaneous
 
 Command line help can be obtained from `n --help`.
@@ -211,6 +234,7 @@ In brief:
 - `N_NODE_DOWNLOAD_MIRROR`: See [Custom source](#custom-source)
 - support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
+- `N_PRESERVE_NPM`: See [Preserving npm](#preserving-npm)
 
 ## How It Works
 
