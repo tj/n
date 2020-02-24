@@ -155,16 +155,23 @@ modules this way.)
 
 A `node` install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve` (requires rsync):
 
-    $ n lts  
-       installed : v12.16.1 (with npm 6.13.4)
-    $ n --preserve v8.0.0
-       installed : v8.0.0
+    $ npm install -g npm@latest
+    ...
     $ npm --version
-    6.13.4
+    6.13.7
+    $ n -p 8
+       installed : v8.17.0
+    $ npm --version
+    6.13.7
 
-You can make `--preserve` the default behaviour for installs by setting `N_PRESERVE_NPM`:
+You can make this the default by setting `N_PRESERVE_NPM` to a non-empty string.
 
     export N_PRESERVE_NPM=1
+
+You can be explicit to get the desired behaviour whatever the environment variable:
+
+    n --preserve nightly
+    n --no-preserve latest
 
 ## Miscellaneous
 
