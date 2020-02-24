@@ -307,6 +307,7 @@ Options:
 
   -V, --version         Output version of n
   -h, --help            Display help information
+  -p, --preserve        Preserve npm and npx during install of node (requires rsync)
   -q, --quiet           Disable curl output (if available)
   -d, --download        Download only
   -a, --arch            Override system architecture
