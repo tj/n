@@ -33,4 +33,33 @@ function teardown() {
 }
 
 
+# mostly --preserve, but also variations with i/install and lts/numeric
+@test "--preserve variations # (4 installs)" {
+  local ARGON_VERSION="v4.9.1"
+  local ARGON_NPM_VERSION="2.15.11"
+  local LTS_VERSION="$(display_remote_version lts)"
+
+  n ${ARGON_VERSION}
+  run "${N_PREFIX}/bin/node" --version
+  [ "$output" = "${ARGON_VERSION}" ]
+  run "${N_PREFIX}/bin/npm" --version
+  [ "$output" = "${ARGON_NPM_VERSION}" ]
+
+  n --preserve "${LTS_VERSION}"
+  run "${N_PREFIX}/bin/node" --version
+  [ "$output" = "v${LTS_VERSION}" ]
+  run "${N_PREFIX}/bin/npm" --version
+  [ "$output" = "${ARGON_NPM_VERSION}" ]
+
+  N_PRESERVE_NPM=1 n "${LTS_VERSION}"
+  run "${N_PREFIX}/bin/npm" --version
+  [ "$output" = "${ARGON_NPM_VERSION}" ]
+
+  N_PRESERVE_NPM=1 n --no-preserve "${LTS_VERSION}"
+  run "${N_PREFIX}/bin/npm" --version
+  [ "$output" != "${ARGON_NPM_VERSION}" ]
+}
+
+
+
 # ToDo: --arch
