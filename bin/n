@@ -573,6 +573,8 @@ activate() {
       rm -rf "$N_PREFIX/lib/node_modules/npm"
     fi
   fi
+  # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
+  rm -f "$N_PREFIX/bin/node"
   # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
   for subdir in lib bin include share; do
     if [[ -n "${N_PRESERVE_NPM}" ]]; then

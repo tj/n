@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased] (date goes here)
+
+### Fix
+
+- remove old version of node before copy to avoid firewall issues on macOS ([#394])
+
 ## [6.3.0] (2020-02-24)
 
 ### Added
@@ -211,6 +217,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#381]: https://github.com/tj/n/issues/381
 [#383]: https://github.com/tj/n/issues/383
 [#391]: https://github.com/tj/n/issues/391
+[#394]: https://github.com/tj/n/issues/394
 [#400]: https://github.com/tj/n/issues/400
 [#416]: https://github.com/tj/n/issues/416
 [#423]: https://github.com/tj/n/issues/423
