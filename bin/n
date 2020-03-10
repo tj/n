@@ -853,7 +853,7 @@ function display_tarball_platform() {
   case "${uname_m}" in
     x86_64) arch=x64 ;;
     i386 | i686) arch="x86" ;;
-    aarch64) arch=arm64 ;;
+    aarch64 | armv8l) arch=arm64 ;;
     *)
       # e.g. armv6l, armv7l, arm64
       arch="${uname_m}"
