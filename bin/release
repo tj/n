@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Run this from the develop branch after setting the version number in bin/n,
+# when ready to release apart from copying up to master and tagging.
+
+{ # force scan of whole file into memory so not affected by changing branches and self-modifying.
+
+#
+# confirm <message>
+#
+
+function confirm {
+  read -p "$1 " -r
+  if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo "Stopping"
+    exit 2
+  fi
+}
+
+
+readonly N_VERSION="$(n --version)"
+if [[ "${N_VERSION}" =~ ^[0-9.]+-[0-9]+$ ]]; then
+  echo "Error: internal version number still prerelease, set it to desired version first."
+  exit 2
+fi
+
+confirm "Are you releasing version '${N_VERSION}' ?"
+confirm "Have you updated CHANGELOG?"
+confirm "Are you running this from a shell with full internet access (not through proxy to run tests)?"
+
+git checkout master
+git merge develop
+npm version "${N_VERSION}"
+
+read -p "One Time Password for npm publish: " -r
+
+set -x
+npm publish . --otp "${REPLY}"
+git push --follow-tags
+git checkout develop
+git merge master
+npm version -no-git-tag-version prepatch
+set +x
+
+echo "Reminder: update the internal number to match."
+echo "Reminder: add release description to github (from CHANGELOG)"
+
+exit
+}
