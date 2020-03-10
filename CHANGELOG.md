@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.4.0] (2020-03-10)
+
+### Added
+
+- treat `armv8l` as `arm64` ([#614])
 
 ## [6.3.1] (2020-02-25)
 
@@ -259,10 +263,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#593]: https://github.com/tj/n/issues/593
 [#606]: https://github.com/tj/n/issues/606
 [#607]: https://github.com/tj/n/issues/607
+[#614]: https://github.com/tj/n/issues/614
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.4.0]: https://github.com/tj/n/compare/v6.3.1...v6.4.0
 [6.3.1]: https://github.com/tj/n/compare/v6.3.0...v6.3.1
 [6.3.0]: https://github.com/tj/n/compare/v6.2.0...v6.3.0
 [6.2.0]: https://github.com/tj/n/compare/v6.1.3...v6.2.0

@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.3.2.0"
+VERSION="6.4.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -853,7 +853,8 @@ function display_tarball_platform() {
   case "${uname_m}" in
     x86_64) arch=x64 ;;
     i386 | i686) arch="x86" ;;
-    aarch64 | armv8l) arch=arm64 ;;
+    aarch64) arch=arm64 ;;
+    armv8l) arch=arm64 ;; # armv8l probably supports arm64, and there is no specific armv8l build so give it a go
     *)
       # e.g. armv6l, armv7l, arm64
       arch="${uname_m}"
