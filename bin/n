@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.4.1-0"
+VERSION="6.5.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -334,6 +334,7 @@ Versions:
     4.9.1, 8, v6.1    Numeric versions
     lts               Newest Long Term Support official release
     latest, current   Newest official release
+    auto              Read version from .node-version
     boron, carbon     Codenames for release streams
     and nightly, chakracore-release/latest, rc/10 et al
 
@@ -891,11 +892,29 @@ function tarball_url() {
 }
 
 #
+# Synopsis: display_auto_version
+#
+
+function display_auto_version() {
+  local filename=".node-version"
+  [[ -e "${filename}" ]] || abort "auto version file not found (${filename})"
+  # read returns a non-zero status but does still work if there is no line ending
+  <"${filename}" read -r version
+  # trim possible trailing \d from a Windows created file
+  version="${version%%[[:space:]]}"
+  echo "${version}"
+}
+
+#
 # Synopsis: display_latest_resolved_version version
 #
 
 function display_latest_resolved_version() {
-  local version=${1#node/}
+  local version=${1}
+  if [[ "${version}" = "auto" ]]; then
+    version="$(display_auto_version)" || return 2
+  fi
+  version=${version#node/}
   if is_exact_numeric_version "${version}"; then
     # Just numbers, already resolved, no need to lookup first.
     version="${version#v}"
@@ -1295,6 +1314,7 @@ else
       lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
       uninstall) uninstall_installed; exit ;;
       i|install) shift; install "$1"; exit ;;
+      N_MOCK_DISPLAY_LATEST_RESOLVED_VERSION) shift; display_latest_resolved_version "$1"; exit ;;
       *) install "$1"; exit ;;
     esac
     shift

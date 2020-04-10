@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+## [6.5.0] (2020-04-11)
+
+### Added
+
+- specify `auto` to read the target version from a ` .node-version` file
+
 ## [6.4.0] (2020-03-10)
 
 ### Added
