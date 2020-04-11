@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
-
-## [6.5.0] (2020-04-11)
+## [6.5.1] (2020-04-11)
 
 ### Added
 
-- specify `auto` to read the target version from a ` .node-version` file ([#616])
+- specify `auto` to read the target version from a `.n-node-version` file (i.e. change filename)
+
+## [6.5.0] (2020-04-11) [YANKED]
+
+### Added
+
+- specify `auto` to read the target version from a `.node-version` file ([#616])
 
 ## [6.4.0] (2020-03-10)
 
@@ -277,6 +281,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.5.1]: https://github.com/tj/n/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/tj/n/compare/v6.4.0...v6.5.0
 [6.4.0]: https://github.com/tj/n/compare/v6.3.1...v6.4.0
 [6.3.1]: https://github.com/tj/n/compare/v6.3.0...v6.3.1

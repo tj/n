@@ -107,7 +107,7 @@ There are labels for two especially useful versions:
   
 There is a label to read the target version from a file, on the first line:
 
-- `auto`: read version from `.node-version` file
+- `auto`: read version from `.n-node-version` file
 
 There is support for release streams:
 

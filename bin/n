@@ -40,7 +40,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.5.1-0"
+VERSION="6.5.1"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -334,7 +334,7 @@ Versions:
     4.9.1, 8, v6.1    Numeric versions
     lts               Newest Long Term Support official release
     latest, current   Newest official release
-    auto              Read version from .node-version
+    auto              Read version from .n-node-version
     boron, carbon     Codenames for release streams
     and nightly, chakracore-release/latest, rc/10 et al
 
@@ -896,7 +896,7 @@ function tarball_url() {
 #
 
 function display_auto_version() {
-  local filename=".node-version"
+  local filename=".n-node-version"
   [[ -e "${filename}" ]] || abort "auto version file not found (${filename})"
   # read returns a non-zero status but does still work if there is no line ending
   <"${filename}" read -r version
