@@ -5,7 +5,8 @@ load shared-functions
 function setup() {
   unset_n_env
   # fixed directory so can reuse the two installs
-  export N_PREFIX="${TMPDIR}/n/test/run-which"
+  tmpdir="${TMPDIR:-/tmp}"
+  export N_PREFIX="${tmpdir}/n/test/run-which"
   # beforeAll
   # See https://github.com/bats-core/bats-core/issues/39
   if [[ "${BATS_TEST_NUMBER}" -eq 1 ]] ; then

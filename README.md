@@ -104,6 +104,10 @@ There are labels for two especially useful versions:
 
 - `lts`: newest Long Term Support official release
 - `latest`, `current`: newest official release
+  
+There is a label to read the target version from a file, on the first line:
+
+- `auto`: read version from `.node-version` file
 
 There is support for release streams:
 
