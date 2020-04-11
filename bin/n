@@ -914,14 +914,14 @@ function display_latest_resolved_version() {
   if [[ "${version}" = "auto" ]]; then
     version="$(display_auto_version)" || return 2
   fi
-  version=${version#node/}
-  if is_exact_numeric_version "${version}"; then
+  simple_version=${version#node/} # Only place supporting node/ [sic]
+  if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
-    version="${version#v}"
-    echo "${version}"
+    simple_version="${simple_version#v}"
+    echo "${simple_version}"
   else
-    # Complicated recognising exact version, KISS and awlays lookup for now.
-    N_MAX_REMOTE_MATCHES=1 display_remote_versions "$1"
+    # Complicated recognising exact version, KISS and lookup.
+    N_MAX_REMOTE_MATCHES=1 display_remote_versions "$version"
   fi
 }
 
