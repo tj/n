@@ -246,6 +246,32 @@ function is_exact_numeric_version() {
 }
 
 #
+# Synopsis: is_node_support_version version
+# Reference: https://github.com/nodejs/package-maintenance/issues/236#issue-474783582
+#
+
+function is_node_support_version() {
+  [[ "$1" =~ ^(all|active|lts_active|lts_latest|lts|current)$ ]]
+}
+
+#
+# Synopsis: display_latest_node_support_alias version
+# Map aliases onto existing n aliases, current and lts
+#
+
+function display_latest_node_support_alias() {
+  case "$1" in
+    "all") printf "current" ;;
+    "active") printf "current" ;;
+    "lts_active") printf "lts" ;;
+    "lts_latest") printf "lts" ;;
+    "lts") printf "lts" ;;
+    "current") printf "current" ;;
+    *) printf "unexpected-version"
+  esac
+}
+
+#
 # Functions used when showing versions installed
 #
 
@@ -962,6 +988,10 @@ function display_remote_versions() {
   update_mirror_settings_for_version "${version}"
   local match='.'
   local match_count="${N_MAX_REMOTE_MATCHES}"
+  if is_node_support_version "${version}"; then
+    version="$(display_latest_node_support_alias "${version}")"
+    match_count=1
+  fi
   if [[ -z "${version}" ]]; then
     match='.'
   elif [[ "${version}" = "lts" || "${version}" = "stable" ]]; then
