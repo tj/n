@@ -251,7 +251,7 @@ function is_exact_numeric_version() {
 #
 
 function is_node_support_version() {
-  [[ "$1" =~ ^(all|active|lts_active|lts_latest|lts|current)$ ]]
+  [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current)$ ]]
 }
 
 #
@@ -261,7 +261,6 @@ function is_node_support_version() {
 
 function display_latest_node_support_alias() {
   case "$1" in
-    "all") printf "current" ;;
     "active") printf "current" ;;
     "lts_active") printf "lts" ;;
     "lts_latest") printf "lts" ;;
@@ -362,6 +361,8 @@ Versions:
     latest, current   Newest official release
     auto              Read version from .n-node-version
     boron, carbon     Codenames for release streams
+    lts_latest        node support aliases
+
     and nightly, chakracore-release/latest, rc/10 et al
 
 EOF
