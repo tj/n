@@ -1345,7 +1345,7 @@ else
       lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
       uninstall) uninstall_installed; exit ;;
       i|install) shift; install "$1"; exit ;;
-      N_MOCK_DISPLAY_LATEST_RESOLVED_VERSION) shift; display_latest_resolved_version "$1"; exit ;;
+      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; display_latest_resolved_version "$1"; exit ;;
       *) install "$1"; exit ;;
     esac
     shift
