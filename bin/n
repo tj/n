@@ -251,7 +251,7 @@ function is_exact_numeric_version() {
 #
 
 function is_node_support_version() {
-  [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current)$ ]]
+  [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current|supported)$ ]]
 }
 
 #
@@ -266,6 +266,7 @@ function display_latest_node_support_alias() {
     "lts_latest") printf "lts" ;;
     "lts") printf "lts" ;;
     "current") printf "current" ;;
+    "supported") printf "current" ;;
     *) printf "unexpected-version"
   esac
 }
