@@ -826,8 +826,8 @@ function can_use_xz() {
     return 0
   elif [[ "${uname_s}" = "Darwin" ]]; then
     local macos_version="$(sw_vers -productVersion)"
-    local macos_major_version="$(echo ${macos_version} | cut -d '.' -f 1)"
-    local macos_minor_version="$(echo ${macos_version} | cut -d '.' -f 2)"
+    local macos_major_version="$(echo "${macos_version}" | cut -d '.' -f 1)"
+    local macos_minor_version="$(echo "${macos_version}" | cut -d '.' -f 2)"
     if [[ "${macos_major_version}" -gt 10 || "${macos_minor_version}" -gt 8 ]]; then
       # tar on recent Darwin has xz support built-in
       return 0
