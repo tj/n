@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Fixed
+
+- Enable `xz` support by default for macOS 11+ ([#624])
+
 ## [6.5.1] (2020-04-11)
 
 ### Added
@@ -279,6 +283,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#607]: https://github.com/tj/n/issues/607
 [#614]: https://github.com/tj/n/issues/614
 [#616]: https://github.com/tj/n/issues/616
+[#624]: https://github.com/tj/n/issues/624
 
 <!-- reference links for releases -->
 
