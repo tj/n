@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] (date goes here)
 
+### Added
+
+- node support aliases (limited support)
+
 ### Fixed
 
 - Enable `xz` support by default for macOS 11+ ([#624])
