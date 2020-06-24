@@ -86,7 +86,7 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
 
     Use up/down arrow keys to select a version, return key to install, d to delete, q to quit
 
-(You can also use `j` and `k` to navigate up or down without using arrows.)
+(You can also use <kbd>j</kbd> and <kbd>k</kbd> to navigate up or down without using arrows.)
 
 If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
@@ -109,9 +109,13 @@ There is a label to read the target version from a file, on the first line:
 
 - `auto`: read version from `.n-node-version` file
 
-There is support for release streams:
+There is support for the named release streams:
 
 - `argon`, `boron`, `carbon`: codenames for LTS release streams
+
+These node support aliases may be used, although for now simply resolve to the latest matching version:
+
+- `active`, `lts_active`, `lts_latest`, `lts`, `current`, `supported`
 
 The last form is for specifying [other releases](https://nodejs.org/download) available using the name of the remote download folder optionally followed by the complete or incomplete version.
 
