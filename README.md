@@ -7,7 +7,7 @@
 
 Node.js version management: no subshells, no profile setup, no convoluted API, just **simple**.
 
-![usage animation](http://nimit.io/images/n/n.gif)
+![usage animation](https://nimit.io/images/n/n.gif)
 
 (Note: `n` is not supported natively on Windows.)
 
@@ -240,7 +240,7 @@ In brief:
 
 - `N_NODE_MIRROR`: See [Custom source](#custom-source)
 - `N_NODE_DOWNLOAD_MIRROR`: See [Custom source](#custom-source)
-- support for [NO_COLOR](http://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
+- support for [NO_COLOR](https://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
 - `N_PRESERVE_NPM`: See [Preserving npm](#preserving-npm)
 
