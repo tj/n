@@ -73,7 +73,7 @@ g_mirror_url=${N_NODE_MIRROR}
 g_mirror_folder_name="node"
 
 # Options for curl and wget.
-# Defining commands in variables is fraught (http://mywiki.wooledge.org/BashFAQ/050)
+# Defining commands in variables is fraught (https://mywiki.wooledge.org/BashFAQ/050)
 # but we can follow the simple case and store arguments in an array.
 
 GET_SHOWS_PROGRESS="false"
@@ -109,7 +109,7 @@ ARCH=
 
 # ANSI escape codes
 # https://en.wikipedia.org/wiki/ANSI_escape_code
-# http://no-color.org
+# https://no-color.org
 # https://bixense.com/clicolors
 
 USE_COLOR="true"
