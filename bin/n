@@ -7,7 +7,10 @@
 #
 
 log() {
-  printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}${SGR_RESET}\n" "$1" "$2"
+  printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
+}
+trace_log() {
+  >&2 log "$1" "$2"
 }
 
 #
@@ -40,7 +43,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.6.1-0"
+VERSION="6.7.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -360,7 +363,7 @@ Versions:
     4.9.1, 8, v6.1    Numeric versions
     lts               Newest Long Term Support official release
     latest, current   Newest official release
-    auto              Read version from .n-node-version
+    auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
     boron, carbon     Codenames for release streams
     lts_latest        node support aliases
 
@@ -925,17 +928,102 @@ function tarball_url() {
 }
 
 #
+# Synopsis: display_file_node_version filename
+#
+
+function display_file_node_version() {
+  local filepath="$1"
+  trace_log "found" "${filepath}"
+  # read returns a non-zero status but does still work if there is no line ending
+  local version
+  <"${filepath}" read -r version
+  # trim possible trailing \d from a Windows created file
+  version="${version%%[[:space:]]}"
+  trace_log "read" "${version}"
+  echo "${version}"
+}
+
+#
+# Synopsis: display_package_engine_version
+#
+
+function display_package_engine_version() {
+  local filepath="$1"
+  trace_log "found" "${filepath}"
+  command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
+  local range
+  range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  trace_log "read" "${range}"
+  if [[ -z "${range}" || "*" == "${range}" ]]; then
+    echo "current"
+    return
+  fi
+
+  local version
+  if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
+    local operator="${BASH_REMATCH[1]}"
+    version="${BASH_REMATCH[2]}"
+    case "${operator}" in
+      '' | =) ;;
+      \> | \>=) version="current" ;;
+      \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
+      ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
+    esac
+  else
+    command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    trace_log "resolving" "${range}"
+    local version_per_line="$(n lsr --all)"
+    local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
+    # Using semver@7 so works with older versions of node.
+    # shellcheck disable=SC2086
+    version=$(npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
+  fi
+  echo "${version}"
+}
+
+#
+# Synopsis: display_nvmrc_version
+#
+
+function display_nvmrc_version() {
+  local filepath="$1"
+  trace_log "found" "${filepath}"
+  local version
+  <"${filepath}" read -r version
+  trace_log "read" "${version}"
+  # Translate from nvm aliases
+  case "${version}" in
+    lts/\*) version="lts" ;;
+    lts/*) version="${version:4}" ;;
+    node) version="current" ;;
+    *) ;;
+  esac
+  echo "${version}"
+}
+
+#
 # Synopsis: display_auto_version
 #
 
 function display_auto_version() {
-  local filename=".n-node-version"
-  [[ -e "${filename}" ]] || abort "auto version file not found (${filename})"
-  # read returns a non-zero status but does still work if there is no line ending
-  <"${filename}" read -r version
-  # trim possible trailing \d from a Windows created file
-  version="${version%%[[:space:]]}"
-  echo "${version}"
+  local parent
+  parent="${PWD}"
+  while [[ -n "${parent}" ]]; do
+    if [[ -e "${parent}/.n-node-version" ]]; then
+      display_file_node_version "${parent}/.n-node-version"
+    elif [[ -e "${parent}/.node-version" ]]; then
+      display_file_node_version "${parent}/.node-version"
+    elif [[ -e "${parent}/.nvmrc" ]]; then
+      display_nvmrc_version "${parent}/.nvmrc"
+    elif [[ -e "${parent}/package.json" ]]; then
+      display_package_engine_version "${parent}/package.json"
+    else
+      parent=${parent%/*}
+      continue
+    fi
+    break
+  done
+  [[ -n "${parent}" ]] || abort "no file found for auto version"
 }
 
 #

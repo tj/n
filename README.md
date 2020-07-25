@@ -105,9 +105,12 @@ There are labels for two especially useful versions:
 - `lts`: newest Long Term Support official release
 - `latest`, `current`: newest official release
   
-There is a label to read the target version from a file, on the first line:
+There is an `auto` label to read the target version from a file in the current directory, or any parent directory. `n` looks for in order:
 
-- `auto`: read version from `.n-node-version` file
+- `.n-node-version`: version on single line. Custom to `n`.
+- `.node-version`: version on single line. Used by multiple tools: [node-version-usage](https://github.com/shadowspawn/node-version-usage)
+- `.nvmrc`: version on single line. Used by `nvm`.
+- `package.json`: use `engines` field to determine compatible `node`. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
 
 There is support for the named release streams:
 
