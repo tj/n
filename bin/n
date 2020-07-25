@@ -10,7 +10,7 @@ log() {
   printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
 }
 trace_log() {
-  >&2 log $1 $2
+  >&2 log "$1" "$2"
 }
 
 #
@@ -43,7 +43,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.6.1-0"
+VERSION="6.7.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
