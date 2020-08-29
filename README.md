@@ -116,7 +116,7 @@ There is support for the named release streams:
 
 - `argon`, `boron`, `carbon`: codenames for LTS release streams
 
-These node support aliases may be used, although simply simply resolve to the latest matching version:
+These node support aliases may be used, although simply resolve to the latest matching version:
 
 - `active`, `lts_active`, `lts_latest`, `lts`, `current`, `supported`
 
