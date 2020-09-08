@@ -122,7 +122,6 @@ These node support aliases may be used, although simply resolve to the latest ma
 
 The last version form is for specifying [other releases](https://nodejs.org/download) available using the name of the remote download folder optionally followed by the complete or incomplete version.
 
-- `chakracore-release/latest`
 - `nightly`
 - `test/v11.0.0-test20180528`
 - `rc/10`
