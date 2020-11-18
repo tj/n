@@ -689,6 +689,9 @@ install() {
 
   log fetch "$url"
   do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
+  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+    abort "failed to download archive for $version"
+  fi
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
