@@ -949,12 +949,17 @@ function display_file_node_version() {
 
 function display_package_engine_version() {
   local filepath="$1"
-  trace_log "found" "${filepath}"
   command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  if [[ -z "${range}" ]]; then
+    return
+  fi
+
+  trace_log "found" "${filepath}"
   trace_log "read" "${range}"
-  if [[ -z "${range}" || "*" == "${range}" ]]; then
+
+  if [[ "*" == "${range}" ]]; then
     echo "current"
     return
   fi
@@ -1011,17 +1016,21 @@ function display_auto_version() {
   while [[ -n "${parent}" ]]; do
     if [[ -e "${parent}/.n-node-version" ]]; then
       display_file_node_version "${parent}/.n-node-version"
+      break
     elif [[ -e "${parent}/.node-version" ]]; then
       display_file_node_version "${parent}/.node-version"
+      break
     elif [[ -e "${parent}/.nvmrc" ]]; then
       display_nvmrc_version "${parent}/.nvmrc"
+      break
     elif [[ -e "${parent}/package.json" ]]; then
-      display_package_engine_version "${parent}/package.json"
-    else
-      parent=${parent%/*}
-      continue
+      local package_engine_version=$(display_package_engine_version "${parent}/package.json")
+      if [[ -n "${package_engine_version}" ]]; then
+        echo "${package_engine_version}"
+        break
+      fi
     fi
-    break
+    parent=${parent%/*}
   done
   [[ -n "${parent}" ]] || abort "no file found for auto version"
 }
