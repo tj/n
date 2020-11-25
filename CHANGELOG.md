@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.7.1] (2020-11-25)
+
+### Fixed
+
+- detect and handle a failed download of full archive ([#635])
 
 ## [6.7.0] (2020-07-25)
 
@@ -299,10 +303,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#614]: https://github.com/tj/n/issues/614
 [#616]: https://github.com/tj/n/issues/616
 [#624]: https://github.com/tj/n/issues/624
+[#635]: https://github.com/tj/n/pull/635
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.7.1]: https://github.com/tj/n/compare/v6.7.0...v6.7.1
 [6.7.0]: https://github.com/tj/n/compare/v6.6.0...v6.7.0
 [6.6.0]: https://github.com/tj/n/compare/v6.5.1...v6.6.0
 [6.5.1]: https://github.com/tj/n/compare/v6.5.0...v6.5.1
