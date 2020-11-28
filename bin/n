@@ -492,18 +492,18 @@ menu_select_cache_versions() {
   while true; do
     read -rsn 1 key
     case "$key" in
-      $ESCAPE_SEQ)
+      "$ESCAPE_SEQ")
         # Handle ESC sequences followed by other characters, i.e. arrow keys
         read -rsn 1 -t 1 tmp
         if [[ "$tmp" == "[" ]]; then
           read -rsn 1 -t 1 arrow
           case "$arrow" in
-            $UP)
+            "$UP")
               clear
               selected="$(prev_version_installed "${selected}")"
               display_versions_with_selected "${selected}"
               ;;
-            $DOWN)
+            "$DOWN")
               clear
               selected="$(next_version_installed "${selected}")"
               display_versions_with_selected "${selected}"
