@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+### Fixed
+
+- suppress unwanted warning during `auto` when using npx with npm 7
+
 ## [6.7.1] (2020-11-25)
 
 ### Fixed

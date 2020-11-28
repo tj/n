@@ -979,7 +979,7 @@ function display_package_engine_version() {
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
     # Using semver@7 so works with older versions of node.
     # shellcheck disable=SC2086
-    version=$(npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
+    version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
   fi
   echo "${version}"
 }
