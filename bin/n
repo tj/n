@@ -43,7 +43,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.8.0"
+VERSION="6.8.1-0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
