@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [6.8.0] (2020-12-12)
 
 ### Fixed
 
 - suppress unwanted warning during `auto` when using npx with npm 7
+- temporary fix for installing on Mac with Apple M1 chip, look for x64 versions of node as arm64 not available yet
 
 ## [6.7.1] (2020-11-25)
 
@@ -314,6 +315,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[6.8.0]: https://github.com/tj/n/compare/v6.7.1...v6.8.0
 [6.7.1]: https://github.com/tj/n/compare/v6.7.0...v6.7.1
 [6.7.0]: https://github.com/tj/n/compare/v6.6.0...v6.7.0
 [6.6.0]: https://github.com/tj/n/compare/v6.5.1...v6.6.0

@@ -43,7 +43,7 @@ function echo_red() {
 # Setup and state
 #
 
-VERSION="6.7.2-0"
+VERSION="6.8.0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -900,8 +900,10 @@ function display_tarball_platform() {
       arch="${uname_m}"
       ;;
   esac
-  # (arch unlikely to be right for SunOS and AIX. Investigate further if/when anyone asks!)
+  # Override from command line.
   [ -n "$ARCH" ] && arch="$ARCH"
+  # Fallback to x64 if autodetecting on Apple M1, native versions not available yet.
+  [[ -z "$ARCH" && "$os" == "darwin" && "$arch" == "arm64" ]] && arch=x64
 
   echo "${os}-${arch}"
 }
