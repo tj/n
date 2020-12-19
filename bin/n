@@ -684,7 +684,6 @@ install() {
     fi
   fi
 
-  echo
   log installing "${g_mirror_folder_name}-v$version"
 
   local url="$(tarball_url "$version")"
@@ -709,7 +708,6 @@ install() {
   if "$ACTIVATE" ; then
     activate "${g_mirror_folder_name}/$version"
   fi
-  echo
 }
 
 #
@@ -969,6 +967,7 @@ function display_package_engine_version() {
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
   trace_log "read" "${range}"
   if [[ -z "${range}" || "*" == "${range}" ]]; then
+    trace_log "target" "current"
     echo "current"
     return
   fi
@@ -983,6 +982,7 @@ function display_package_engine_version() {
       \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
       ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
     esac
+    trace_log "target" "${version}"
   else
     command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
     trace_log "resolving" "${range}"
@@ -1016,10 +1016,31 @@ function display_nvmrc_version() {
 }
 
 #
+# Synopsis: display_engine_version [error-message]
+#
+
+function display_engine_version() {
+  local error_message="${1-package.json not found}"
+  local parent
+  parent="${PWD}"
+  while [[ -n "${parent}" ]]; do
+    if [[ -e "${parent}/package.json" ]]; then
+      display_package_engine_version "${parent}/package.json"
+    else
+      parent=${parent%/*}
+      continue
+    fi
+    break
+  done
+  [[ -n "${parent}" ]] || abort "${error_message}"
+}
+
+#
 # Synopsis: display_auto_version
 #
 
 function display_auto_version() {
+  # Search for a version control file first
   local parent
   parent="${PWD}"
   while [[ -n "${parent}" ]]; do
@@ -1029,17 +1050,15 @@ function display_auto_version() {
       display_file_node_version "${parent}/.node-version"
     elif [[ -e "${parent}/.nvmrc" ]]; then
       display_nvmrc_version "${parent}/.nvmrc"
-    elif [[ -e "${parent}/package.json" ]]; then
-      display_package_engine_version "${parent}/package.json"
     else
       parent=${parent%/*}
       continue
     fi
     break
   done
-  [[ -n "${parent}" ]] || abort "no file found for auto version"
+  # Fallback to package.json
+  [[ -n "${parent}" ]] || display_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
 }
-
 #
 # Synopsis: display_latest_resolved_version version
 #
@@ -1048,6 +1067,9 @@ function display_latest_resolved_version() {
   local version=${1}
   if [[ "${version}" = "auto" ]]; then
     version="$(display_auto_version)" || return 2
+  fi
+  if [[ "${version}" = "engine" ]]; then
+    version="$(display_engine_version)" || return 2
   fi
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
