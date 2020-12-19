@@ -40,6 +40,15 @@ function echo_red() {
 }
 
 #
+# Synopsis: grep [args] [pattern]
+# Grep wrapper to ensure consistent grep options and circumvent aliases
+#
+
+function n_grep() {
+  GREP_OPTIONS='' command grep "$@"
+}
+
+#
 # Setup and state
 #
 
@@ -383,7 +392,7 @@ err_no_installed_print_help() {
 #
 
 function next_version_installed() {
-  display_cache_versions | grep "$1" -A 1 | tail -n 1
+  display_cache_versions | n_grep "$1" -A 1 | tail -n 1
 }
 
 #
@@ -392,7 +401,7 @@ function next_version_installed() {
 #
 
 function prev_version_installed() {
-  display_cache_versions | grep "$1" -B 1 | head -n 1
+  display_cache_versions | n_grep "$1" -B 1 | head -n 1
 }
 
 #
@@ -436,7 +445,7 @@ function set_active_node() {
 display_versions_paths() {
   find "$CACHE_DIR" -maxdepth 2 -type d \
     | sed 's|'"$CACHE_DIR"'/||g' \
-    | grep -E "/[0-9]+\.[0-9]+\.[0-9]+" \
+    | n_grep -E "/[0-9]+\.[0-9]+\.[0-9]+" \
     | sed 's|/|.|' \
     | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -t . \
     | sed 's|\.|/|'
@@ -1140,11 +1149,11 @@ function display_remote_versions() {
   # - restrict search to compatible files as not always available, or not at same time
   # - return status of curl command (i.e. PIPESTATUS[0])
   display_remote_index \
-    | grep -E "$(display_compatible_file_field)" \
-    | grep -E "${match}" \
+    | n_grep -E "$(display_compatible_file_field)" \
+    | n_grep -E "${match}" \
     | awk "NR<=${match_count}" \
     | cut -f 1 \
-    | grep -E -o '[^v].*'
+    | n_grep -E -o '[^v].*'
   return "${PIPESTATUS[0]}"
 }
 
