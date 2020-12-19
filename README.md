@@ -110,7 +110,9 @@ There is an `auto` label to read the target version from a file in the current d
 - `.n-node-version`: version on single line. Custom to `n`.
 - `.node-version`: version on single line. Used by multiple tools: [node-version-usage](https://github.com/shadowspawn/node-version-usage)
 - `.nvmrc`: version on single line. Used by `nvm`.
-- `package.json`: use `engines` field to determine compatible `node`. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
+- if no version file found, look for `engine` as below.
+
+The `engine` label looks for a `package.json` file and reads the `engines` field to determine compatible `node`. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
 
 There is support for the named release streams:
 

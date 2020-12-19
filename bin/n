@@ -222,7 +222,7 @@ function is_lts_codename() {
 
 function is_download_folder() {
   # e.g. nightly
-  [[ "$1" =~ ^(chakracore-nightly|chakracore-rc|chakracore-release|next-nightly|nightly|rc|release|test|v8-canary)$ ]]
+  [[ "$1" =~ ^(next-nightly|nightly|rc|release|test|v8-canary)$ ]]
 }
 
 #
@@ -373,10 +373,11 @@ Versions:
     lts               Newest Long Term Support official release
     latest, current   Newest official release
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
+    engine            Read version from package.json
     boron, carbon     Codenames for release streams
     lts_latest        node support aliases
 
-    and nightly, chakracore-release/latest, rc/10 et al
+    and nightly, rc/10 et al
 
 EOF
 }
@@ -1065,6 +1066,7 @@ function display_auto_version() {
 
 function display_latest_resolved_version() {
   local version=${1}
+  # auto and engine make sense for local use and not much for ls-remote, so handled here rather than display_remote_versions
   if [[ "${version}" = "auto" ]]; then
     version="$(display_auto_version)" || return 2
   fi
@@ -1255,7 +1257,7 @@ function show_diagnostics() {
   printf "\nnode\n"
   if command -v node &> /dev/null; then
     command -v node && node --version
-    node -e 'if (process.versions.v8) console.log("JavaScript engine: v8"); if (process.versions.chakracore) console.log("JavaScript engine: chakracore")'
+    node -e 'if (process.versions.v8) console.log("JavaScript engine: v8");'
 
     printf "\nnpm\n"
     command -v npm && npm --version
