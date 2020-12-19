@@ -40,8 +40,8 @@ function echo_red() {
 }
 
 #
-# Synopsis: grep [args] [pattern]
-# Grep wrapper to ensure consistent grep options and circumvent aliases
+# Synopsis: n_grep <args...>
+# grep wrapper to ensure consistent grep options and circumvent aliases.
 #
 
 function n_grep() {

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+### Fixed
+
+- avoid colorized grep output via `GREP_OPTIONS` breaking version lookup ([#643])
+
 ## [6.8.0] (2020-12-12)
 
 ### Fixed
@@ -313,6 +317,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#616]: https://github.com/tj/n/issues/616
 [#624]: https://github.com/tj/n/issues/624
 [#635]: https://github.com/tj/n/pull/635
+[#643]: https://github.com/tj/n/pull/643
 
 <!-- reference links for releases -->
 

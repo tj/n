@@ -14,6 +14,7 @@ function unset_n_env(){
   unset N_PRESERVE_NPM
   unset HTTP_USER
   unset HTTP_PASSWORD
+  unset GREP_OPTIONS
 }
 
 
