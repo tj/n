@@ -28,7 +28,7 @@ function teardown() {
 @test "n --quiet 4.9.1" {
   # just checking option is allowed, not testing functionality
   n --quiet 4.9.1
-  run node --version
+  output="$(node --version)"
   [ "${output}" = "v4.9.1" ]
 }
 
@@ -40,23 +40,23 @@ function teardown() {
   local LTS_VERSION="$(display_remote_version lts)"
 
   n ${ARGON_VERSION}
-  run "${N_PREFIX}/bin/node" --version
+  output="$("${N_PREFIX}/bin/node" --version)"
   [ "$output" = "${ARGON_VERSION}" ]
-  run "${N_PREFIX}/bin/npm" --version
+  output="$("${N_PREFIX}/bin/npm" --version)"
   [ "$output" = "${ARGON_NPM_VERSION}" ]
 
   n --preserve "${LTS_VERSION}"
-  run "${N_PREFIX}/bin/node" --version
+  output="$("${N_PREFIX}/bin/node" --version)"
   [ "$output" = "v${LTS_VERSION}" ]
-  run "${N_PREFIX}/bin/npm" --version
+  output="$("${N_PREFIX}/bin/npm" --version)"
   [ "$output" = "${ARGON_NPM_VERSION}" ]
 
   N_PRESERVE_NPM=1 n "${LTS_VERSION}"
-  run "${N_PREFIX}/bin/npm" --version
+  output="$("${N_PREFIX}/bin/npm" --version)"
   [ "$output" = "${ARGON_NPM_VERSION}" ]
 
   N_PRESERVE_NPM=1 n --no-preserve "${LTS_VERSION}"
-  run "${N_PREFIX}/bin/npm" --version
+  output="$("${N_PREFIX}/bin/npm" --version)"
   [ "$output" != "${ARGON_NPM_VERSION}" ]
 }
 

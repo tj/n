@@ -11,26 +11,22 @@ function setup() {
 # labels
 
 @test "n lsr lts" {
-  run n lsr lts
-  [ "${status}" -eq "0" ]
+  output="$(n lsr lts)"
   [ "${output}" = "$(display_remote_version lts)" ]
 }
 
 @test "n lsr stable" {
-  run n lsr lts
-  [ "${status}" -eq "0" ]
+  output="$(n lsr lts)"
   [ "${output}" = "$(display_remote_version lts)" ]
 }
 
 @test "n ls-remote latest" {
-  run n ls-remote latest
-  [ "${status}" -eq "0" ]
+  output="$(n ls-remote latest)"
   [ "${output}" = "$(display_remote_version latest)" ]
 }
 
 @test "n list-remote current" {
-  run n list-remote current
-  [ "${status}" -eq "0" ]
+  output="$(n list-remote current)"
   [ "${output}" = "$(display_remote_version latest)" ]
 }
 
@@ -38,14 +34,12 @@ function setup() {
 # codenames
 
 @test "n=1 n lsr argon" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr argon
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr argon)"
   [ "${output}" = "4.9.1" ]
 }
 
 @test "n=1 n lsr Argon # case" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr Argon
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr Argon)"
   [ "${output}" = "4.9.1" ]
 }
 
@@ -53,32 +47,27 @@ function setup() {
 # numeric versions
 
 @test "n=1 n lsr 4" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr 4
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr 4)"
   [ "${output}" = "4.9.1" ]
 }
 
 @test "n=1 n lsr v4" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr v4
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr v4)"
   [ "${output}" = "4.9.1" ]
 }
 
 @test "n=1 n lsr 4.9" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr 4.9
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr 4.9)"
   [ "${output}" = "4.9.1" ]
 }
 
 @test "n=1 n lsr 4.9.1" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr 4.9.1
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr 4.9.1)"
   [ "${output}" = "4.9.1" ]
 }
 
 @test "n=1 n lsr v4.9.1" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr v4.9.1
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr v4.9.1)"
   [ "${output}" = "4.9.1" ]
 }
 
@@ -103,8 +92,7 @@ function setup() {
 
 # Checking does not match 8.11
 @test "n=1 n lsr v8.1 # numeric match" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr v8.1
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr v8.1)"
   [ "${output}" = "8.1.4" ]
 }
 
@@ -112,45 +100,38 @@ function setup() {
 # Nightly
 
 @test "n=1 n lsr nightly" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly)"
   [ "${output}" = "$(display_remote_version nightly)" ]
 }
 
 @test "n=1 n lsr nightly/" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/)"
   [ "${output}" = "$(display_remote_version nightly)" ]
 }
 
 @test "n=1 n lsr nightly/latest" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/latest
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/latest)"
   [ "${output}" = "$(display_remote_version nightly)" ]
 }
 
 @test "n=1 n lsr nightly/v10.8.1-nightly201808 # partial match" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/v10.8.1-nightly201808
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v10.8.1-nightly201808)"
   [ "${output}" = "10.8.1-nightly2018081382830a809b" ]
 }
 
 # Numeric match should not find v7.10.1-nightly2017050369a8053e8a
 @test "n=1 n lsr nightly/7.1 # numeric match" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/7.1
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/7.1)"
   [ "${output}" = "7.1.1-nightly201611093daf11635d" ]
 }
 
 # Numeric match should not find v7.10.1-nightly2017050369a8053e8a
 @test "n=1 n lsr nightly/v7.1 # numeric match" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/v7.1
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v7.1)"
   [ "${output}" = "7.1.1-nightly201611093daf11635d" ]
 }
 
 @test "n lsr nightly/v6.10.3-nightly2017040479546c0b5a # exact" {
-  N_MAX_REMOTE_MATCHES=1 run n lsr nightly/v6.10.3-nightly2017040479546c0b5a
-  [ "${status}" -eq "0" ]
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v6.10.3-nightly2017040479546c0b5a)"
   [ "${output}" = "6.10.3-nightly2017040479546c0b5a" ]
 }

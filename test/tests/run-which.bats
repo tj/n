@@ -32,37 +32,32 @@ function teardown() {
 # n which
 
 @test "n which 4" {
-  run n which 4
-  [ "$status" -eq 0 ]
+  output="$(n which 4)"
   [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
 }
 
 
 @test "n which v4.9.1" {
-  run n which v4.9.1
-  [ "$status" -eq 0 ]
+  output="$(n which v4.9.1)"
   [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
 }
 
 
 @test "n bin v4.9.1" {
-  run n bin v4.9.1
-  [ "$status" -eq 0 ]
+  output="$(n bin v4.9.1)"
   [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
 }
 
 
 @test "n which argon" {
-  run n which argon
-  [ "$status" -eq 0 ]
+  output="$(n which argon)"
   [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
 }
 
 
 @test "n which lts" {
-  run n which lts
+  output="$(n which lts)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$status" -eq 0 ]
   [ "$output" = "${N_PREFIX}/n/versions/node/${LTS_VERSION}/bin/node" ]
 }
 
@@ -70,30 +65,26 @@ function teardown() {
 # n run
 
 @test "n run 4" {
-  run n run 4 --version
-  [ "$status" -eq 0 ]
+  output="$(n run 4 --version)"
   [ "$output" = "v4.9.1" ]
 }
 
 
 @test "n run lts" {
-  run n run lts --version
+  output="$(n run lts --version)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$status" -eq 0 ]
   [ "$output" = "v${LTS_VERSION}" ]
 }
 
 
 @test "n use 4" {
-  run n use 4 --version
-  [ "$status" -eq 0 ]
+  output="$(n use 4 --version)"
   [ "$output" = "v4.9.1" ]
 }
 
 
 @test "n as 4" {
-  run n as 4 --version
-  [ "$status" -eq 0 ]
+  output="$(n as 4 --version)"
   [ "$output" = "v4.9.1" ]
 }
 
@@ -103,22 +94,19 @@ function teardown() {
 # n exec
 
 @test "n exec v4.9.1 node" {
-  run n exec v4.9.1 node --version
-  [ "$status" -eq 0 ]
+  output="$(n exec v4.9.1 node --version)"
   [ "$output" = "v4.9.1" ]
 }
 
 
 @test "n exec 4 npm" {
-  run n exec 4 npm --version
-  [ "$status" -eq 0 ]
+  output="$(n exec 4 npm --version)"
   [ "$output" = "2.15.11" ]
 }
 
 
 @test "n exec lts" {
-  run n exec lts node --version
+  output="$(n exec lts node --version)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$status" -eq 0 ]
   [ "$output" = "v${LTS_VERSION}" ]
 }

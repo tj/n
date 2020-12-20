@@ -18,20 +18,20 @@ function teardown() {
 
 @test "n 4.9.1" {
   n 4.9.1
-  run node --version
+  output="$(node --version)"
   [ "${output}" = "v4.9.1" ]
 }
 
 
 @test "n lts" {
   n lts
-  run node --version
+  output="$(node --version)"
   [ "${output}" = "v$(display_remote_version lts)" ]
 }
 
 
 @test "n latest" {
   n latest
-  run node --version
+  output="$(node --version)"
   [ "${output}" = "v$(display_remote_version latest)" ]
 }
