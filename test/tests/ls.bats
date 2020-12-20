@@ -17,11 +17,9 @@ function teardown() {
   mkdir -p "${N_PREFIX}/n/versions/node/4.9.1"
   mkdir -p "${N_PREFIX}/n/versions/node/10.15.0"
 
-  run n ls
-  [ "$status" -eq 0 ]
-  [ "${lines[0]}" = "node/4.9.1" ]
-  [ "${lines[1]}" = "node/10.15.0" ]
-  [ "${lines[2]}" = "" ]
+  output="$(n ls)"
+  [ "${output}" = "node/4.9.1
+node/10.15.0" ]
 }
 
 
@@ -31,10 +29,8 @@ function teardown() {
   mkdir -p "${N_PREFIX}/n/versions/nightly/${NIGHTLY_VERSION}"
   mkdir -p "${N_PREFIX}/n/versions/node/10.15.0"
 
-  run n list
-  [ "$status" -eq 0 ]
-  [ "${lines[0]}" = "nightly/${NIGHTLY_VERSION}" ]
-  [ "${lines[1]}" = "node/10.15.0" ]
-  [ "${lines[2]}" = "" ]
+  output="$(n list)"
+  [ "${output}" = "nightly/${NIGHTLY_VERSION}
+node/10.15.0" ]
 }
 

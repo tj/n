@@ -35,7 +35,7 @@ function setup() {
   # Did not install files from top level of tarball
   [ ! -f "${N_PREFIX}/README.md" ]
 
-  run node --version
+  output="$(node --version)"
   [ "${output}" = "v${TARGET_VERSION}" ]
 
   rm -rf "${TMP_PREFIX_DIR}"

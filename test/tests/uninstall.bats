@@ -21,8 +21,7 @@ function teardown() {
   # Check we get all the files if we uninstall and rm cache.
   echo y | n uninstall
   n rm lts
-  run find "${N_PREFIX}" -not -type d
-  [ "${status}" -eq "0" ]
+  output="$(find "${N_PREFIX}" -not -type d)"
   [ "$output" = "" ]
 }
 
@@ -36,7 +35,6 @@ function teardown() {
   # Check we get all the files if we uninstall and rm cache.
   echo y | n uninstall
   n rm nightly/latest
-  run find "${N_PREFIX}" -not -type d
-  [ "${status}" -eq "0" ]
+  output="$(find "${N_PREFIX}" -not -type d)"
   [ "$output" = "" ]
 }

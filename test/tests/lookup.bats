@@ -9,8 +9,7 @@ function setup() {
 
 
 @test "n --lts" {
-  run n --lts
-  [ "${status}" -eq 0 ]
+  output="$(n --lts)"
   local expected_version
   expected_version="$(display_remote_version lts)"
   expected_version="${expected_version#v}"
@@ -19,8 +18,7 @@ function setup() {
 
 
 @test "n --stable" {
-  run n --stable
-  [ "${status}" -eq 0 ]
+  output="$(n --stable)"
   local expected_version
   expected_version="$(display_remote_version lts)"
   expected_version="${expected_version#v}"
@@ -29,8 +27,7 @@ function setup() {
 
 
 @test "n --latest" {
-  run n --latest
-  [ "${status}" -eq 0 ]
+  output="$(n --latest)"
   local expected_version
   expected_version="$(display_remote_version latest)"
   expected_version="${expected_version#v}"
