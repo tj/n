@@ -25,14 +25,14 @@ function teardown() {
 @test "auto .nvmrc, numeric" {
   cd "${MY_DIR}"
   printf "102.0.1\n" > .nvmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "102.0.1" ]
 }
 
 @test "auto .nvmrc, numeric with leading v" {
   cd "${MY_DIR}"
   printf "v102.0.2\n" > .nvmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "102.0.2" ]
 }
 
@@ -40,7 +40,7 @@ function teardown() {
   local TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   printf "node\n" > .nvmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "${TARGET_VERSION}" ]
 }
 
@@ -48,7 +48,7 @@ function teardown() {
   local TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/*\n" > .nvmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "${TARGET_VERSION}" ]
 }
 
@@ -56,7 +56,7 @@ function teardown() {
   local TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/argon\n" > .nvmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "4.9.1" ]
 }
 
@@ -65,6 +65,6 @@ function teardown() {
   printf "v102.0.3\n" > .nvmrc
   mkdir -p sub-npmrc
   cd sub-npmrc
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "102.0.3" ]
 }

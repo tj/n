@@ -40,35 +40,35 @@ function write_engine() {
 @test "auto engine, 104.0.1" {
   cd "${MY_DIR}"
   write_engine "103.0.1"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "103.0.1" ]
 }
 
 @test "auto engine, v104.0.2" {
   cd "${MY_DIR}"
   write_engine "v104.0.2"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "104.0.2" ]
 }
 
 @test "auto engine, =104.0.3" {
   cd "${MY_DIR}"
   write_engine "=103.0.3"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "103.0.3" ]
 }
 
 @test "auto engine, =v104.0.4" {
   cd "${MY_DIR}"
   write_engine "=v104.0.4"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "104.0.4" ]
 }
 
 @test "engine, =v104.0.5" {
   cd "${MY_DIR}"
   write_engine "=v104.0.5"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
   [ "${output}" = "104.0.5" ]
 }
 
@@ -76,7 +76,7 @@ function write_engine() {
   local TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   write_engine ">1"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "${TARGET_VERSION}" ]
 }
 
@@ -84,70 +84,70 @@ function write_engine() {
   local TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   write_engine ">=2"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "${TARGET_VERSION}" ]
 }
 
 @test "auto engine, 8" {
   cd "${MY_DIR}"
   write_engine "8"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, 8.x" {
   cd "${MY_DIR}"
   write_engine "8.x"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, 8.X" {
   cd "${MY_DIR}"
   write_engine "8.X"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, 8.*" {
   cd "${MY_DIR}"
   write_engine "8.*"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, ~8.11.0" {
   cd "${MY_DIR}"
   write_engine "~8.11.0"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.4" ]
 }
 
 @test "auto engine, ~8.11" {
   cd "${MY_DIR}"
   write_engine "~8.11"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.4" ]
 }
 
 @test "auto engine, ~8" {
   cd "${MY_DIR}"
   write_engine "~8"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, ^8.11.0" {
   cd "${MY_DIR}"
   write_engine "^8.11.0"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
 @test "auto engine, ^8.x" {
   cd "${MY_DIR}"
   write_engine "^8.x"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.17.0" ]
 }
 
@@ -156,27 +156,27 @@ function write_engine() {
   write_engine "8.11.2"
   mkdir -p sub-engine
   cd sub-engine
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.2" ]
 }
 
 @test "auto engine (semver), <8.12" {
   cd "${MY_DIR}"
   write_engine "<8.12"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.4" ]
 }
 
 @test "auto engine (semver), 8.11.1 - 8.11.3" {
   cd "${MY_DIR}"
   write_engine "8.11.1 - 8.11.3"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.3" ]
 }
 
 @test "auto engine (semver), >8.1 <8.12 || >2.1 <3.4" {
   cd "${MY_DIR}"
   write_engine ">8.1 <8.12 || >2.1 <3.4"
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "8.11.4" ]
 }

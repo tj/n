@@ -39,7 +39,7 @@ function teardown() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "401.0.1" ]
 }
 
@@ -49,7 +49,7 @@ function teardown() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "401.0.2" ]
 }
 
@@ -58,7 +58,7 @@ function teardown() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "401.0.3" ]
 }
 
@@ -66,7 +66,7 @@ function teardown() {
   cd "${MY_DIR}"
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "401.0.4" ]
 }
 
@@ -77,7 +77,7 @@ function teardown() {
   cd package
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  local output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "401.0.2" ]
 
   rm package.json
