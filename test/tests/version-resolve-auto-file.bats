@@ -60,7 +60,7 @@ function teardown() {
 
 @test "auto .n-node-version, first line only" {
   cd "${MY_DIR}"
-  # printf "101.0.5\nmore text\n" > .n-node-version
+  printf "101.0.5\nmore text\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   [ "${output}" = "101.0.5" ]
 }
