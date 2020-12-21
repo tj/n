@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 function setup() {
@@ -36,7 +38,7 @@ function setup() {
   [ ! -f "${N_PREFIX}/README.md" ]
 
   output="$(node --version)"
-  [ "${output}" = "v${TARGET_VERSION}" ]
+  assert_equal "${output}" "v${TARGET_VERSION}"
 
   rm -rf "${TMP_PREFIX_DIR}"
 }

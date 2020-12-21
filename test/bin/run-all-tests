@@ -6,7 +6,7 @@ services=( ubuntu-curl ubuntu-wget )
 cd "$(dirname "${BIN_DIRECTORY}")" || exit 2
 for service in "${services[@]}" ; do
   echo "${service}"
-  docker-compose run --rm "${service}" "bats" "/mnt/tests"
+  docker-compose run --rm "${service}" "bats" "/mnt/test/tests"
   echo ""
 done
 

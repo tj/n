@@ -1,32 +1,31 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 # auto
 # engine is a label too! These tests mostly use auto as first available only through auto.
 
-function setup() {
+function setup_file() {
   unset_n_env
   tmpdir="${TMPDIR:-/tmp}"
   export MY_DIR="${tmpdir}/n/test/version-resolve-auto-engine"
   mkdir -p "${MY_DIR}"
-  rm -f "${MY_DIR}/package.json"
 
   # Need a version of node and npx available for reading package.json
   export N_PREFIX="${MY_DIR}"
   export PATH="${MY_DIR}/bin:${PATH}"
-  # beforeAll
-  if [[ "${BATS_TEST_NUMBER}" -eq 1 ]] ; then
-    n install lts
-  fi
+  n install lts
 }
 
-function teardown() {
-  # afterAll
-  if [[ "${#BATS_TEST_NAMES[@]}" -eq "${BATS_TEST_NUMBER}" ]] ; then
-    rm -rf "${MY_DIR}"
-  fi
+function teardown_file() {
+  rm -rf "${MY_DIR}"
+}
+
+function setup() {
+  rm -f "${MY_DIR}/package.json"
 }
 
 function write_engine() {
@@ -41,35 +40,35 @@ function write_engine() {
   cd "${MY_DIR}"
   write_engine "103.0.1"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "103.0.1" ]
+  assert_equal "${output}" "103.0.1"
 }
 
 @test "auto engine, v104.0.2" {
   cd "${MY_DIR}"
   write_engine "v104.0.2"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "104.0.2" ]
+  assert_equal "${output}" "104.0.2"
 }
 
 @test "auto engine, =104.0.3" {
   cd "${MY_DIR}"
   write_engine "=103.0.3"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "103.0.3" ]
+  assert_equal "${output}" "103.0.3"
 }
 
 @test "auto engine, =v104.0.4" {
   cd "${MY_DIR}"
   write_engine "=v104.0.4"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "104.0.4" ]
+  assert_equal "${output}" "104.0.4"
 }
 
 @test "engine, =v104.0.5" {
   cd "${MY_DIR}"
   write_engine "=v104.0.5"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
-  [ "${output}" = "104.0.5" ]
+  assert_equal "${output}" "104.0.5"
 }
 
 @test "auto engine, >1" {
@@ -77,7 +76,7 @@ function write_engine() {
   cd "${MY_DIR}"
   write_engine ">1"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "${TARGET_VERSION}" ]
+  assert_equal "${output}" "${TARGET_VERSION}"
 }
 
 @test "auto engine, >=2" {
@@ -85,70 +84,70 @@ function write_engine() {
   cd "${MY_DIR}"
   write_engine ">=2"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "${TARGET_VERSION}" ]
+  assert_equal "${output}" "${TARGET_VERSION}"
 }
 
 @test "auto engine, 8" {
   cd "${MY_DIR}"
   write_engine "8"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, 8.x" {
   cd "${MY_DIR}"
   write_engine "8.x"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, 8.X" {
   cd "${MY_DIR}"
   write_engine "8.X"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, 8.*" {
   cd "${MY_DIR}"
   write_engine "8.*"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, ~8.11.0" {
   cd "${MY_DIR}"
   write_engine "~8.11.0"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.4" ]
+  assert_equal "${output}" "8.11.4"
 }
 
 @test "auto engine, ~8.11" {
   cd "${MY_DIR}"
   write_engine "~8.11"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.4" ]
+  assert_equal "${output}" "8.11.4"
 }
 
 @test "auto engine, ~8" {
   cd "${MY_DIR}"
   write_engine "~8"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, ^8.11.0" {
   cd "${MY_DIR}"
   write_engine "^8.11.0"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, ^8.x" {
   cd "${MY_DIR}"
   write_engine "^8.x"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.17.0" ]
+  assert_equal "${output}" "8.17.0"
 }
 
 @test "auto engine, subdir" {
@@ -157,26 +156,26 @@ function write_engine() {
   mkdir -p sub-engine
   cd sub-engine
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.2" ]
+  assert_equal "${output}" "8.11.2"
 }
 
 @test "auto engine (semver), <8.12" {
   cd "${MY_DIR}"
   write_engine "<8.12"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.4" ]
+  assert_equal "${output}" "8.11.4"
 }
 
 @test "auto engine (semver), 8.11.1 - 8.11.3" {
   cd "${MY_DIR}"
   write_engine "8.11.1 - 8.11.3"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.3" ]
+  assert_equal "${output}" "8.11.3"
 }
 
 @test "auto engine (semver), >8.1 <8.12 || >2.1 <3.4" {
   cd "${MY_DIR}"
   write_engine ">8.1 <8.12 || >2.1 <3.4"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "8.11.4" ]
+  assert_equal "${output}" "8.11.4"
 }

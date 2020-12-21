@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 function setup() {
   unset_n_env
@@ -18,8 +20,8 @@ function teardown() {
   mkdir -p "${N_PREFIX}/n/versions/node/10.15.0"
 
   output="$(n ls)"
-  [ "${output}" = "node/4.9.1
-node/10.15.0" ]
+  assert_equal "${output}" "node/4.9.1
+node/10.15.0"
 }
 
 
@@ -30,7 +32,7 @@ node/10.15.0" ]
   mkdir -p "${N_PREFIX}/n/versions/node/10.15.0"
 
   output="$(n list)"
-  [ "${output}" = "nightly/${NIGHTLY_VERSION}
-node/10.15.0" ]
+  assert_equal "${output}" "nightly/${NIGHTLY_VERSION}
+node/10.15.0"
 }
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 function setup() {
@@ -19,19 +21,19 @@ function teardown() {
 @test "n 4.9.1" {
   n 4.9.1
   output="$(node --version)"
-  [ "${output}" = "v4.9.1" ]
+  assert_equal "${output}" "v4.9.1"
 }
 
 
 @test "n lts" {
   n lts
   output="$(node --version)"
-  [ "${output}" = "v$(display_remote_version lts)" ]
+  assert_equal "${output}" "v$(display_remote_version lts)"
 }
 
 
 @test "n latest" {
   n latest
   output="$(node --version)"
-  [ "${output}" = "v$(display_remote_version latest)" ]
+  assert_equal "${output}" "v$(display_remote_version latest)"
 }

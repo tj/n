@@ -1,25 +1,20 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
-function setup() {
+function setup_file() {
   unset_n_env
   # fixed directory so can reuse the two installs
   tmpdir="${TMPDIR:-/tmp}"
   export N_PREFIX="${tmpdir}/n/test/run-which"
-  # beforeAll
-  # See https://github.com/bats-core/bats-core/issues/39
-  if [[ "${BATS_TEST_NUMBER}" -eq 1 ]] ; then
-    n --download 4.9.1
-    n --download lts
-  fi
+  n --download 4.9.1
+  n --download lts
 }
 
-function teardown() {
-  # afterAll
-  if [[ "${#BATS_TEST_NAMES[@]}" -eq "${BATS_TEST_NUMBER}" ]] ; then
-    rm -rf "${N_PREFIX}"
-  fi
+function teardown_file() {
+  rm -rf "${N_PREFIX}"
 }
 
 
@@ -33,32 +28,32 @@ function teardown() {
 
 @test "n which 4" {
   output="$(n which 4)"
-  [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
+  assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
 
 @test "n which v4.9.1" {
   output="$(n which v4.9.1)"
-  [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
+  assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
 
 @test "n bin v4.9.1" {
   output="$(n bin v4.9.1)"
-  [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
+  assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
 
 @test "n which argon" {
   output="$(n which argon)"
-  [ "$output" = "${N_PREFIX}/n/versions/node/4.9.1/bin/node" ]
+  assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
 
 @test "n which lts" {
   output="$(n which lts)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$output" = "${N_PREFIX}/n/versions/node/${LTS_VERSION}/bin/node" ]
+  assert_equal "$output" "${N_PREFIX}/n/versions/node/${LTS_VERSION}/bin/node"
 }
 
 
@@ -66,26 +61,26 @@ function teardown() {
 
 @test "n run 4" {
   output="$(n run 4 --version)"
-  [ "$output" = "v4.9.1" ]
+  assert_equal "$output" "v4.9.1"
 }
 
 
 @test "n run lts" {
   output="$(n run lts --version)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$output" = "v${LTS_VERSION}" ]
+  assert_equal "$output" "v${LTS_VERSION}"
 }
 
 
 @test "n use 4" {
   output="$(n use 4 --version)"
-  [ "$output" = "v4.9.1" ]
+  assert_equal "$output" "v4.9.1"
 }
 
 
 @test "n as 4" {
   output="$(n as 4 --version)"
-  [ "$output" = "v4.9.1" ]
+  assert_equal "$output" "v4.9.1"
 }
 
 
@@ -95,18 +90,18 @@ function teardown() {
 
 @test "n exec v4.9.1 node" {
   output="$(n exec v4.9.1 node --version)"
-  [ "$output" = "v4.9.1" ]
+  assert_equal "$output" "v4.9.1"
 }
 
 
 @test "n exec 4 npm" {
   output="$(n exec 4 npm --version)"
-  [ "$output" = "2.15.11" ]
+  assert_equal "$output" "2.15.11"
 }
 
 
 @test "n exec lts" {
   output="$(n exec lts node --version)"
   local LTS_VERSION="$(display_remote_version lts)"
-  [ "$output" = "v${LTS_VERSION}" ]
+  assert_equal "$output" "v${LTS_VERSION}"
 }

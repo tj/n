@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 function setup() {
@@ -29,7 +31,7 @@ function teardown() {
   # just checking option is allowed, not testing functionality
   n --quiet 4.9.1
   output="$(node --version)"
-  [ "${output}" = "v4.9.1" ]
+  assert_equal "${output}" "v4.9.1"
 }
 
 
@@ -41,23 +43,23 @@ function teardown() {
 
   n ${ARGON_VERSION}
   output="$("${N_PREFIX}/bin/node" --version)"
-  [ "$output" = "${ARGON_VERSION}" ]
+  assert_equal "$output" "${ARGON_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  [ "$output" = "${ARGON_NPM_VERSION}" ]
+  assert_equal "$output" "${ARGON_NPM_VERSION}"
 
   n --preserve "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/node" --version)"
-  [ "$output" = "v${LTS_VERSION}" ]
+  assert_equal "$output" "v${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  [ "$output" = "${ARGON_NPM_VERSION}" ]
+  assert_equal "$output" "${ARGON_NPM_VERSION}"
 
   N_PRESERVE_NPM=1 n "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  [ "$output" = "${ARGON_NPM_VERSION}" ]
+  assert_equal "$output" "${ARGON_NPM_VERSION}"
 
   N_PRESERVE_NPM=1 n --no-preserve "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  [ "$output" != "${ARGON_NPM_VERSION}" ]
+  assert [ "$output" != "${ARGON_NPM_VERSION}" ]
 }
 
 

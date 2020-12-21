@@ -1,35 +1,34 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 # auto
 
-function setup() {
+function setup_file() {
   unset_n_env
   tmpdir="${TMPDIR:-/tmp}"
   export MY_DIR="${tmpdir}/n/test/version-resolve-auto-priority"
   mkdir -p "${MY_DIR}"
+
+  # Need a version of node available for reading package.json
+  export N_PREFIX="${MY_DIR}"
+  export PATH="${MY_DIR}/bin:${PATH}"
+  n install lts
+}
+
+function teardown_file() {
+  rm -rf "${MY_DIR}"
+}
+
+function setup() {
   # Bit fragile, but reuse directory and clean up between tests.
   rm -f "${MY_DIR}/package.json"
   rm -f "${MY_DIR}/.n-node-version"
   rm -f "${MY_DIR}/.node-version"
   rm -f "${MY_DIR}/.nvmrc"
-
-  # Need a version of node available for reading package.json
-  export N_PREFIX="${MY_DIR}"
-  export PATH="${MY_DIR}/bin:${PATH}"
-  if [[ "${BATS_TEST_NUMBER}" -eq 1 ]] ; then
-    # beforeAll
-    n install lts
-  fi
-}
-
-function teardown() {
-  # afterAll
-  if [[ "${#BATS_TEST_NAMES[@]}" -eq "${BATS_TEST_NUMBER}" ]] ; then
-    rm -rf "${MY_DIR}"
-  fi
 }
 
 @test ".n-node-version first" {
@@ -40,7 +39,7 @@ function teardown() {
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "401.0.1" ]
+  assert_equal "${output}" "401.0.1"
 }
 
 @test ".node-version second" {
@@ -50,7 +49,7 @@ function teardown() {
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "401.0.2" ]
+  assert_equal "${output}" "401.0.2"
 }
 
 @test ".nvmrc third" {
@@ -59,7 +58,7 @@ function teardown() {
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "401.0.3" ]
+  assert_equal "${output}" "401.0.3"
 }
 
 @test ".package.json last" {
@@ -67,7 +66,7 @@ function teardown() {
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "401.0.4" ]
+  assert_equal "${output}" "401.0.4"
 }
 
 @test ".package.json last, after parent scanning" {
@@ -78,7 +77,7 @@ function teardown() {
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "401.0.2" ]
+  assert_equal "${output}" "401.0.2"
 
   rm package.json
   cd ..

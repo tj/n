@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 function setup() {
   unset_n_env
@@ -22,7 +24,7 @@ function teardown() {
   echo y | n uninstall
   n rm lts
   output="$(find "${N_PREFIX}" -not -type d)"
-  [ "$output" = "" ]
+  assert_equal "$output" ""
 }
 
 
@@ -36,5 +38,5 @@ function teardown() {
   echo y | n uninstall
   n rm nightly/latest
   output="$(find "${N_PREFIX}" -not -type d)"
-  [ "$output" = "" ]
+  assert_equal "$output" ""
 }

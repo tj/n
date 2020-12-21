@@ -4,65 +4,67 @@
 # Not testing all the permutations on both files, as know they are currenly implemented using same code!
 
 load shared-functions
+load '../../node_modules/bats-support/load'
+load '../../node_modules/bats-assert/load'
 
 
 # auto
 
-function setup() {
+function setup_file() {
   unset_n_env
   tmpdir="${TMPDIR:-/tmp}"
   export MY_DIR="${tmpdir}/n/test/version-resolve-auto-file"
   mkdir -p "${MY_DIR}"
-  rm -f "${MY_DIR}/.n-node-version"
-  rm -f "${MY_DIR}/.node-version"
 }
 
-function teardown() {
-  # afterAll
-  if [[ "${#BATS_TEST_NAMES[@]}" -eq "${BATS_TEST_NUMBER}" ]] ; then
-    rm -rf "${MY_DIR}"
-  fi
+function teardown_file() {
+  rm -rf "${MY_DIR}"
+}
+
+function setup() {
+  rm -f "${MY_DIR}/.n-node-version"
+  rm -f "${MY_DIR}/.node-version"
 }
 
 @test "auto, missing file" {
   cd "${MY_DIR}"
   run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
-  [ "$status" -ne 0 ]
+  assert [ "$status" -ne 0 ]
 }
 
 @test "auto .n-node-version, no eol" {
   cd "${MY_DIR}"
   printf "101.0.1" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.1" ]
+  assert_equal "${output}" "101.0.1"
 }
 
 @test "auto .n-node-version, unix eol" {
   cd "${MY_DIR}"
   printf "101.0.2\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.2" ]
+  assert_equal "${output}" "101.0.2"
 }
 
 @test "auto .n-node-version, Windows eol" {
   cd "${MY_DIR}"
   printf "101.0.3\r\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.3" ]
+  assert_equal "${output}" "101.0.3"
 }
 
 @test "auto .n-node-version, leading v" {
   cd "${MY_DIR}"
   printf "v101.0.4\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.4" ]
+  assert_equal "${output}" "101.0.4"
 }
 
 @test "auto .n-node-version, first line only" {
   cd "${MY_DIR}"
   printf "101.0.5\nmore text\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.5" ]
+  assert_equal "${output}" "101.0.5"
 }
 
 @test "auto .n-node-version, from sub directory" {
@@ -71,7 +73,7 @@ function teardown() {
   mkdir -p sub6
   cd sub6
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.6" ]
+  assert_equal "${output}" "101.0.6"
 }
 
 @test "auto .node-version, partial version lookup" {
@@ -79,7 +81,7 @@ function teardown() {
   cd "${MY_DIR}"
   printf "4.9\n" > .node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "4.9.1" ]
+  assert_equal "${output}" "4.9.1"
 }
 
 @test "auto .node-version, from sub directory" {
@@ -88,6 +90,6 @@ function teardown() {
   mkdir -p sub7
   cd sub7
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  [ "${output}" = "101.0.7" ]
+  assert_equal "${output}" "101.0.7"
 }
 
