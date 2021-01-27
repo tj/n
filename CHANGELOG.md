@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+### Changed
+
+- update bats, and use bats-assert for better failure messages
+
+### Fixed
+
+- fail to display error for missing `curl` and `wget` for some uses ([#649])
+
 ## [7.0.0] (2020-12-20)
 
 ### Changed
@@ -329,6 +337,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#635]: https://github.com/tj/n/pull/635
 [#643]: https://github.com/tj/n/pull/643
 [#644]: https://github.com/tj/n/pull/644
+[#649]: https://github.com/tj/n/issues/649
 
 <!-- reference links for releases -->
 
