@@ -850,7 +850,7 @@ function is_ok() {
   if command -v curl &> /dev/null; then
     do_get --silent --head "$1" > /dev/null || return 1
   else
-    do_get --spider "$1" &> /dev/null || return 1
+    do_get --spider "$1" > /dev/null || return 1
   fi
 }
 
