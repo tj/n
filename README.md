@@ -61,7 +61,7 @@ On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https
 
     brew install n
     
-Or on macOS with [MacPorts](https://www.macports.org/):
+Or on macOS with [MacPorts](https://www.macports.org/) you can install the [n port](https://ports.macports.org/port/n/summary):
 
     port install n
 
