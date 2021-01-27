@@ -60,6 +60,10 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
 
     brew install n
+    
+Or on macOS with [MacPorts](https://www.macports.org/):
+
+    port install n
 
 On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows installation directly from GitHub; for instance:
 
