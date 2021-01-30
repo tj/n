@@ -7,15 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [7.0.1] (2021-01-30)
 
 ### Changed
 
-- update bats, and use bats-assert for better failure messages
+- update bats, and use bats-assert for better unit test failure messages
 
 ### Fixed
 
-- fail to display error for missing `curl` and `wget` for some uses ([#649])
+- fail to display error in some cases for missing both `curl` and `wget` ([#649])
 
 ## [7.0.0] (2020-12-20)
 
@@ -342,6 +342,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.0.1]: https://github.com/tj/n/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/tj/n/compare/v6.8.0...v7.0.0
 [6.8.0]: https://github.com/tj/n/compare/v6.7.1...v6.8.0
 [6.7.1]: https://github.com/tj/n/compare/v6.7.0...v6.7.1
