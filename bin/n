@@ -1495,7 +1495,7 @@ else
       lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
       uninstall) uninstall_installed; exit ;;
       i|install) shift; install "$1"; exit ;;
-      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1"; echo "${g_target_node}"; exit ;;
+      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1" > /dev/null; echo "${g_target_node}"; exit ;;
       *) install "$1"; exit ;;
     esac
     shift
