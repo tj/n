@@ -38,8 +38,8 @@ function setup() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.1"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "401.0.1$"
 }
 
 @test ".node-version second" {
@@ -48,8 +48,8 @@ function setup() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.2"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "401.0.2$"
 }
 
 @test ".nvmrc third" {
@@ -57,16 +57,16 @@ function setup() {
   echo "401.0.3" > .nvmrc
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.3"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "401.0.3$"
 }
 
 @test ".package.json last" {
   cd "${MY_DIR}"
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.4"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "401.0.4$"
 }
 
 @test ".package.json last, after parent scanning" {
@@ -76,8 +76,8 @@ function setup() {
   cd package
   echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
 
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.2"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "401.0.2$"
 
   rm package.json
   cd ..

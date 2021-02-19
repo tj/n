@@ -27,39 +27,39 @@ function setup() {
 @test "auto .nvmrc, numeric" {
   cd "${MY_DIR}"
   printf "102.0.1\n" > .nvmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.1"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "102.0.1$"
 }
 
 @test "auto .nvmrc, numeric with leading v" {
   cd "${MY_DIR}"
   printf "v102.0.2\n" > .nvmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.2"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "102.0.2$"
 }
 
 @test "auto .nvmrc, node" {
   local TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   printf "node\n" > .nvmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "${TARGET_VERSION}"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "${TARGET_VERSION}$"
 }
 
 @test "auto .nvmrc, lts/*" {
   local TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/*\n" > .nvmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "${TARGET_VERSION}"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "${TARGET_VERSION}$"
 }
 
 @test "auto .nvmrc, lts/argon" {
   local TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/argon\n" > .nvmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "4.9.1"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "4.9.1$"
 }
 
 @test "auto .nvmrc, sub directory" {
@@ -67,6 +67,6 @@ function setup() {
   printf "v102.0.3\n" > .nvmrc
   mkdir -p sub-npmrc
   cd sub-npmrc
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.3"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "102.0.3$"
 }

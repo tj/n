@@ -35,36 +35,36 @@ function setup() {
 @test "auto .n-node-version, no eol" {
   cd "${MY_DIR}"
   printf "101.0.1" > .n-node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.1"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.1$"
 }
 
 @test "auto .n-node-version, unix eol" {
   cd "${MY_DIR}"
   printf "101.0.2\n" > .n-node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.2"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.2$"
 }
 
 @test "auto .n-node-version, Windows eol" {
   cd "${MY_DIR}"
   printf "101.0.3\r\n" > .n-node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.3"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.3$"
 }
 
 @test "auto .n-node-version, leading v" {
   cd "${MY_DIR}"
   printf "v101.0.4\n" > .n-node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.4"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.4$"
 }
 
 @test "auto .n-node-version, first line only" {
   cd "${MY_DIR}"
   printf "101.0.5\nmore text\n" > .n-node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.5"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.5$"
 }
 
 @test "auto .n-node-version, from sub directory" {
@@ -72,16 +72,16 @@ function setup() {
   printf "101.0.6\nmore text\n" > .n-node-version
   mkdir -p sub6
   cd sub6
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.6"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.6$"
 }
 
 @test "auto .node-version, partial version lookup" {
   # Check normal resolving
   cd "${MY_DIR}"
   printf "4.9\n" > .node-version
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "4.9.1"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "4.9.1$"
 }
 
 @test "auto .node-version, from sub directory" {
@@ -89,7 +89,7 @@ function setup() {
   printf "101.0.7\nmore text\n" > .n-node-version
   mkdir -p sub7
   cd sub7
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.7"
+  run n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto
+  assert_output --regexp "101.0.7$"
 }
 

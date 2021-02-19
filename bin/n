@@ -9,9 +9,6 @@
 log() {
   printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
 }
-trace_log() {
-  >&2 log "$1" "$2"
-}
 
 #
 # Exit with the given <msg ...>
@@ -115,6 +112,9 @@ fi
 
 # Set by set_active_node
 g_active_node=
+
+# set by various lookups, especially for engine and node, where mixed logging and return value from function
+g_target_node=
 
 ACTIVATE=true
 ARCH=
@@ -663,7 +663,8 @@ activate() {
 install() {
   [[ -z "$1" ]] && abort "version required"
   local version
-  version="$(display_latest_resolved_version "$1")" || return 2
+  get_latest_resolved_version "$1" || return 2
+  version="${g_target_node}"
   [[ -n "${version}" ]] || abort "no version found for '$1'"
   update_mirror_settings_for_version "$1"
   update_xz_settings_for_version "${version}"
@@ -759,7 +760,8 @@ function remove_versions() {
   [[ -z "$1" ]] && abort "version(s) required"
   while [[ $# -ne 0 ]]; do
     local version
-    version="$(display_latest_resolved_version "$1")" || break
+    get_latest_resolved_version "$1" || break
+    version="${g_target_node}"
     if [[ -n "${version}" ]]; then
       update_mirror_settings_for_version "$1"
       local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
@@ -799,7 +801,8 @@ function prune_cache() {
 function find_cached_version() {
   [[ -z "$1" ]] && abort "version required"
   local version
-  version="$(display_latest_resolved_version "$1")" || exit 1
+  get_latest_resolved_version "$1" || exit 1
+  version="${g_target_node}"
   [[ -n "${version}" ]] || abort "no version found for '$1'"
 
   update_mirror_settings_for_version "$1"
@@ -941,35 +944,39 @@ function tarball_url() {
 }
 
 #
-# Synopsis: display_file_node_version filename
+# Synopsis: get_file_node_version filename
+# Sets g_target_node
 #
 
-function display_file_node_version() {
+function get_file_node_version() {
+  g_target_node=
   local filepath="$1"
-  trace_log "found" "${filepath}"
+  log "found" "${filepath}"
   # read returns a non-zero status but does still work if there is no line ending
   local version
   <"${filepath}" read -r version
   # trim possible trailing \d from a Windows created file
   version="${version%%[[:space:]]}"
-  trace_log "read" "${version}"
-  echo "${version}"
+  log "read" "${version}"
+  g_target_node="${version}"
 }
 
 #
-# Synopsis: display_package_engine_version
+# Synopsis: get_package_engine_version\
+# Sets g_target_node
 #
 
-function display_package_engine_version() {
+function get_package_engine_version() {
+  g_target_node=
   local filepath="$1"
-  trace_log "found" "${filepath}"
+  log "found" "${filepath}"
   command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
-  trace_log "read" "${range}"
+  log "read" "${range}"
   if [[ -z "${range}" || "*" == "${range}" ]]; then
-    trace_log "target" "current"
-    echo "current"
+    log "target" "current"
+    g_target_node="current"
     return
   fi
 
@@ -983,29 +990,31 @@ function display_package_engine_version() {
       \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
       ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
     esac
-    trace_log "target" "${version}"
+    log "target" "${version}"
   else
     command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
-    trace_log "resolving" "${range}"
+    log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
     # Using semver@7 so works with older versions of node.
     # shellcheck disable=SC2086
     version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
   fi
-  echo "${version}"
+  g_target_node="${version}"
 }
 
 #
-# Synopsis: display_nvmrc_version
+# Synopsis: get_nvmrc_version
+# Sets g_target_node
 #
 
-function display_nvmrc_version() {
+function get_nvmrc_version() {
+  g_target_node=
   local filepath="$1"
-  trace_log "found" "${filepath}"
+  log "found" "${filepath}"
   local version
   <"${filepath}" read -r version
-  trace_log "read" "${version}"
+  log "read" "${version}"
   # Translate from nvm aliases
   case "${version}" in
     lts/\*) version="lts" ;;
@@ -1013,20 +1022,22 @@ function display_nvmrc_version() {
     node) version="current" ;;
     *) ;;
   esac
-  echo "${version}"
+  g_target_node="${version}"
 }
 
 #
-# Synopsis: display_engine_version [error-message]
+# Synopsis: get_engine_version [error-message]
+# Sets g_target_node
 #
 
-function display_engine_version() {
+function get_engine_version() {
+  g_target_node=
   local error_message="${1-package.json not found}"
   local parent
   parent="${PWD}"
   while [[ -n "${parent}" ]]; do
     if [[ -e "${parent}/package.json" ]]; then
-      display_package_engine_version "${parent}/package.json"
+      get_package_engine_version "${parent}/package.json"
     else
       parent=${parent%/*}
       continue
@@ -1037,20 +1048,22 @@ function display_engine_version() {
 }
 
 #
-# Synopsis: display_auto_version
+# Synopsis: get_auto_version
+# Sets g_target_node
 #
 
-function display_auto_version() {
+function get_auto_version() {
+  g_target_node=
   # Search for a version control file first
   local parent
   parent="${PWD}"
   while [[ -n "${parent}" ]]; do
     if [[ -e "${parent}/.n-node-version" ]]; then
-      display_file_node_version "${parent}/.n-node-version"
+      get_file_node_version "${parent}/.n-node-version"
     elif [[ -e "${parent}/.node-version" ]]; then
-      display_file_node_version "${parent}/.node-version"
+      get_file_node_version "${parent}/.node-version"
     elif [[ -e "${parent}/.nvmrc" ]]; then
-      display_nvmrc_version "${parent}/.nvmrc"
+      get_nvmrc_version "${parent}/.nvmrc"
     else
       parent=${parent%/*}
       continue
@@ -1058,29 +1071,34 @@ function display_auto_version() {
     break
   done
   # Fallback to package.json
-  [[ -n "${parent}" ]] || display_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
+  [[ -n "${parent}" ]] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
 }
+
 #
-# Synopsis: display_latest_resolved_version version
+# Synopsis: get_latest_resolved_version version
+# Sets g_target_node
 #
 
-function display_latest_resolved_version() {
+function get_latest_resolved_version() {
+  g_target_node=
   local version=${1}
   # auto and engine make sense for local use and not much for ls-remote, so handled here rather than display_remote_versions
   if [[ "${version}" = "auto" ]]; then
-    version="$(display_auto_version)" || return 2
+    get_auto_version || return 2
+    version="${g_target_node}"
   fi
   if [[ "${version}" = "engine" ]]; then
-    version="$(display_engine_version)" || return 2
+    get_engine_version || return 2
+    version="${g_target_node}"
   fi
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
     simple_version="${simple_version#v}"
-    echo "${simple_version}"
+    g_target_node="${simple_version}"
   else
     # Complicated recognising exact version, KISS and lookup.
-    N_MAX_REMOTE_MATCHES=1 display_remote_versions "$version"
+    g_target_node=$(N_MAX_REMOTE_MATCHES=1 display_remote_versions "$version")
   fi
 }
 
@@ -1477,7 +1495,7 @@ else
       lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
       uninstall) uninstall_installed; exit ;;
       i|install) shift; install "$1"; exit ;;
-      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; display_latest_resolved_version "$1"; exit ;;
+      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1"; echo "${g_target_node}"; exit ;;
       *) install "$1"; exit ;;
     esac
     shift
