@@ -113,7 +113,7 @@ fi
 # Set by set_active_node
 g_active_node=
 
-# set by various lookups, especially for engine and node, where mixed logging and return value from function
+# set by various lookups to allow mixed logging and return value from function, especially for engine and node
 g_target_node=
 
 ACTIVATE=true
