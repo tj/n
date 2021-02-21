@@ -634,8 +634,11 @@ activate() {
     disable_pax_mprotect "${installed_node}"
   else
     [[ -d "${N_PREFIX}/bin" ]] || mkdir "${N_PREFIX}/bin"
+    rm -f "${N_PREFIX}/bin/node"
     ln -s "${dir}/bin/node" "${N_PREFIX}/bin/node"
+    rm -f "${N_PREFIX}/bin/npm"
     ln -s "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
+    rm -f "${N_PREFIX}/bin/npx"
     [[ -e "${dir}/bin/npx" ]] && ln -s "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
   fi
 
