@@ -79,6 +79,8 @@ elif [[ -n "${N_USE_XZ+defined}" ]]; then
 fi
 # Not setting to readonly. Overriden by CLI flags, and update_xz_settings_for_version.
 
+# N_EXPERIMENTAL_USE_SYMLINK from env
+
 N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
 # modified by update_mirror_settings_for_version
 g_mirror_url=${N_NODE_MIRROR}
@@ -608,27 +610,34 @@ activate() {
   local version="$1"
   local dir="$CACHE_DIR/$version"
   local original_node="$(command -v node)"
-
-  # Remove old npm to avoid potential issues with simple overwrite.
-  if [[ -z "${N_PRESERVE_NPM}" && -d "$dir/lib/node_modules/npm" ]]; then
-    if test -d "$N_PREFIX/lib/node_modules/npm"; then
-      rm -rf "$N_PREFIX/lib/node_modules/npm"
-    fi
-  fi
-  # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
-  rm -f "$N_PREFIX/bin/node"
-  # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
-  for subdir in lib bin include share; do
-    if [[ -n "${N_PRESERVE_NPM}" ]]; then
-      rsync --recursive --archive --keep-dirlinks --exclude=npm --exclude=npx "${dir}/${subdir}" "${N_PREFIX}"
-    elif test -L "$N_PREFIX/$subdir"; then
-      find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
-    else
-      cp -fR "$dir/$subdir" "$N_PREFIX"
-    fi
-  done
   local installed_node="${N_PREFIX}/bin/node"
-  disable_pax_mprotect "${installed_node}"
+
+  if [[ -z "${N_EXPERIMENTAL_USE_SYMLINK}" ]]; then
+    # Remove old npm to avoid potential issues with simple overwrite.
+    if [[ -z "${N_PRESERVE_NPM}" && -d "$dir/lib/node_modules/npm" ]]; then
+      if test -d "$N_PREFIX/lib/node_modules/npm"; then
+        rm -rf "$N_PREFIX/lib/node_modules/npm"
+      fi
+    fi
+    # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
+    rm -f "$N_PREFIX/bin/node"
+    # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
+    for subdir in lib bin include share; do
+      if [[ -n "${N_PRESERVE_NPM}" ]]; then
+        rsync --recursive --archive --keep-dirlinks --exclude=npm --exclude=npx "${dir}/${subdir}" "${N_PREFIX}"
+      elif test -L "$N_PREFIX/$subdir"; then
+        find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
+      else
+        cp -fR "$dir/$subdir" "$N_PREFIX"
+      fi
+    done
+    disable_pax_mprotect "${installed_node}"
+  else
+    [[ -d "${N_PREFIX}/bin" ]] || mkdir "${N_PREFIX}/bin"
+    ln -s "${dir}/bin/node" "${N_PREFIX}/bin/node"
+    ln -s "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
+    [[ -e "${dir}/bin/npx" ]] && ln -s "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
+  fi
 
   local active_node="$(command -v node)"
   if [[ -e "${active_node}" && -e "${installed_node}" && "${active_node}" != "${installed_node}" ]]; then
@@ -1192,6 +1201,14 @@ function delete_with_echo() {
   fi
 }
 
+function delete_file_with_echo() {
+  if [[ -e "$1" ]]; then
+    echo "$1"
+    rm -f "$1"
+  fi
+}
+
+
 #
 # Synopsis: uninstall_installed
 # Uninstall the installed node and npm (leaving alone the cache),
@@ -1216,15 +1233,22 @@ uninstall_installed() {
 
   echo ""
   echo "Uninstalling node and npm"
-  delete_with_echo "${N_PREFIX}/bin/node"
-  delete_with_echo "${N_PREFIX}/bin/npm"
-  delete_with_echo "${N_PREFIX}/bin/npx"
-  delete_with_echo "${N_PREFIX}/include/node"
-  delete_with_echo "${N_PREFIX}/lib/dtrace/node.d"
-  delete_with_echo "${N_PREFIX}/lib/node_modules/npm"
-  delete_with_echo "${N_PREFIX}/share/doc/node"
-  delete_with_echo "${N_PREFIX}/share/man/man1/node.1"
-  delete_with_echo "${N_PREFIX}/share/systemtap/tapset/node.stp"
+
+  if [[ -z "${N_EXPERIMENTAL_USE_SYMLINK}" ]]; then
+    delete_file_with_echo "${N_PREFIX}/bin/node"
+    delete_file_with_echo "${N_PREFIX}/bin/npm"
+    delete_file_with_echo "${N_PREFIX}/bin/npx"
+    delete_with_echo "${N_PREFIX}/include/node"
+    delete_with_echo "${N_PREFIX}/lib/dtrace/node.d"
+    delete_with_echo "${N_PREFIX}/lib/node_modules/npm"
+    delete_with_echo "${N_PREFIX}/share/doc/node"
+    delete_with_echo "${N_PREFIX}/share/man/man1/node.1"
+    delete_with_echo "${N_PREFIX}/share/systemtap/tapset/node.stp"
+  else
+    delete_file_with_echo "${N_PREFIX}/bin/node"
+    delete_file_with_echo "${N_PREFIX}/bin/npm"
+    delete_file_with_echo "${N_PREFIX}/bin/npx"
+  fi
 }
 
 #
