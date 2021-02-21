@@ -1352,6 +1352,13 @@ function show_diagnostics() {
     fi
   fi
 
+  printf "\nInstall\n"
+  if [[ -z "${N_EXPERIMENTAL_USE_SYMLINK}" ]]; then
+      echo "install using copy"
+  else
+      echo "install using symlink"
+  fi
+
   printf "\n\nCHECKS\n"
 
   printf "\nChecking n install destination is in PATH...\n"
