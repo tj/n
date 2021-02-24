@@ -347,7 +347,7 @@ Options:
 
   -V, --version         Output version of n
   -h, --help            Display help information
-  -p, --preserve        Preserve npm and npx during install of node (requires rsync)
+  -p, --preserve        Preserve npm and npx during install of node
   -q, --quiet           Disable curl output (if available)
   -d, --download        Download only
   -a, --arch            Override system architecture
@@ -603,6 +603,33 @@ disable_pax_mprotect() {
 }
 
 #
+# clean_link <source> <link>
+#
+
+clean_link() {
+  local source="$1"
+  local link="$2"
+  if [[ -e "${source}" ]]; then
+    rm -f "${link}"
+    ln -s "${source}" "${link}"
+  fi
+}
+
+#
+# clean_copy_folder <source> <target>
+#
+
+clean_copy_folder() {
+  local source="$1"
+  local target="$2"
+  if [[ -d "${source}" ]]; then
+    rm -rf "${target}"
+    cp -fR "${source}" "${target}"
+  fi
+}
+
+
+#
 # Activate <version>
 #
 
@@ -613,33 +640,51 @@ activate() {
   local installed_node="${N_PREFIX}/bin/node"
 
   if [[ -z "${N_EXPERIMENTAL_USE_SYMLINK}" ]]; then
-    # Remove old npm to avoid potential issues with simple overwrite.
-    if [[ -z "${N_PRESERVE_NPM}" && -d "$dir/lib/node_modules/npm" ]]; then
-      if test -d "$N_PREFIX/lib/node_modules/npm"; then
-        rm -rf "$N_PREFIX/lib/node_modules/npm"
-      fi
+    # Ideally we would just copy from cache to N_PREFIX, but there are some complications
+    # - various linux versions use symlinks for folders in /usr/local and also error when copy folder onto symlink
+    # - we have used cp for years, so keep using it for backwards compatibility (instead of say rsync)
+    # - we allow preserving npm
+    # - we want to be somewhat robust to changes in tarball contents, so use find instead of hard-code expected subfolders
+
+    # Copy lib before bin so symlink targets exist.
+    # lib
+    mkdir -p "$N_PREFIX/lib"
+    # Copy everything except node_modules.
+    find "$dir/lib" -mindepth 1 -maxdepth 1 \! -name node_modules -exec cp -fR "{}" "$N_PREFIX/lib" \;
+    if [[ -z "${N_PRESERVE_NPM}" ]]; then
+      mkdir -p "$N_PREFIX/lib/node_modules"
+      # Copy just npm, skipping possible added global modules after download. Clean copy to avoid version change problems.
+      clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
     fi
+
+    # bin
+    mkdir -p "$N_PREFIX/bin"
     # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
     rm -f "$N_PREFIX/bin/node"
-    # Copy (lib before bin to avoid error messages on Darwin when cp over dangling link)
-    for subdir in lib bin include share; do
-      if [[ -n "${N_PRESERVE_NPM}" ]]; then
-        rsync --recursive --archive --keep-dirlinks --exclude=npm --exclude=npx "${dir}/${subdir}" "${N_PREFIX}"
-      elif test -L "$N_PREFIX/$subdir"; then
-        find "$dir/$subdir" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/$subdir" \;
-      else
-        cp -fR "$dir/$subdir" "$N_PREFIX"
-      fi
-    done
+    # Copy just node, in case user has installed global npm modules into cache.
+    cp -fR "$dir/bin/node" "$N_PREFIX/bin"
+    if [[ -z "${N_PRESERVE_NPM}" ]]; then
+      cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
+      [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
+    fi
+
+    # include
+    mkdir -p "$N_PREFIX/include"
+    find "$dir/include" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/include" \;
+
+    # share
+    mkdir -p "$N_PREFIX/share"
+    # Copy everything except man, at it is a symlink on some Linux (e.g. archlinux).
+    find "$dir/share" -mindepth 1 -maxdepth 1 \! -name man -exec cp -fR "{}" "$N_PREFIX/share" \;
+    mkdir -p "$N_PREFIX/share/man"
+    find "$dir/share/man" -mindepth 1 -maxdepth 1 -exec cp -fR "{}" "$N_PREFIX/share/man" \;
+
     disable_pax_mprotect "${installed_node}"
   else
     [[ -d "${N_PREFIX}/bin" ]] || mkdir "${N_PREFIX}/bin"
-    rm -f "${N_PREFIX}/bin/node"
-    ln -s "${dir}/bin/node" "${N_PREFIX}/bin/node"
-    rm -f "${N_PREFIX}/bin/npm"
-    ln -s "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
-    rm -f "${N_PREFIX}/bin/npx"
-    [[ -e "${dir}/bin/npx" ]] && ln -s "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
+    clean_link "${dir}/bin/node" "${N_PREFIX}/bin/node"
+    clean_link "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
+    clean_link "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
   fi
 
   local active_node="$(command -v node)"
@@ -1304,13 +1349,6 @@ function show_diagnostics() {
     command -v wget && wget --version
   else
     echo_red "Neither curl nor wget found. Need one of them for downloads."
-  fi
-
-  printf "\nrsync:\n"
-  if command -v rsync &> /dev/null; then
-    command -v rsync && rsync --version
-  else
-    printf "rsync not found. (Needed for preserving npm during install.)\n"
   fi
 
   printf "\nuname\n"
