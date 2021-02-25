@@ -683,8 +683,10 @@ activate() {
   else
     [[ -d "${N_PREFIX}/bin" ]] || mkdir "${N_PREFIX}/bin"
     clean_link "${dir}/bin/node" "${N_PREFIX}/bin/node"
-    clean_link "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
-    clean_link "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
+    if [[ -z "${N_PRESERVE_NPM}" ]]; then
+      clean_link "${dir}/bin/npm" "${N_PREFIX}/bin/npm"
+      clean_link "${dir}/bin/npx" "${N_PREFIX}/bin/npx"
+    fi
   fi
 
   local active_node="$(command -v node)"
