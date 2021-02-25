@@ -681,6 +681,7 @@ activate() {
 
     disable_pax_mprotect "${installed_node}"
   else
+    log "linking" "support for install using symlinks is experimental"
     [[ -d "${N_PREFIX}/bin" ]] || mkdir "${N_PREFIX}/bin"
     clean_link "${dir}/bin/node" "${N_PREFIX}/bin/node"
     if [[ -z "${N_PRESERVE_NPM}" ]]; then
@@ -1510,6 +1511,7 @@ while [[ $# -ne 0 ]]; do
     -q|--quiet) set_quiet ;;
     -d|--download) ACTIVATE=false ;;
     --insecure) set_insecure ;;
+    -L|--link) N_EXPERIMENTAL_USE_SYMLINK=true ;;
     -p|--preserve) N_PRESERVE_NPM="true" ;;
     --no-preserve) N_PRESERVE_NPM="" ;;
     --use-xz) N_USE_XZ="true" ;;
