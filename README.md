@@ -162,8 +162,7 @@ Or run a downloaded `node` version with the `n run` command:
     n run 8.11.3 --debug some.js
 
 Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded `node` version.
-(NB: this `npm` will be working with a different and empty global node_modules directory, and you should not install global
-modules this way.)
+(NB: this `npm` is using a version-specific global node_modules folder.)
 
     n exec 10 my-script --fast test
 
