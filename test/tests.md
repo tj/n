@@ -20,13 +20,13 @@ Run all the tests on a single system:
 
     cd test
     npx bats tests
-    docker-compose run ubuntu-curl bats /mnt/tests
+    docker-compose run ubuntu-curl bats /mnt/test/tests
 
 Run single test on a single system::
 
     cd test
     npx bats tests/install-contents.bats
-    docker-compose run ubuntu-curl bats /mnt/tests/install-contents.bats
+    docker-compose run ubuntu-curl bats /mnt/test/tests/install-contents.bats
 
 ## Proxy
 
@@ -57,7 +57,7 @@ The containers each have:
 Using `docker-compose` to run the container adds:
 
 * specified `n` script mounted to `/usr/local/bin/n`
-* `test/tests` mounted to `/mnt/tests`
+* `test/tests` mounted to `/mnt/test/tests`
 * `node_modules/bats` provides `/usr/local/bin/bats` et al
 * `.curlrc` with `--insecure` to allow use of proxy
 
@@ -67,4 +67,4 @@ So for example:
     docker-compose run ubuntu-curl
       # in container
       n --version
-      bats /mnt/tests
+      bats /mnt/test/tests
