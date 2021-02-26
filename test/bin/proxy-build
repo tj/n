@@ -36,7 +36,7 @@ https_proxy="$(hostname):8080"
 export https_proxy
 
 # linux. Use wget first so cache uncompressed index.tab and works with both wget and curl.
-docker-compose run ubuntu-wget /mnt/tests/install-reference-versions.bash
+docker-compose run ubuntu-wget /mnt/test/tests/install-reference-versions.bash
 # native
 tests/install-reference-versions.bash
 

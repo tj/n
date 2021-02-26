@@ -9,7 +9,7 @@ services:
       - ../node_modules/bats/lib/bats-core:/usr/local/lib/bats-core
       - ../node_modules/bats/man/bats.1:/usr/local/share/man/man1"
       - ../node_modules/bats/man/bats.7:/usr/local/share/man/man7"
-      # the bats tests
+      # the bats tests, same relative location to node_modules as in repo
       - ./tests:/mnt/test/tests
       # bats extra libraries, into similar relative location
       - ../node_modules/bats-support:/mnt/node_modules/bats-support
