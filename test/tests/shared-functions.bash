@@ -63,6 +63,9 @@ function display_compatible_file_field() {
 # display_remote_version <version>
 # Limited support for using index.tab to resolve version into a number.
 # Return version number, without leading v.
+#
+# The simper (and independent) code here can cause transient false positive failures, like if the latest nightly version
+# has not been build for all architectures yet.
 
 function display_remote_version() {
   # ToDo: support NODE_MIRROR
