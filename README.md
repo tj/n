@@ -169,7 +169,7 @@ Or execute a command with `PATH` modified so `node` and `npm` will be from the d
 
 ## Preserving npm
 
-A `node` install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`. Or you may not be using npm, so do not need to install.
+A `node` install normally includes `npm` as well, but you may not care about npm, or may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`:
 
     $ npm install -g npm@latest
     ...
