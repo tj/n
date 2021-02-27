@@ -7,18 +7,8 @@
   "bugs": "https://github.com/tj/n/issues",
   "contributors": [
     {
-      "name": "Travis Webb",
-      "email": "me@traviswebb.com"
-    },
-    {
-      "name": "Nimit Kalra",
-      "email": "me@nimit.io",
-      "url": "https://nimit.io"
-    },
-    {
-      "name": "Troy Connor",
-      "email": "troy0820@gmail.com",
-      "url": "https://github.com/troy0820"
+      "name": "n Contributors",
+      "url": "https://github.com/tj/n/graphs/contributors"
     }
   ],
   "keywords": [
