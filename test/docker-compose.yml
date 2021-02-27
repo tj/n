@@ -14,3 +14,10 @@ services:
     build:
       context: dockerfiles
       dockerfile: Dockerfile-ubuntu-wget
+  archlinux-curl:
+    extends:
+      file: ./docker-base.yml
+      service: testbed
+    build:
+      context: dockerfiles
+      dockerfile: Dockerfile-archlinux-curl

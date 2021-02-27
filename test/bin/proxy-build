@@ -35,7 +35,10 @@ export http_proxy
 https_proxy="$(hostname):8080"
 export https_proxy
 
-# linux. Use wget first so cache uncompressed index.tab and works with both wget and curl.
+# Need to do wget first, as curl gets compressed index.tab which will break wget.
+# linux, archlinux-curl gets gz archives
+docker-compose run archlinux-curl /mnt/test/tests/install-reference-versions.bash
+# linux, ubuntu-curl would get compressed index and gz archives
 docker-compose run ubuntu-wget /mnt/test/tests/install-reference-versions.bash
 # native
 tests/install-reference-versions.bash
