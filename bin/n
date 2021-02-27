@@ -330,6 +330,7 @@ Commands:
   n latest                       Install the latest node release (downloading if necessary)
   n lts                          Install the latest LTS node release (downloading if necessary)
   n <version>                    Install node <version> (downloading if necessary)
+  n install <version>            Install node <version> (downloading if necessary)
   n run <version> [args ...]     Execute downloaded node <version> with [args ...]
   n which <version>              Output path for downloaded node <version>
   n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
@@ -355,13 +356,14 @@ Options:
 
 Aliases:
 
-  which: bin
-  run: use, as
+  install: i
+  latest: current
   ls: list
   lsr: ls-remote
-  rm: -
   lts: stable
-  latest: current
+  rm: -
+  run: use, as
+  which: bin
 
 Versions:
 
