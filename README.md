@@ -14,10 +14,10 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 - [`n` – Interactively Manage Your Node.js Versions](#n--interactively-manage-your-nodejs-versions)
     - [Installation](#installation)
         - [Third Party Installers](#third-party-installers)
-    - [Installing Node Versions](#installing-node-versions)
-    - [Specifying Node Versions](#specifying-node-versions)
+    - [Installing Node.js Versions](#installing-nodejs-versions)
+    - [Specifying Node.js Versions](#specifying-nodejs-versions)
     - [Removing Versions](#removing-versions)
-    - [Using Downloaded Node Versions Without Reinstalling](#using-downloaded-node-versions-without-reinstalling)
+    - [Using Downloaded Node.js Versions Without Reinstalling](#using-downloaded-nodejs-versions-without-reinstalling)
     - [Preserving npm](#preserving-npm)
     - [Miscellaneous](#miscellaneous)
     - [Custom Source](#custom-source)
@@ -31,14 +31,14 @@ Since you probably already have `node`, the easiest way to install `n` is throug
 
     npm install -g n
 
-Once installed, `n` caches `node` versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ `node` version is installed under `N_PREFIX`.
+Once installed, `n` caches Node.js versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ Node.js version is installed under `N_PREFIX`.
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
     # make cache folder (if missing) and take ownership
     sudo mkdir -p /usr/local/n
     sudo chown -R $(whoami) /usr/local/n
-    # take ownership of node install destination folders
+    # take ownership of Node.js install destination folders
     sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
 
 -----
@@ -69,13 +69,13 @@ On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows i
 
     curl -L https://git.io/n-install | bash
 
-n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS `node` version.
+n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS Node.js version.
 
-As a result, both `n` itself and all `node` versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
+As a result, both `n` itself and all Node.js versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
 
-## Installing Node Versions
+## Installing Node.js Versions
 
-Simply execute `n <version>` to download and install a version of `node`. If `<version>` has already been downloaded, `n` will install from its cache.
+Simply execute `n <version>` to download and install a version of Node.js. If `<version>` has already been downloaded, `n` will install from its cache.
 
     n 10.16.0
     n lts
@@ -94,9 +94,9 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
 
 If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
-## Specifying Node Versions
+## Specifying Node.js Versions
 
-There are a variety of ways of specifying the target node version for `n` commands. Most commands use the latest matching version, and  `n ls-remote` lists multiple matching versions.
+There are a variety of ways of specifying the target Node.js version for `n` commands. Most commands use the latest matching version, and  `n ls-remote` lists multiple matching versions.
 
 Numeric version numbers can be complete or incomplete, with an optional leading `v`.
 
@@ -116,13 +116,13 @@ There is an `auto` label to read the target version from a file in the current d
 - `.nvmrc`: version on single line. Used by `nvm`.
 - if no version file found, look for `engine` as below.
 
-The `engine` label looks for a `package.json` file and reads the `engines` field to determine compatible `node`. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
+The `engine` label looks for a `package.json` file and reads the `engines` field to determine compatible Node.js. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
 
 There is support for the named release streams:
 
 - `argon`, `boron`, `carbon`: codenames for LTS release streams
 
-These node support aliases may be used, although simply resolve to the latest matching version:
+These Node.js support aliases may be used, although simply resolve to the latest matching version:
 
 - `active`, `lts_active`, `lts_latest`, `lts`, `current`, `supported`
 
@@ -142,17 +142,17 @@ Removing all cached versions except the current version:
 
     n prune
 
-Remove the installed node and npm (does not affect the cached version). This can be useful
+Remove the installed Node.js (does not affect the cached version). This can be useful
 to revert to the system version of node (if in a different location), or if you no longer
 wish to use node and npm, or are switching to a different way of managing them.
 
     n uninstall
 
-## Using Downloaded Node Versions Without Reinstalling
+## Using Downloaded Node.js Versions Without Reinstalling
 
-There are three commands for working directly with your downloaded versions of `node`, without reinstalling.
+There are three commands for working directly with your downloaded versions of Node.js, without reinstalling.
 
-You can show the path to the downloaded version:
+You can show the path to the downloaded `node` version:
 
     $ n which 6.14.3
     /usr/local/n/versions/6.14.3/bin/node
@@ -161,7 +161,7 @@ Or run a downloaded `node` version with the `n run` command:
 
     n run 8.11.3 --debug some.js
 
-Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded `node` version.
+Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded Node.js version.
 (NB: this `npm` will be working with a different and empty global node_modules directory, and you should not install global
 modules this way.)
 
@@ -169,7 +169,7 @@ modules this way.)
 
 ## Preserving npm
 
-A `node` install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve` (requires rsync):
+A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve` (requires rsync):
 
     $ npm install -g npm@latest
     ...
@@ -210,7 +210,7 @@ Display diagnostics to help resolve problems:
 
 ## Custom Source
 
-If you would like to use a different node mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
+If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
 The most common example is users in China can define:
 
     export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
@@ -221,7 +221,7 @@ There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout a
 
 By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
 
-Download and use latest 32 bit version of `node`:
+Download and use latest 32 bit version of Node.js:
 
     n --arch x86 latest
 
@@ -233,7 +233,7 @@ To change the location to say `$HOME/.n`, add lines like the following to your s
     export N_PREFIX=$HOME/.n
     export PATH=$N_PREFIX/bin:$PATH
 
-`n` defaults to using xz compressed node tarballs for the download if it is likely tar on the system supports xz decompression.
+`n` defaults to using xz compressed Node.js tarballs for the download if it is likely tar on the system supports xz decompression.
 You can override the automatic choice by setting an environment variable to zero or non-zero:
 
     export N_USE_XZ=0 # to disable
@@ -254,9 +254,9 @@ In brief:
 
 ## How It Works
 
-`n` downloads a prebuilt `node` package and installs to a single prefix (e.g. `/usr/local`). This overwrites the previous version. The `bin` folder in this location should be in your `PATH` (e.g. `/usr/local/bin`).
+`n` downloads a prebuilt Node.js package and installs to a single prefix (e.g. `/usr/local`). This overwrites the previous version. The `bin` folder in this location should be in your `PATH` (e.g. `/usr/local/bin`).
 
 The downloads are kept in a cache folder to be used for reinstalls. The downloads are also available for limited use using `n which` and `n run` and `n exec`.
 
 The global `npm` packages are not changed by the install, with the
-exception of `npm` itself which is part of the `node` install.
+exception of `npm` itself which is part of the Node.js install.

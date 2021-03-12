@@ -326,27 +326,28 @@ Usage: n [options] [COMMAND] [args]
 
 Commands:
 
-  n                              Display downloaded node versions and install selection
-  n latest                       Install the latest node release (downloading if necessary)
-  n lts                          Install the latest LTS node release (downloading if necessary)
-  n <version>                    Install node <version> (downloading if necessary)
-  n install <version>            Install node <version> (downloading if necessary)
+  n                              Display downloaded Node.js versions and install selection
+  n latest                       Install the latest Node.js release (downloading if necessary)
+  n lts                          Install the latest LTS Node.js release (downloading if necessary)
+  n <version>                    Install Node.js <version> (downloading if necessary)
+  n install <version>            Install Node.js <version> (downloading if necessary)
+  n run <version> [args ...]     Execute downloaded Node.js <version> with [args ...]
   n run <version> [args ...]     Execute downloaded node <version> with [args ...]
   n which <version>              Output path for downloaded node <version>
   n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
   n rm <version ...>             Remove the given downloaded version(s)
   n prune                        Remove all downloaded versions except the installed version
-  n --latest                     Output the latest node version available
-  n --lts                        Output the latest LTS node version available
+  n --latest                     Output the latest Node.js version available
+  n --lts                        Output the latest LTS Node.js version available
   n ls                           Output downloaded versions
   n ls-remote [version]          Output matching versions available for download
-  n uninstall                    Remove the installed node and npm
+  n uninstall                    Remove the installed Node.js
 
 Options:
 
   -V, --version         Output version of n
   -h, --help            Display help information
-  -p, --preserve        Preserve npm and npx during install of node (requires rsync)
+  -p, --preserve        Preserve npm and npx during install of Node.js (requires rsync)
   -q, --quiet           Disable curl output (if available)
   -d, --download        Download only
   -a, --arch            Override system architecture
@@ -377,7 +378,7 @@ Versions:
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
     engine            Read version from package.json
     boron, carbon     Codenames for release streams
-    lts_latest        node support aliases
+    lts_latest        Node.js support aliases
 
     and nightly, rc/10 et al
 
