@@ -162,14 +162,14 @@ Or run a downloaded `node` version with the `n run` command:
     n run 8.11.3 --debug some.js
 
 Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded Node.js version.
-(NB: this `npm` will be working with a different and empty global node_modules directory, and you should not install global
-modules this way.)
+(NB: `npm` run this way will be using global node_modules from the target node version folder.)
 
     n exec 10 my-script --fast test
+    n exec lts zsh
 
 ## Preserving npm
 
-A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve` (requires rsync):
+A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`:
 
     $ npm install -g npm@latest
     ...

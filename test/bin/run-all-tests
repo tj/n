@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 BIN_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-services=( ubuntu-curl ubuntu-wget )
+# We want to cover curl and wget especially, gz and xz and variety of OS a bonus.
+services=( archlinux-curl ubuntu-wget )
 
 cd "$(dirname "${BIN_DIRECTORY}")" || exit 2
 for service in "${services[@]}" ; do
@@ -10,5 +11,6 @@ for service in "${services[@]}" ; do
   echo ""
 done
 
+# host (current maintainer uses Mac)
 uname -s
 ../node_modules/.bin/bats tests
