@@ -15,7 +15,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Installation](#installation)
         - [Third Party Installers](#third-party-installers)
     - [Installing Node.js Versions](#installing-nodejs-versions)
-    - [Specifying Node,js Versions](#specifying-nodejs-versions)
+    - [Specifying Node.js Versions](#specifying-nodejs-versions)
     - [Removing Versions](#removing-versions)
     - [Using Downloaded Node.js Versions Without Reinstalling](#using-downloaded-nodejs-versions-without-reinstalling)
     - [Preserving npm](#preserving-npm)
@@ -94,7 +94,7 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
 
 If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
-## Specifying Node,js Versions
+## Specifying Node.js Versions
 
 There are a variety of ways of specifying the target Node.js version for `n` commands. Most commands use the latest matching version, and  `n ls-remote` lists multiple matching versions.
 
