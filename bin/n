@@ -632,7 +632,7 @@ activate() {
   # - we allow preserving npm
   # - we want to be somewhat robust to changes in tarball contents, so use find instead of hard-code expected subfolders
   #
-  # This code was purist and concises for a long time.
+  # This code was purist and concise for a long time.
   # Now twice as much code, but using same code path for all uses, and supporting more setups.
 
   # Copy lib before bin so symlink targets exist.
