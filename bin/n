@@ -698,6 +698,66 @@ activate() {
 }
 
 #
+# Build <version> from source
+#
+build() {
+  [[ -z "$1" ]] && abort "version required"
+  local version
+  get_latest_resolved_version "$1" || return 2
+  version="${g_target_node}"
+  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  update_mirror_settings_for_version "$1"
+  update_xz_settings_for_version "${version}"
+
+  local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
+
+  if test "$N_USE_XZ" = "true"; then
+    local tarflag="-Jx"
+  else
+    local tarflag="-zx"
+  fi
+
+  if test -d "$dir"; then
+    if [[ ! -e "$dir/n.lock" ]] ; then
+      if "$ACTIVATE" ; then
+        activate "${g_mirror_folder_name}/${version}"
+      fi
+      exit
+    fi
+  fi
+
+  log "try building" "${g_mirror_folder_name}-v$version"
+  [[ ${version%%.*} -lt 15 ]] && abort "arm64 builds for nodejs are only supported for v15.x and higher"
+
+  local url="$(tarball_url "$version" "true")"
+  local TMP_DIR
+  $(type mktemp &>/dev/null) && {
+    TMP_DIR=$(mktemp -dt "${g_mirror_folder_name}-v$version")
+    log mkdir "$TMP_DIR"
+  } || {
+    TMP_DIR="${TMPDIR:=${TMP:-$(CDPATH=/var:/; cd -P tmp)}}"
+    TMP_DIR="${TMP_DIR%*/}/${g_mirror_folder_name}-v$version.$(date +%s)"
+    log mkdir "$TMP_DIR"
+    mkdir -p "$TMP_DIR" || abort "sudo required (or change ownership)"
+  }
+
+  is_ok "${url}" || abort "download preflight failed for '$version' (${url})"
+  cd "${TMP_DIR}" || abort "Failed to cd to ${TMP_DIR}"
+  log fetch "${url}"
+  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
+  log configure "${g_mirror_folder_name}-v$version"
+  ./configure --prefix="${dir}" --dest-cpu=arm64 --dest-os=mac || abort "failed to configure source"
+  log mkdir "$dir"
+  mkdir -p "$dir" || abort "sudo required (or change ownership, or define N_PREFIX)"
+  touch "$dir/n.lock"
+  log build "${g_mirror_folder_name}-v$version" || abort "build failed"
+  local core_count
+  $(type -p nproc &>/dev/null) && core_count=$(nproc --all)
+  [ -z "$core_count" ] && $(type -p sysctl &>/dev/null) && core_count=$(sysctl -n hw.ncpu) || core_count=4
+  make install -j${core_count} V= DESTCPU="arm64" ARCH="arm64" VARIATION="" DISTYPE="release" RELEASE_URLBASE="https://nodejs.org/download/release/"
+}
+
+#
 # Install <version>
 #
 
@@ -730,20 +790,25 @@ install() {
   log installing "${g_mirror_folder_name}-v$version"
 
   local url="$(tarball_url "$version")"
-  is_ok "${url}" || abort "download preflight failed for '$version' (${url})"
+  is_ok "${url}" && {
+    log "fetch" "${url}"
+    log mkdir "$dir"
+    mkdir -p "$dir" || abort "sudo required (or change ownership, or define N_PREFIX)"
+    touch "$dir/n.lock"
 
-  log mkdir "$dir"
-  mkdir -p "$dir" || abort "sudo required (or change ownership, or define N_PREFIX)"
-  touch "$dir/n.lock"
+    cd "${dir}" || abort "Failed to cd to ${dir}"
 
-  cd "${dir}" || abort "Failed to cd to ${dir}"
+    log fetch "$url"
+    do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
+    if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+      abort "failed to download archive for $version"
+    fi
+    [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
+  } || {
+    log "cannot fetch" "download preflight failed for '$version' (${url})"
+    build "${version}"
+  }
 
-  log fetch "$url"
-  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
-  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
-    abort "failed to download archive for $version"
-  fi
-  [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
   disable_pax_mprotect bin/node
@@ -955,7 +1020,7 @@ function display_tarball_platform() {
   # Override from command line.
   [ -n "$ARCH" ] && arch="$ARCH"
   # Fallback to x64 if autodetecting on Apple M1, native versions not available yet.
-  [[ -z "$ARCH" && "$os" == "darwin" && "$arch" == "arm64" ]] && arch=x64
+  # [[ -z "$ARCH" && "$os" == "darwin" && "$arch" == "arm64" ]] && arch=x64
 
   echo "${os}-${arch}"
 }
@@ -979,9 +1044,12 @@ function display_compatible_file_field {
 
 function tarball_url() {
   local version="$1"
+  local use_source="$2"
   local ext=gz
   [ "$N_USE_XZ" = "true" ] && ext="xz"
-  echo "${g_mirror_url}/v${version}/node-v${version}-$(display_tarball_platform).tar.${ext}"
+  [ -n "$use_source" ] \
+    && echo "${g_mirror_url}/v${version}/node-v${version}.tar.${ext}" \
+    || echo "${g_mirror_url}/v${version}/node-v${version}-$(display_tarball_platform).tar.${ext}"
 }
 
 #
@@ -1231,7 +1299,7 @@ function display_remote_versions() {
   # - restrict search to compatible files as not always available, or not at same time
   # - return status of curl command (i.e. PIPESTATUS[0])
   display_remote_index \
-    | n_grep -E "$(display_compatible_file_field)" \
+    | n_grep -E "$(display_compatible_file_field)|src" \
     | n_grep -E "${match}" \
     | awk "NR<=${match_count}" \
     | cut -f 1 \
