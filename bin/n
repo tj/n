@@ -994,6 +994,7 @@ function display_compatible_file_field {
   local compatible_file_field="$(display_tarball_platform)"
   if [[ -z "${ARCH}" && "${compatible_file_field}" = "darwin-arm64" ]]; then
     # Look for arm64 for native but also x64 for older versions which can run in rosetta.
+    # (Downside is will get an install error if install version above 16 with x64 and not arm64.)
     compatible_file_field="osx-arm64-tar|osx-x64-tar"
   elif [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
     compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
