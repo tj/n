@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [7.2.0] (2021-04-18)
+
+### Added
+
+- install native arm64 Node.js on Macs with Apple silicon for Node.js 16 and higher (#664)
 
 ## [7.1.0] (2021-03-12)
 
@@ -355,10 +359,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#644]: https://github.com/tj/n/pull/644
 [#649]: https://github.com/tj/n/issues/649
 [#654]: https://github.com/tj/n/issues/654
+[#654]: https://github.com/tj/n/pull/664
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.2.0]: https://github.com/tj/n/compare/v7.1.0...v7.2.0
 [7.1.0]: https://github.com/tj/n/compare/v7.0.2...v7.1.0
 [7.0.2]: https://github.com/tj/n/compare/v7.0.1...v7.0.2
 [7.0.1]: https://github.com/tj/n/compare/v7.0.0...v7.0.1
