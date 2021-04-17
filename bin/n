@@ -170,6 +170,16 @@ function set_insecure() {
 }
 
 #
+# Synposis: display_major_version numeric-version
+#
+display_major_version() {
+    local version=$1
+    version="${version#v}"
+    version="${version%%.*}"
+    echo "${version}"
+}
+
+#
 # Synopsis: update_mirror_settings_for_version version
 # e.g. <nightly/latest> means using download mirror and folder is nightly
 # Globals modified:
@@ -190,7 +200,7 @@ function update_mirror_settings_for_version() {
 }
 
 #
-# Synopsis: update_xz_settings_for_version version
+# Synopsis: update_xz_settings_for_version numeric-version
 # Globals modified:
 # - N_USE_XZ
 #
@@ -198,10 +208,26 @@ function update_mirror_settings_for_version() {
 function update_xz_settings_for_version() {
   # tarballs in xz format were available in later version of iojs, but KISS and only use xz from v4.
   if [[ "${N_USE_XZ}" = "true" ]]; then
-    local resolved_major_version
-    resolved_major_version="$(echo "${1#v}" | cut -d '.' -f '1')"
-    if [[ "${resolved_major_version}" -lt 4 ]]; then
+    local major_version="$(display_major_version "$1")"
+    if [[ "${major_version}" -lt 4 ]]; then
       N_USE_XZ="false"
+    fi
+  fi
+}
+
+#
+# Synopsis: update_arch_settings_for_version numeric-version
+# Globals modified:
+# - ARCH
+#
+
+function update_arch_settings_for_version() {
+  local tarball_platform="$(display_tarball_platform)"
+  if [[ -z "${ARCH}" && "${tarball_platform}" = "darwin-arm64" ]]; then
+    # First native builds were for v16, but can use x64 in rosetta for older versions.
+    local major_version="$(display_major_version "$1")"
+    if [[ "${major_version}" -lt 16 ]]; then
+      ARCH=x64
     fi
   fi
 }
@@ -709,6 +735,7 @@ install() {
   [[ -n "${version}" ]] || abort "no version found for '$1'"
   update_mirror_settings_for_version "$1"
   update_xz_settings_for_version "${version}"
+  update_arch_settings_for_version "${version}"
 
   local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
 
@@ -952,10 +979,8 @@ function display_tarball_platform() {
       arch="${uname_m}"
       ;;
   esac
-  # Override from command line.
+    # Override from command line, or version specific adjustment.
   [ -n "$ARCH" ] && arch="$ARCH"
-  # Fallback to x64 if autodetecting on Apple M1, native versions not available yet.
-  [[ -z "$ARCH" && "$os" == "darwin" && "$arch" == "arm64" ]] && arch=x64
 
   echo "${os}-${arch}"
 }
@@ -967,7 +992,10 @@ function display_tarball_platform() {
 
 function display_compatible_file_field {
   local compatible_file_field="$(display_tarball_platform)"
-  if [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
+  if [[ -z "${ARCH}" && "${compatible_file_field}" = "darwin-arm64" ]]; then
+    # Look for arm64 for native but also x64 for older versions which can run in rosetta.
+    compatible_file_field="osx-arm64-tar|osx-x64-tar"
+  elif [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
     compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
   fi
   echo "${compatible_file_field}"
