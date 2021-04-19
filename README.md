@@ -219,11 +219,18 @@ There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout a
 
 ## Custom Architecture
 
-By default `n` picks the binaries matching your system architecture, e.g. `n` will download 64 bit binaries for a 64 bit system. You can override this by using the `-a` or `--arch` option.
+By default `n` picks the binaries matching your system architecture. For example, on a 64 bit system `n` will download 64 bit binaries. 
 
-Download and use latest 32 bit version of Node.js:
+On a Mac with Apple silicon:
+- for Node.js 16 and higher, `n` defaults to arm64 binaries which run natively
+- for older versions of Node.js, `n` defaults to x64 binaries which run in Rosetta 2
 
-    n --arch x86 latest
+You can override the default architecture by using the `-a` or `--arch` option.
+
+e.g. reinstall latest version of Node.js with x64 binaries:
+
+    n rm current
+    n --arch x64 current
 
 ## Optional Environment Variables
 
