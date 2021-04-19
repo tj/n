@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- install native arm64 Node.js on Macs with Apple silicon for Node.js 16 and higher (#664)
+- install native arm64 Node.js on Macs with Apple silicon for Node.js 16 and higher ([#664])
 
 ## [7.2.0] (2021-04-19) [YANKED]
 
@@ -365,7 +365,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#644]: https://github.com/tj/n/pull/644
 [#649]: https://github.com/tj/n/issues/649
 [#654]: https://github.com/tj/n/issues/654
-[#654]: https://github.com/tj/n/pull/664
+[#664]: https://github.com/tj/n/pull/664
 
 <!-- reference links for releases -->
 
