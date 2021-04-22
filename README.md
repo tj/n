@@ -211,7 +211,7 @@ Display diagnostics to help resolve problems:
 ## Custom Source
 
 If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
-The most common example is users in China who can define:
+The most common example is from users in China who can define:
 
     export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
 
