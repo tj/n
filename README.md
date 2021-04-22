@@ -211,11 +211,17 @@ Display diagnostics to help resolve problems:
 ## Custom Source
 
 If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
-The most common example is users in China can define:
+The most common example is users in China who can define:
 
     export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
 
-There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout as the default <https://nodejs.org/download>
+If the custom mirror requires authentication you can [url encode](https://urlencode.org/) the credentials into the URL:
+
+    https://username:password@host:port/path
+
+The encoding is especially important when the username or password contains special characters.
+
+There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout as the default <https://nodejs.org/download>.
 
 ## Custom Architecture
 
