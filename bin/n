@@ -534,7 +534,8 @@ menu_select_cache_versions() {
       "$ESCAPE_SEQ")
         # Handle ESC sequences followed by other characters, i.e. arrow keys
         read -rsn 1 -t 1 tmp
-        if [[ "$tmp" == "[" ]]; then
+        # See "[" if terminal in normal mode, and "0" in application mode
+        if [[ "$tmp" == "[" || "$tmp" == "O" ]]; then
           read -rsn 1 -t 1 arrow
           case "$arrow" in
             "$UP")
