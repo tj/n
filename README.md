@@ -215,11 +215,9 @@ The most common example is from users in China who can define:
 
     export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
 
-If the custom mirror requires authentication you can [url encode](https://urlencode.org/) the credentials into the URL:
+If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 
-    https://username:password@host:port/path
-
-The encoding is especially important when the username or password contains special characters.
+    export N_NODE_MIRROR=https://encoded-username:encoded-password@host:port/path
 
 There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout as the default <https://nodejs.org/download>.
 

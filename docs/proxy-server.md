@@ -6,11 +6,11 @@ Under the hood, `n` uses `curl` or `wget` for the downloads. `curl` is used if a
 
 You can define the proxy server using an environment variable, which is read by multiple commands including `curl` and `wget`:
 
-    export https_proxy='http://host:port/path'
+    export https_proxy='https://host:port/path'
 
-If your proxy requires authentication you can [url-encode](https://urlencode.org) the username and password in the URL. e.g.
+If your proxy requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 
-    export https_proxy='http://user:password@host:port/path'
+    export https_proxy='https://encoded-user:encoded-password@host:port/path'
 
 If you have defined a custom node mirror which uses http, then you would define `http_proxy` rather than `https_proxy`.
 
