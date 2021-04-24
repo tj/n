@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+### Fixed
+
+- arrow key navigation of version menu when terminal in application mode (e.g. PowerShell on Mac)
+
 ## [7.2.1] (2021-04-19)
 
 ### Added
