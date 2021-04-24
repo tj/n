@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [7.2.2] (2021-04-25)
 
 ### Fixed
 
-- arrow key navigation of version menu when terminal in application mode (e.g. PowerShell on Mac)
+- arrow key navigation of version menu when terminal in application mode (e.g. PowerShell on Mac) ([#668])
 
 ## [7.2.1] (2021-04-19)
 
@@ -370,10 +370,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#649]: https://github.com/tj/n/issues/649
 [#654]: https://github.com/tj/n/issues/654
 [#664]: https://github.com/tj/n/pull/664
+[#668]: https://github.com/tj/n/pull/668
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.2.2]: https://github.com/tj/n/compare/v7.2.1...v7.2.2
 [7.2.1]: https://github.com/tj/n/compare/v7.1.0...v7.2.1
 [7.2.0]: https://github.com/tj/n/compare/v7.1.0...v7.2.0
 [7.1.0]: https://github.com/tj/n/compare/v7.0.2...v7.1.0
