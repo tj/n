@@ -49,7 +49,7 @@ function n_grep() {
 # Setup and state
 #
 
-VERSION="7.2.2"
+VERSION="7.2.3-0"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
