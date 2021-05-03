@@ -527,8 +527,8 @@ menu_select_cache_versions() {
   ESCAPE_SEQ=$'\033'
   UP=$'A'
   DOWN=$'B'
-  CTRLP=$'\020'
-  CTRLN=$'\016'
+  CTRL_P=$'\020'
+  CTRL_N=$'\016'
 
   while true; do
     read -rsn 1 key
@@ -575,13 +575,13 @@ menu_select_cache_versions() {
         fi
         ;;
       # Vim or Emacs 'up' key
-      "k"|"$CTRLP")
+      "k"|"$CTRL_P")
         clear
         selected="$(prev_version_installed "${selected}")"
         display_versions_with_selected "${selected}"
         ;;
       # Vim or Emacs 'down' key
-      "j"|"$CTRLN")
+      "j"|"$CTRL_N")
         clear
         selected="$(next_version_installed "${selected}")"
         display_versions_with_selected "${selected}"
