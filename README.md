@@ -90,7 +90,7 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
 
     Use up/down arrow keys to select a version, return key to install, d to delete, q to quit
 
-(You can also use <kbd>j</kbd> and <kbd>k</kbd> to navigate up or down without using arrows.)
+(You can also use <kbd>j</kbd> and <kbd>k</kbd> to select next or previous version instead of using arrows, or <kbd>ctrl+n</kbd> and <kbd>ctrl+p</kbd>.)
 
 If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
