@@ -36,10 +36,7 @@
   },
   "devDependencies": {
     "bats": "^1.2.1",
-    "bats-assert": "github:bats-core/bats-assert",
-    "bats-support": "github:bats-core/bats-support"
-  },
-  "preferGlobal": true,
+    "bats-assert": "github:bats-core/batsithub:bats-coreferGlobalht
   "os": [
     "!win32"
   ],
