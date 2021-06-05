@@ -1,6 +1,5 @@
 #!/usr/bin/env bats
 
-# Note: full semver is resolved without lookup, so can use arbitrary versions for testing like 999.999.999
 # Not testing all the permutations on both files, as know they are currenly implemented using same code!
 
 load shared-functions
@@ -34,46 +33,46 @@ function setup() {
 
 @test "auto .n-node-version, no eol" {
   cd "${MY_DIR}"
-  printf "101.0.1" > .n-node-version
+  printf "8.1.0" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.1"
+  assert_equal "${output}" "8.1.0"
 }
 
 @test "auto .n-node-version, unix eol" {
   cd "${MY_DIR}"
-  printf "101.0.2\n" > .n-node-version
+  printf "8.1.1\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.2"
+  assert_equal "${output}" "8.1.1"
 }
 
 @test "auto .n-node-version, Windows eol" {
   cd "${MY_DIR}"
-  printf "101.0.3\r\n" > .n-node-version
+  printf "8.1.2\r\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.3"
+  assert_equal "${output}" "8.1.2"
 }
 
 @test "auto .n-node-version, leading v" {
   cd "${MY_DIR}"
-  printf "v101.0.4\n" > .n-node-version
+  printf "v8.1.3\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.4"
+  assert_equal "${output}" "8.1.3"
 }
 
 @test "auto .n-node-version, first line only" {
   cd "${MY_DIR}"
-  printf "101.0.5\nmore text\n" > .n-node-version
+  printf "8.1.4\nmore text\n" > .n-node-version
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.5"
+  assert_equal "${output}" "8.1.4"
 }
 
 @test "auto .n-node-version, from sub directory" {
   cd "${MY_DIR}"
-  printf "101.0.6\nmore text\n" > .n-node-version
+  printf "8.2.0\n" > .n-node-version
   mkdir -p sub6
   cd sub6
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.6"
+  assert_equal "${output}" "8.2.0"
 }
 
 @test "auto .node-version, partial version lookup" {
@@ -86,10 +85,10 @@ function setup() {
 
 @test "auto .node-version, from sub directory" {
   cd "${MY_DIR}"
-  printf "101.0.7\nmore text\n" > .n-node-version
+  printf "8.2.1\n" > .n-node-version
   mkdir -p sub7
   cd sub7
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "101.0.7"
+  assert_equal "${output}" "8.2.1"
 }
 

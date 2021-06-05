@@ -33,51 +33,51 @@ function setup() {
 
 @test ".n-node-version first" {
   cd "${MY_DIR}"
-  echo "401.0.1" > .n-node-version
-  echo "401.0.2" > .node-version
-  echo "401.0.3" > .nvmrc
-  echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
+  echo "8.1.4" > .n-node-version
+  echo "8.2.0" > .node-version
+  echo "8.3.0" > .nvmrc
+  echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.1"
+  assert_equal "${output}" "8.1.4"
 }
 
 @test ".node-version second" {
   cd "${MY_DIR}"
-  echo "401.0.2" > .node-version
-  echo "401.0.3" > .nvmrc
-  echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
+  echo "8.2.0" > .node-version
+  echo "8.3.0" > .nvmrc
+  echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.2"
+  assert_equal "${output}" "8.2.0"
 }
 
 @test ".nvmrc third" {
   cd "${MY_DIR}"
-  echo "401.0.3" > .nvmrc
-  echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
+  echo "8.3.0" > .nvmrc
+  echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.3"
+  assert_equal "${output}" "8.3.0"
 }
 
 @test ".package.json last" {
   cd "${MY_DIR}"
-  echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
+  echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.4"
+  assert_equal "${output}" "8.4.0"
 }
 
 @test ".package.json last, after parent scanning" {
   cd "${MY_DIR}"
-  echo "401.0.2" > .node-version
+  echo "8.2.0" > .node-version
   mkdir package
   cd package
-  echo '{ "engines" : { "node" : "v401.0.4" } }' > package.json
+  echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "401.0.2"
+  assert_equal "${output}" "8.2.0"
 
   rm package.json
   cd ..

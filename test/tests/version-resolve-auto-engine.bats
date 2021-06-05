@@ -36,39 +36,39 @@ function write_engine() {
   # Dummy test so setupAll displayed while running first setup
 }
 
-@test "auto engine, 104.0.1" {
+@test "auto engine, 8.9.0" {
   cd "${MY_DIR}"
-  write_engine "103.0.1"
+  write_engine "8.9.0"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "103.0.1"
+  assert_equal "${output}" "8.9.0"
 }
 
-@test "auto engine, v104.0.2" {
+@test "auto engine, v8.9.1" {
   cd "${MY_DIR}"
-  write_engine "v104.0.2"
+  write_engine "v8.9.1"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "104.0.2"
+  assert_equal "${output}" "8.9.1"
 }
 
-@test "auto engine, =104.0.3" {
+@test "auto engine, =8.9.2" {
   cd "${MY_DIR}"
-  write_engine "=103.0.3"
+  write_engine "=8.9.2"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "103.0.3"
+  assert_equal "${output}" "8.9.2"
 }
 
-@test "auto engine, =v104.0.4" {
+@test "auto engine, =v8.9.3" {
   cd "${MY_DIR}"
-  write_engine "=v104.0.4"
+  write_engine "=v8.9.3"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "104.0.4"
+  assert_equal "${output}" "8.9.3"
 }
 
-@test "engine, =v104.0.5" {
+@test "engine, =v8.9.4" {
   cd "${MY_DIR}"
-  write_engine "=v104.0.5"
+  write_engine "=v8.9.4"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
-  assert_equal "${output}" "104.0.5"
+  assert_equal "${output}" "8.9.4"
 }
 
 @test "auto engine, >1" {

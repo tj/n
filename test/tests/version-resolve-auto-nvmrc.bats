@@ -1,7 +1,5 @@
 #!/usr/bin/env bats
 
-# Note: full semver is resolved without lookup, so can use arbitrary versions for testing like 999.999.999
-
 load shared-functions
 load '../../node_modules/bats-support/load'
 load '../../node_modules/bats-assert/load'
@@ -26,16 +24,16 @@ function setup() {
 
 @test "auto .nvmrc, numeric" {
   cd "${MY_DIR}"
-  printf "102.0.1\n" > .nvmrc
+  printf "8.10.0\n" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.1"
+  assert_equal "${output}" "8.10.0"
 }
 
 @test "auto .nvmrc, numeric with leading v" {
   cd "${MY_DIR}"
-  printf "v102.0.2\n" > .nvmrc
+  printf "v8.11.0\n" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.2"
+  assert_equal "${output}" "8.11.0"
 }
 
 @test "auto .nvmrc, node" {
@@ -64,9 +62,9 @@ function setup() {
 
 @test "auto .nvmrc, sub directory" {
   cd "${MY_DIR}"
-  printf "v102.0.3\n" > .nvmrc
+  printf "v8.11.1\n" > .nvmrc
   mkdir -p sub-npmrc
   cd sub-npmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
-  assert_equal "${output}" "102.0.3"
+  assert_equal "${output}" "8.11.1"
 }
