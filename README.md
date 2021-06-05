@@ -138,11 +138,11 @@ Remove some cached versions:
 
     n rm 0.9.4 v0.10.0
 
-Removing all cached versions except the current version:
+Removing all cached versions except the installed version:
 
     n prune
 
-Remove the installed Node.js (does not affect the cached version). This can be useful
+Remove the installed Node.js (does not affect the cached versions). This can be useful
 to revert to the system version of node (if in a different location), or if you no longer
 wish to use node and npm, or are switching to a different way of managing them.
 
