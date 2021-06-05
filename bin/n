@@ -387,7 +387,7 @@ Options:
   -V, --version         Output version of n
   -h, --help            Display help information
   -p, --preserve        Preserve npm and npx during install of Node.js
-  -q, --quiet           Disable curl output (if available)
+  -q, --quiet           Disable curl output (if available), and log messages processing "auto" and "engine" labels.
   -d, --download        Download only
   -a, --arch            Override system architecture
   --all                 ls-remote displays all matches instead of last 20
