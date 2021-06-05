@@ -11,12 +11,15 @@ log() {
 }
 
 #
-# diag <type> <msg>
-# Same as log, but diagnostic to stderr rather than stdout.
+# verbose_log <type> <msg>
+# Can suppress with --quiet.
+# Like log but to stderr rather than stdout, so can also be used from "display" routines.
 #
 
-diag() {
-  >&2 printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
+verbose_log() {
+  if [[ "${SHOW_VERBOSE_LOG}" == "true" ]]; then
+    >&2 printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
+  fi
 }
 
 #
@@ -127,6 +130,7 @@ g_target_node=
 
 ACTIVATE=true
 ARCH=
+SHOW_VERBOSE_LOG="true"
 
 # ANSI escape codes
 # https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -795,10 +799,11 @@ install() {
 }
 
 #
-# Set curl to quiet (silent) mode.
+# Be more silent.
 #
 
 set_quiet() {
+  SHOW_VERBOSE_LOG="false"
   command -v curl > /dev/null && CURL_OPTIONS+=( "--silent" ) && GET_SHOWS_PROGRESS="false"
 }
 
@@ -1035,13 +1040,13 @@ function tarball_url() {
 function get_file_node_version() {
   g_target_node=
   local filepath="$1"
-  diag "found" "${filepath}"
+  verbose_log "found" "${filepath}"
   # read returns a non-zero status but does still work if there is no line ending
   local version
   <"${filepath}" read -r version
   # trim possible trailing \d from a Windows created file
   version="${version%%[[:space:]]}"
-  diag "read" "${version}"
+  verbose_log "read" "${version}"
   g_target_node="${version}"
 }
 
@@ -1053,13 +1058,13 @@ function get_file_node_version() {
 function get_package_engine_version() {
   g_target_node=
   local filepath="$1"
-  diag "found" "${filepath}"
+  verbose_log "found" "${filepath}"
   command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
-  diag "read" "${range}"
+  verbose_log "read" "${range}"
   if [[ -z "${range}" || "*" == "${range}" ]]; then
-    diag "target" "current"
+    verbose_log "target" "current"
     g_target_node="current"
     return
   fi
@@ -1074,10 +1079,10 @@ function get_package_engine_version() {
       \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
       ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
     esac
-    diag "target" "${version}"
+    verbose_log "target" "${version}"
   else
     command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
-    diag "resolving" "${range}"
+    verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
     # Using semver@7 so works with older versions of node.
@@ -1095,10 +1100,10 @@ function get_package_engine_version() {
 function get_nvmrc_version() {
   g_target_node=
   local filepath="$1"
-  diag "found" "${filepath}"
+  verbose_log "found" "${filepath}"
   local version
   <"${filepath}" read -r version
-  diag "read" "${version}"
+  verbose_log "read" "${version}"
   # Translate from nvm aliases
   case "${version}" in
     lts/\*) version="lts" ;;
