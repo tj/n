@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [7.3.0] (2021-06-06)
+
+### Added
+
+- ls-remote supports `engine` and `auto` labels ([#675])
+- reduce `engine` and `auto` logging with `--quiet` ([#675])
+- add WSL support to README ([#676])
+- support for Emacs up and down keys (`ctrl-p` and `ctrl-n`) ([#669])
+
+### Changed
+
+- diagnostic logging during processing of engine and auto written to stderr rather than stdout ([#675])
 
 ## [7.2.2] (2021-04-25)
 
@@ -373,10 +384,14 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#654]: https://github.com/tj/n/issues/654
 [#664]: https://github.com/tj/n/pull/664
 [#668]: https://github.com/tj/n/pull/668
+[#669]: https://github.com/tj/n/pull/669
+[#675]: https://github.com/tj/n/pull/675
+[#676]: https://github.com/tj/n/pull/676
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.3.0]: https://github.com/tj/n/compare/v7.2.2...v7.3.0
 [7.2.2]: https://github.com/tj/n/compare/v7.2.1...v7.2.2
 [7.2.1]: https://github.com/tj/n/compare/v7.1.0...v7.2.1
 [7.2.0]: https://github.com/tj/n/compare/v7.1.0...v7.2.0
