@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## Unreleased (date goes here)
+## [7.3.1] (2021-07-25)
+
+### Changed
+
+- Improved README for new users missing expected folders in `/usr/local` ([#679])
 
 ## [7.3.0] (2021-06-06)
 
@@ -389,10 +393,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#669]: https://github.com/tj/n/pull/669
 [#675]: https://github.com/tj/n/pull/675
 [#676]: https://github.com/tj/n/pull/676
+[#679]: https://github.com/tj/n/issues/679
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.3.1]: https://github.com/tj/n/compare/v7.3.0...v7.3.1
 [7.3.0]: https://github.com/tj/n/compare/v7.2.2...v7.3.0
 [7.2.2]: https://github.com/tj/n/compare/v7.2.1...v7.2.2
 [7.2.1]: https://github.com/tj/n/compare/v7.1.0...v7.2.1
