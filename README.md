@@ -35,31 +35,39 @@ It is written as a BASH script but does not require you to use BASH as your comm
 
 Since you probably already have `node`, the easiest way to install `n` is through `npm`:
 
-    npm install -g n
+```bash
+npm install -g n
+```
 
 Once installed, `n` caches Node.js versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ Node.js version is installed under `N_PREFIX`.
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
-    # make cache folder (if missing) and take ownership
-    sudo mkdir -p /usr/local/n
-    sudo chown -R $(whoami) /usr/local/n
-    # make sure the required folders exist (safe to execute even if they already exist)
-    sudo mkdir -p /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
-    # take ownership of Node.js install destination folders
-    sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+```bash
+# make cache folder (if missing) and take ownership
+sudo mkdir -p /usr/local/n
+sudo chown -R $(whoami) /usr/local/n
+# make sure the required folders exist (safe to execute even if they already exist)
+sudo mkdir -p /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+# take ownership of Node.js install destination folders
+sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+```
 
 -----
 
 If `npm` is not yet available, one way to bootstrap an install:
 
-    curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
-    bash n lts
-    # Now node and npm are available
+```bash
+curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
+bash n lts
+# Now node and npm are available
+```
 
 Alternatively, you can clone this repo and
 
-    make install
+```bash
+make install
+```
 
 to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
@@ -67,15 +75,21 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 
 On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
 
-    brew install n
-    
+```bash
+brew install n
+```
+
 Or on macOS with [MacPorts](https://www.macports.org/) you can install the [n port](https://ports.macports.org/port/n/summary):
 
-    port install n
+```bash
+port install n
+```
 
 On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows installation directly from GitHub; for instance:
 
-    curl -L https://git.io/n-install | bash
+```bash
+curl -L https://git.io/n-install | bash
+```
 
 n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS Node.js version.
 
@@ -85,18 +99,22 @@ As a result, both `n` itself and all Node.js versions it manages are hosted insi
 
 Simply execute `n <version>` to download and install a version of Node.js. If `<version>` has already been downloaded, `n` will install from its cache.
 
-    n 10.16.0
-    n lts
+```bash
+n 10.16.0
+n lts
+```
 
 Execute `n` on its own to view your downloaded versions, and install the selected version.
 
-    $ n
+```bash
+$ n
 
-      node/4.9.1
-    ο node/8.11.3
-      node/10.15.0
+  node/4.9.1
+ο node/8.11.3
+  node/10.15.0
 
-    Use up/down arrow keys to select a version, return key to install, d to delete, q to quit
+Use up/down arrow keys to select a version, return key to install, d to delete, q to quit
+```
 
 (You can also use <kbd>j</kbd> and <kbd>k</kbd> to select next or previous version instead of using arrows, or <kbd>ctrl+n</kbd> and <kbd>ctrl+p</kbd>.)
 
@@ -144,17 +162,23 @@ The last version form is for specifying [other releases](https://nodejs.org/down
 
 Remove some cached versions:
 
-    n rm 0.9.4 v0.10.0
+```bash
+n rm 0.9.4 v0.10.0
+```
 
 Removing all cached versions except the installed version:
 
-    n prune
+```bash
+n prune
+```
 
 Remove the installed Node.js (does not affect the cached versions). This can be useful
 to revert to the system version of node (if in a different location), or if you no longer
 wish to use node and npm, or are switching to a different way of managing them.
 
-    n uninstall
+```bash
+n uninstall
+```
 
 ## Using Downloaded Node.js Versions Without Reinstalling
 
@@ -162,40 +186,52 @@ There are three commands for working directly with your downloaded versions of N
 
 You can show the path to the downloaded `node` version:
 
-    $ n which 6.14.3
-    /usr/local/n/versions/6.14.3/bin/node
+```bash
+$ n which 6.14.3
+/usr/local/n/versions/6.14.3/bin/node
+```
 
 Or run a downloaded `node` version with the `n run` command:
 
-    n run 8.11.3 --debug some.js
+```bash
+n run 8.11.3 --debug some.js
+```
 
 Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded Node.js version.
 (NB: `npm` run this way will be using global node_modules from the target node version folder.)
 
-    n exec 10 my-script --fast test
-    n exec lts zsh
+```bash
+n exec 10 my-script --fast test
+n exec lts zsh
+```
 
 ## Preserving npm
 
 A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`:
 
-    $ npm install -g npm@latest
-    ...
-    $ npm --version
-    6.13.7
-    $ n -p 8
-       installed : v8.17.0
-    $ npm --version
-    6.13.7
+```bash
+$ npm install -g npm@latest
+...
+$ npm --version
+6.13.7
+$ n -p 8
+   installed : v8.17.0
+$ npm --version
+6.13.7
+```
 
 You can make this the default by setting `N_PRESERVE_NPM` to a non-empty string.
 
-    export N_PRESERVE_NPM=1
+```bash
+export N_PRESERVE_NPM=1
+```
 
 You can be explicit to get the desired behaviour whatever the environment variable:
 
-    n --preserve nightly
-    n --no-preserve latest
+```bash
+n --preserve nightly
+n --no-preserve latest
+```
 
 ## Miscellaneous
 
@@ -203,29 +239,39 @@ Command line help can be obtained from `n --help`.
 
 List matching remote versions available for download:
 
-    n ls-remote lts
-    n ls-remote latest
-    n lsr 10
-    n --all lsr
+```bash
+n ls-remote lts
+n ls-remote latest
+n lsr 10
+n --all lsr
+```
 
 List downloaded versions in cache:
 
-    n ls
+```bash
+n ls
+```
 
 Display diagnostics to help resolve problems:
 
-    n doctor
+```bash
+n doctor
+```
 
 ## Custom Source
 
 If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
 The most common example is from users in China who can define:
 
-    export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
+```bash
+export N_NODE_MIRROR=https://npm.taobao.org/mirrors/node
+```
 
 If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 
-    export N_NODE_MIRROR=https://encoded-username:encoded-password@host:port/path
+```bash
+export N_NODE_MIRROR=https://encoded-username:encoded-password@host:port/path
+```
 
 There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout as the default <https://nodejs.org/download>.
 
@@ -241,27 +287,35 @@ You can override the default architecture by using the `-a` or `--arch` option.
 
 e.g. reinstall latest version of Node.js with x64 binaries:
 
-    n rm current
-    n --arch x64 current
+```bash
+n rm current
+n --arch x64 current
+```
 
 ## Optional Environment Variables
 
 The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
 To change the location to say `$HOME/.n`, add lines like the following to your shell initialization file:
 
-    export N_PREFIX=$HOME/.n
-    export PATH=$N_PREFIX/bin:$PATH
+```bash
+export N_PREFIX=$HOME/.n
+export PATH=$N_PREFIX/bin:$PATH
+```
 
 `n` defaults to using xz compressed Node.js tarballs for the download if it is likely tar on the system supports xz decompression.
 You can override the automatic choice by setting an environment variable to zero or non-zero:
 
-    export N_USE_XZ=0 # to disable
-    export N_USE_XZ=1 # to enable
+```bash
+export N_USE_XZ=0 # to disable
+export N_USE_XZ=1 # to enable
+```
 
 You can be explicit to get the desired behaviour whatever the environment variable:
 
-    n install --use-xz nightly
-    n install --no-use-xz latest
+```bash
+n install --use-xz nightly
+n install --no-use-xz latest
+```
 
 In brief:
 
