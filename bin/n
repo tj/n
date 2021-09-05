@@ -128,7 +128,7 @@ g_active_node=
 # set by various lookups to allow mixed logging and return value from function, especially for engine and node
 g_target_node=
 
-ACTIVATE=true
+DOWNLOAD=false # set to opt-out of activate (install), and opt-in to download (run, exec)
 ARCH=
 SHOW_VERBOSE_LOG="true"
 
@@ -765,7 +765,7 @@ install() {
 
   if test -d "$dir"; then
     if [[ ! -e "$dir/n.lock" ]] ; then
-      if "$ACTIVATE" ; then
+      if [[ "$DOWNLOAD" == "false" ]] ; then
         activate "${g_mirror_folder_name}/${version}"
       fi
       exit
@@ -793,7 +793,7 @@ install() {
 
   disable_pax_mprotect bin/node
 
-  if "$ACTIVATE" ; then
+  if [[ "$DOWNLOAD" == "false" ]]; then
     activate "${g_mirror_folder_name}/$version"
   fi
 }
@@ -894,6 +894,9 @@ function find_cached_version() {
 
   update_mirror_settings_for_version "$1"
   g_cached_version="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
+  if [[ ! -d "${g_cached_version}" && "${DOWNLOAD}" == "true" ]]; then
+    install "${version}"
+  fi
   [[ -d "${g_cached_version}" ]] || abort "'$1' (${version}) not in downloads cache"
 }
 
@@ -1536,7 +1539,7 @@ while [[ $# -ne 0 ]]; do
     -V|--version) display_n_version ;;
     -h|--help|help) display_help; exit ;;
     -q|--quiet) set_quiet ;;
-    -d|--download) ACTIVATE=false ;;
+    -d|--download) DOWNLOAD="true" ;;
     --insecure) set_insecure ;;
     -p|--preserve) N_PRESERVE_NPM="true" ;;
     --no-preserve) N_PRESERVE_NPM="" ;;
