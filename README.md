@@ -33,7 +33,7 @@ It is written as a BASH script but does not require you to use BASH as your comm
 
 ## Installation
 
-Since you probably already have `node`, the easiest way to install `n` is through `npm`:
+If you already have Node.js installed, an easy way to install `n` is using `npm`:
 
     npm install -g n
 
@@ -56,6 +56,7 @@ If `npm` is not yet available, one way to bootstrap an install:
     curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
     bash n lts
     # Now node and npm are available
+    npm install -g n
 
 Alternatively, you can clone this repo and
 
