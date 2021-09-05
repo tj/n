@@ -1528,6 +1528,7 @@ function show_diagnostics() {
 # which feel pretty natural.
 
 unprocessed_args=()
+positional_arg="false"
 
 while [[ $# -ne 0 ]]; do
   case "$1" in
@@ -1545,9 +1546,17 @@ while [[ $# -ne 0 ]]; do
     --stable) display_remote_versions lts; exit ;; # [sic] old terminology
     --lts) display_remote_versions lts; exit ;;
     -a|--arch) shift; set_arch "$1";; # set arch and continue
-    exec) unprocessed_args=("$@"); break ;;
-    run|as|use) unprocessed_args=("$@"); break ;;
-    *) unprocessed_args+=( "$1" ) ;;
+    exec|run|as|use)
+      unprocessed_args+=("$1")
+      positional_arg="true"
+      ;;
+    *)
+      if [[ "${positional_arg}" == "true" ]]; then
+        unprocessed_args+=("$@")
+        break
+      fi
+      unprocessed_args+=( "$1" )
+      ;;
   esac
   shift
 done
