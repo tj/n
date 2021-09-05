@@ -115,9 +115,9 @@ if [ -n "$HTTP_USER" ];then
   if [ -z "$HTTP_PASSWORD" ]; then
     abort "Must specify HTTP_PASSWORD when supplying HTTP_USER"
   fi
-  CURL_OPTIONS+=("-u $HTTP_USER:$HTTP_PASSWORD")
-  WGET_OPTIONS+=("--http-password=$HTTP_PASSWORD"
-                "--http-user=$HTTP_USER")
+  CURL_OPTIONS+=( "-u $HTTP_USER:$HTTP_PASSWORD" )
+  WGET_OPTIONS+=( "--http-password=$HTTP_PASSWORD"
+                "--http-user=$HTTP_USER" )
 elif [ -n "$HTTP_PASSWORD" ]; then
   abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
 fi
@@ -1550,12 +1550,12 @@ while [[ $# -ne 0 ]]; do
     --lts) display_remote_versions lts; exit ;;
     -a|--arch) shift; set_arch "$1";; # set arch and continue
     exec|run|as|use)
-      unprocessed_args+=("$1")
+      unprocessed_args+=( "$1" )
       positional_arg="true"
       ;;
     *)
       if [[ "${positional_arg}" == "true" ]]; then
-        unprocessed_args+=("$@")
+        unprocessed_args+=( "$@" )
         break
       fi
       unprocessed_args+=( "$1" )
