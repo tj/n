@@ -371,7 +371,6 @@ Commands:
   n <version>                    Install Node.js <version> (downloading if necessary)
   n install <version>            Install Node.js <version> (downloading if necessary)
   n run <version> [args ...]     Execute downloaded Node.js <version> with [args ...]
-  n run <version> [args ...]     Execute downloaded node <version> with [args ...]
   n which <version>              Output path for downloaded node <version>
   n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
   n rm <version ...>             Remove the given downloaded version(s)
