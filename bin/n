@@ -388,7 +388,7 @@ Options:
   -h, --help            Display help information
   -p, --preserve        Preserve npm and npx during install of Node.js
   -q, --quiet           Disable curl output. Disable log messages processing "auto" and "engine" labels.
-  -d, --download        Download only
+  -d, --download        Download if necessary, and don't make active
   -a, --arch            Override system architecture
   --all                 ls-remote displays all matches instead of last 20
   --insecure            Turn off certificate checking for https requests (may be needed from behind a proxy server)
