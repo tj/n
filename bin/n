@@ -61,7 +61,7 @@ function n_grep() {
 # Setup and state
 #
 
-VERSION="v7.4.1-0"
+VERSION="v7.4.1"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -894,7 +894,7 @@ function find_cached_version() {
   update_mirror_settings_for_version "$1"
   g_cached_version="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
   if [[ ! -d "${g_cached_version}" && "${DOWNLOAD}" == "true" ]]; then
-    install "${version}"
+    (install "${version}")
   fi
   [[ -d "${g_cached_version}" ]] || abort "'$1' (${version}) not in downloads cache"
 }
