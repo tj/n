@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- support for `--download` option to `run` and `exec` to download the target version when needed
+- support for `--download` option to `run` and `exec` to download the target version when needed ([#685])
 
 ## [7.3.1] (2021-07-25)
 
@@ -402,6 +402,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#675]: https://github.com/tj/n/pull/675
 [#676]: https://github.com/tj/n/pull/676
 [#679]: https://github.com/tj/n/issues/679
+[#685]: https://github.com/tj/n/issues/685
 
 <!-- reference links for releases -->
 
