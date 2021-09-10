@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [7.4.0] (2021-09-10)
+
+### Added
+
+- support for `--download` option to `run` and `exec` to download the target version when needed
 
 ## [7.3.1] (2021-07-25)
 
@@ -400,6 +404,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[7.4.0]: https://github.com/tj/n/compare/v7.3.1...v7.4.0
 [7.3.1]: https://github.com/tj/n/compare/v7.3.0...v7.3.1
 [7.3.0]: https://github.com/tj/n/compare/v7.2.2...v7.3.0
 [7.2.2]: https://github.com/tj/n/compare/v7.2.1...v7.2.2
