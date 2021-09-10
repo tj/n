@@ -11,12 +11,12 @@ function setup_file() {
   export N_PREFIX="${tmpdir}/n/test/run-which"
   n --download 4.9.1
   n --download lts
+  # using "latest" for download tests with run and exec
 }
 
 function teardown_file() {
   rm -rf "${N_PREFIX}"
 }
-
 
 @test "setupAll for run/which/exec # (2 installs)" {
   # Dummy test so setupAll displayed while running first setup
@@ -37,18 +37,15 @@ function teardown_file() {
   assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
-
 @test "n bin v4.9.1" {
   output="$(n bin v4.9.1)"
   assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
 
-
 @test "n which argon" {
   output="$(n which argon)"
   assert_equal "$output" "${N_PREFIX}/n/versions/node/4.9.1/bin/node"
 }
-
 
 @test "n which lts" {
   output="$(n which lts)"
@@ -64,26 +61,29 @@ function teardown_file() {
   assert_equal "$output" "v4.9.1"
 }
 
-
 @test "n run lts" {
   output="$(n run lts --version)"
   local LTS_VERSION="$(display_remote_version lts)"
   assert_equal "$output" "v${LTS_VERSION}"
 }
 
-
 @test "n use 4" {
   output="$(n use 4 --version)"
   assert_equal "$output" "v4.9.1"
 }
-
 
 @test "n as 4" {
   output="$(n as 4 --version)"
   assert_equal "$output" "v4.9.1"
 }
 
-
+@test "n run --download latest" {
+  n rm latest || true
+  n run --download latest --version
+  output="$(n run latest --version)"
+  local LATEST_VERSION="$(display_remote_version latest)"
+  assert_equal "$output" "v${LATEST_VERSION}"
+}
 
 
 # n exec
@@ -93,15 +93,21 @@ function teardown_file() {
   assert_equal "$output" "v4.9.1"
 }
 
-
 @test "n exec 4 npm" {
   output="$(n exec 4 npm --version)"
   assert_equal "$output" "2.15.11"
 }
 
-
 @test "n exec lts" {
   output="$(n exec lts node --version)"
   local LTS_VERSION="$(display_remote_version lts)"
   assert_equal "$output" "v${LTS_VERSION}"
+}
+
+@test "n exec -d latest" {
+  n rm latest || true
+  n exec -d latest node --version
+  output="$(n exec latest node --version)"
+  local LATEST_VERSION="$(display_remote_version latest)"
+  assert_equal "$output" "v${LATEST_VERSION}"
 }
