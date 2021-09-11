@@ -701,10 +701,10 @@ activate() {
   # Copy just node, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
   [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
-  [[ -e "$dir/bin/corepack" ]] && cp -f "$dir/bin/corepack" "$N_PREFIX/bin"
+  [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin"
   if [[ -z "${N_PRESERVE_NPM}" ]]; then
-    [[ -e "$dir/bin/npm" ]] && cp -f "$dir/bin/npm" "$N_PREFIX/bin"
-    [[ -e "$dir/bin/npx" ]] && cp -f "$dir/bin/npx" "$N_PREFIX/bin"
+    [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
+    [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
   fi
 
   # include
