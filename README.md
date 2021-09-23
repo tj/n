@@ -37,7 +37,9 @@ If you already have Node.js installed, an easy way to install `n` is using `npm`
 
     npm install -g n
 
-Once installed, `n` caches Node.js versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ Node.js version is installed under `N_PREFIX`.
+Once installed, `n` caches Node.js versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`.
+
+The _active_ Node.js version is installed under `N_PREFIX`. (This creates subdirectories `bin`, `include`, `lib` and `share`.)
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
