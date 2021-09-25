@@ -37,7 +37,8 @@ If you already have Node.js installed, an easy way to install `n` is using `npm`
 
     npm install -g n
 
-Once installed, `n` caches Node.js versions in subdirectory `n/versions` of the directory specified in environment variable `N_PREFIX`, which defaults to `/usr/local`; and the _active_ Node.js version is installed under `N_PREFIX`.
+The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
+`n` caches Node.js versions in subdirectory `n/versions`. The _active_ Node.js version is installed in subdirectories `bin`, `include`, `lib`, and `share`.
 
 To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
 
@@ -69,7 +70,7 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
 
     brew install n
-    
+
 Or on macOS with [MacPorts](https://www.macports.org/) you can install the [n port](https://ports.macports.org/port/n/summary):
 
     port install n
@@ -232,9 +233,10 @@ There is also `N_NODE_DOWNLOAD_MIRROR` for a different mirror with same layout a
 
 ## Custom Architecture
 
-By default `n` picks the binaries matching your system architecture. For example, on a 64 bit system `n` will download 64 bit binaries. 
+By default `n` picks the binaries matching your system architecture. For example, on a 64 bit system `n` will download 64 bit binaries.
 
 On a Mac with Apple silicon:
+
 - for Node.js 16 and higher, `n` defaults to arm64 binaries which run natively
 - for older versions of Node.js, `n` defaults to x64 binaries which run in Rosetta 2
 
