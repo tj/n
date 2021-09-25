@@ -689,7 +689,7 @@ activate() {
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
   # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
-  if [[ -e "$dir/bin/corepack" ]]; then
+  if [[ -e "$dir/lib/node_modules/corepack" ]]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
   fi
