@@ -1,7 +1,7 @@
 {
   "name": "n",
   "description": "Interactively Manage All Your Node Versions",
-  "version": "7.5.0",
+  "version": "7.5.1-0",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "homepage": "https://github.com/tj/n",
   "bugs": "https://github.com/tj/n/issues",
