@@ -688,14 +688,20 @@ activate() {
     # Copy just npm, skipping possible added global modules after download. Clean copy to avoid version change problems.
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
+  # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
+  if [[ -e "$dir/lib/node_modules/corepack" ]]; then
+    mkdir -p "$N_PREFIX/lib/node_modules"
+    clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
+  fi
 
   # bin
   mkdir -p "$N_PREFIX/bin"
   # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
   rm -f "$N_PREFIX/bin/node"
-  # Copy just node, in case user has installed global npm modules into cache.
+  # Copy bin items by hand, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
   [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
+  [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
   if [[ -z "${N_PRESERVE_NPM}" ]]; then
     [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
     [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
@@ -1329,9 +1335,11 @@ uninstall_installed() {
   delete_with_echo "${N_PREFIX}/bin/node"
   delete_with_echo "${N_PREFIX}/bin/npm"
   delete_with_echo "${N_PREFIX}/bin/npx"
+  delete_with_echo "${N_PREFIX}/bin/corepack"
   delete_with_echo "${N_PREFIX}/include/node"
   delete_with_echo "${N_PREFIX}/lib/dtrace/node.d"
   delete_with_echo "${N_PREFIX}/lib/node_modules/npm"
+  delete_with_echo "${N_PREFIX}/lib/node_modules/corepack"
   delete_with_echo "${N_PREFIX}/share/doc/node"
   delete_with_echo "${N_PREFIX}/share/man/man1/node.1"
   delete_with_echo "${N_PREFIX}/share/systemtap/tapset/node.stp"
