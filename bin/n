@@ -1071,7 +1071,8 @@ function get_package_engine_version() {
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
   verbose_log "read" "${range}"
-  if [[ -z "${range}" || "*" == "${range}" ]]; then
+  [[ -n "${range}" ]] || return 2
+  if [[ "*" == "${range}" ]]; then
     verbose_log "target" "current"
     g_target_node="current"
     return
@@ -1142,6 +1143,7 @@ function get_engine_version() {
     break
   done
   [[ -n "${parent}" ]] || abort "${error_message}"
+  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
 }
 
 #
@@ -1169,6 +1171,7 @@ function get_auto_version() {
   done
   # Fallback to package.json
   [[ -n "${parent}" ]] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
+  [[ -n "${g_target_node}" ]] || abort "file found for auto did not contain target version of node"
 }
 
 #
