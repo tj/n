@@ -1143,7 +1143,7 @@ function get_engine_version() {
     break
   done
   [[ -n "${parent}" ]] || abort "${error_message}"
-  [[ -n "${g_target_node}" ]] || abort "did not find supported versions of node in 'engines' field of package.json"
+  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
 }
 
 #
