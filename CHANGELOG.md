@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [8.0.0] (2021-10-23)
+
+### Changed
+
+- display error if version missing in version file for `n auto` and `n engine` (rather than fallback to current) ([#693])
 
 ## [7.5.0] (2021-09-26)
 
@@ -415,10 +419,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#676]: https://github.com/tj/n/pull/676
 [#679]: https://github.com/tj/n/issues/679
 [#685]: https://github.com/tj/n/issues/685
+[#693]: https://github.com/tj/n/issues/693
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[8.0.0]: https://github.com/tj/n/compare/v7.5.0...v8.0.0
 [7.5.0]: https://github.com/tj/n/compare/v7.4.1...v7.5.0
 [7.4.1]: https://github.com/tj/n/compare/v7.4.0...v7.4.1
 [7.4.0]: https://github.com/tj/n/compare/v7.3.1...v7.4.0
