@@ -337,7 +337,7 @@ enter_fullscreen() {
 leave_fullscreen() {
   # Set cursor to normal
   tput cnorm 2> /dev/null
-  # Restore screen contentsq
+  # Restore screen contents
   tput rmcup 2> /dev/null
   stty echo
 }
