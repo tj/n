@@ -790,7 +790,7 @@ install() {
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner
+  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
   pipe_results=( "${PIPESTATUS[@]}" )
   if [[ "${pipe_results[0]}" -ne 0 ]]; then
     abort "failed to download archive for $version"
