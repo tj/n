@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [8.0.1] (2011-12-04)
+
+### Fixed
+
+- improve error handling for tar extraction errors ([#701])
+- add tar flag for compatibility with tar builds which do not default to stdin ([#697])
 
 ## [8.0.0] (2021-10-23)
 
@@ -422,10 +427,13 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#679]: https://github.com/tj/n/issues/679
 [#685]: https://github.com/tj/n/issues/685
 [#693]: https://github.com/tj/n/issues/693
+[#697]: https://github.com/tj/n/issues/697
+[#701]: https://github.com/tj/n/issues/701
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[8.0.1]: https://github.com/tj/n/compare/v8.0.0...v8.0.1
 [8.0.0]: https://github.com/tj/n/compare/v7.5.0...v8.0.0
 [7.5.0]: https://github.com/tj/n/compare/v7.4.1...v7.5.0
 [7.4.1]: https://github.com/tj/n/compare/v7.4.0...v7.4.1
