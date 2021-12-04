@@ -762,6 +762,7 @@ install() {
 
   local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
 
+  # Note: decompression flags ignored with default Darwin tar which autodetects.
   if test "$N_USE_XZ" = "true"; then
     local tarflag="-Jx"
   else
@@ -790,8 +791,12 @@ install() {
 
   log fetch "$url"
   do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
-  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+  pipe_results=( "${PIPESTATUS[@]}" )
+  if [[ "${pipe_results[0]}" -ne 0 ]]; then
     abort "failed to download archive for $version"
+  fi
+  if [[ "${pipe_results[1]}" -ne 0 ]]; then
+    abort "failed to extract archive for $version"
   fi
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
