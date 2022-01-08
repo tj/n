@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [8.0.2] (2022-01-09)
 
-## [8.0.1] (2011-12-04)
+### Fixed
+
+- improved warning message when utility location hash may be holding old location to cover a wider range of shells including dash ([#707])
+
+## [8.0.1] (2021-12-04)
 
 ### Fixed
 
@@ -431,10 +435,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#693]: https://github.com/tj/n/issues/693
 [#697]: https://github.com/tj/n/issues/697
 [#701]: https://github.com/tj/n/issues/701
+[#707]: https://github.com/tj/n/issues/707
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[8.0.2]: https://github.com/tj/n/compare/v8.0.1...v8.0.2
 [8.0.1]: https://github.com/tj/n/compare/v8.0.0...v8.0.1
 [8.0.0]: https://github.com/tj/n/compare/v7.5.0...v8.0.0
 [7.5.0]: https://github.com/tj/n/compare/v7.4.1...v7.5.0
