@@ -1273,7 +1273,7 @@ function display_remote_versions() {
   elif is_download_folder "${version}"; then
     match='.'
   elif is_download_version "${version}"; then
-    version="${version#${g_mirror_folder_name}/}"
+    version="${version#"${g_mirror_folder_name}"/}"
     if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
       match_count=1
       match='.'
