@@ -7,6 +7,7 @@
 
 function unset_n_env(){
   unset N_PREFIX
+  unset N_CACHE_PREFIX
   unset NODE_MIRROR
   unset N_NODE_MIRROR
   unset N_NODE_DOWNLOAD_MIRROR

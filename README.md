@@ -255,6 +255,9 @@ To change the location to say `$HOME/.n`, add lines like the following to your s
     export N_PREFIX=$HOME/.n
     export PATH=$N_PREFIX/bin:$PATH
 
+If you want to store the downloads under a different location, use `N_CACHE_PREFIX`. This does *not* affect the currently active
+node version.
+
 `n` defaults to using xz compressed Node.js tarballs for the download if it is likely tar on the system supports xz decompression.
 You can override the automatic choice by setting an environment variable to zero or non-zero:
 
