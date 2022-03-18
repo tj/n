@@ -42,3 +42,21 @@ function setup() {
 
   rm -rf "${TMP_PREFIX_DIR}"
 }
+
+@test "install: cache prefix" {
+  readonly N_CACHE_PREFIX="$(mktemp -d)"
+  readonly TARGET_VERSION="4.9.1"
+  setup_tmp_prefix
+  export N_CACHE_PREFIX
+
+  [ ! -d "${N_CACHE_PREFIX}/n/versions/node/${TARGET_VERSION}" ]
+  [ ! -d "${N_PREFIX}/n/versions/node/${TARGET_VERSION}" ]
+
+  n ${TARGET_VERSION}
+
+  # Cached version
+  [ -d "${N_CACHE_PREFIX}/n/versions/node/${TARGET_VERSION}" ]
+  [ ! -d "${N_PREFIX}/n/versions/node/${TARGET_VERSION}" ]
+
+  rm -rf "${TMP_PREFIX_DIR}" "${N_CACHE_PREFIX}"
+}
