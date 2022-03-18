@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## Unreleased (date goes here)
+## [8.1.0] (2022-03-18)
+
+### Added
+
+- optional `N_CACHE_PREFIX` for separate location for downloaded files than install location ([#717])
 
 ## [8.0.2] (2022-01-09)
 
@@ -438,10 +442,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#697]: https://github.com/tj/n/issues/697
 [#701]: https://github.com/tj/n/issues/701
 [#707]: https://github.com/tj/n/issues/707
+[#717]: https://github.com/tj/n/issues/717
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[8.1.0]: https://github.com/tj/n/compare/v8.0.2...v8.1.0
 [8.0.2]: https://github.com/tj/n/compare/v8.0.1...v8.0.2
 [8.0.1]: https://github.com/tj/n/compare/v8.0.0...v8.0.1
 [8.0.0]: https://github.com/tj/n/compare/v7.5.0...v8.0.0
