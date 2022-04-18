@@ -672,6 +672,8 @@ activate() {
   local dir="$CACHE_DIR/$version"
   local original_node="$(command -v node)"
   local installed_node="${N_PREFIX}/bin/node"
+  log "copying" "$version"
+
 
   # Ideally we would just copy from cache to N_PREFIX, but there are some complications
   # - various linux versions use symlinks for folders in /usr/local and also error when copy folder onto symlink
