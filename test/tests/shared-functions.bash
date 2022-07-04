@@ -13,6 +13,7 @@ function unset_n_env(){
   unset N_NODE_DOWNLOAD_MIRROR
   unset N_MAX_REMOTE_MATCHES
   unset N_PRESERVE_NPM
+  unset N_PRESERVE_COREPACK
   unset HTTP_USER
   unset HTTP_PASSWORD
   unset GREP_OPTIONS
