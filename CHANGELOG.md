@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [9.0.0] (2022-07-16)
+
+### Changed
+
+- `--preserve` preserves `corepack` too ([#736])
+
+### Added
+
+- optional `N_PRESERVE_COREPACK` to change default behaviour for preserving `corepack` ([#736])
 
 ## [8.2.0] (2022-04-18)
 
@@ -452,10 +460,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#707]: https://github.com/tj/n/issues/707
 [#717]: https://github.com/tj/n/issues/717
 [#720]: https://github.com/tj/n/issues/720
+[#736]: https://github.com/tj/n/pull/736
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.0.0]: https://github.com/tj/n/compare/v8.2.0...v9.0.0
 [8.2.0]: https://github.com/tj/n/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/tj/n/compare/v8.0.2...v8.1.0
 [8.0.2]: https://github.com/tj/n/compare/v8.0.1...v8.0.2
