@@ -695,7 +695,7 @@ activate() {
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
   # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
-  if [[ -e "$dir/lib/node_modules/corepack" ]]; then
+  if [[ -e "$dir/lib/node_modules/corepack" && -z "${N_PRESERVE_COREPACK}" ]]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
   fi
@@ -707,7 +707,9 @@ activate() {
   # Copy bin items by hand, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
   [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
-  [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
+  if [[ -z "${N_PRESERVE_COREPACK}" ]]; then
+    [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
+  fi
   if [[ -z "${N_PRESERVE_NPM}" ]]; then
     [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
     [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
@@ -1422,6 +1424,7 @@ function show_diagnostics() {
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
    [[ -n "${N_PRESERVE_NPM}" ]] && echo "installs preserve npm by default"
+   [[ -n "${N_PRESERVE_COREPACK}" ]] && echo "installs preserve corepack by default"
 
   printf "\nProxy\n"
   # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
@@ -1561,8 +1564,8 @@ while [[ $# -ne 0 ]]; do
     -q|--quiet) set_quiet ;;
     -d|--download) DOWNLOAD="true" ;;
     --insecure) set_insecure ;;
-    -p|--preserve) N_PRESERVE_NPM="true" ;;
-    --no-preserve) N_PRESERVE_NPM="" ;;
+    -p|--preserve) N_PRESERVE_NPM="true" N_PRESERVE_COREPACK="true" ;;
+    --no-preserve) N_PRESERVE_NPM="" N_PRESERVE_COREPACK="" ;;
     --use-xz) N_USE_XZ="true" ;;
     --no-use-xz) N_USE_XZ="false" ;;
     --latest) display_remote_versions latest; exit ;;

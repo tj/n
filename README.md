@@ -179,22 +179,24 @@ Or execute a command with `PATH` modified so `node` and `npm` will be from the d
 
 ## Preserving npm
 
-A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`:
+A Node.js install normally also includes `npm`,  `npx`, and `corepack`, but you may wish to preserve your current (especially newer) versions using `--preserve`:
 
     $ npm install -g npm@latest
     ...
     $ npm --version
     6.13.7
+    # Node.js 8.17.0 includes (older) npm 6.13.4
     $ n -p 8
        installed : v8.17.0
     $ npm --version
     6.13.7
 
-You can make this the default by setting `N_PRESERVE_NPM` to a non-empty string.
+You can make this the default by setting the environment variable to a non-empty string. There are separate environment variables for `npm` and `corepack`:
 
     export N_PRESERVE_NPM=1
+    export N_PRESERVE_COREPACK=1
 
-You can be explicit to get the desired behaviour whatever the environment variable:
+You can be explicit to get the desired behaviour whatever the environment variables:
 
     n --preserve nightly
     n --no-preserve latest
@@ -276,6 +278,7 @@ In brief:
 - support for [NO_COLOR](https://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
 - `N_PRESERVE_NPM`: See [Preserving npm](#preserving-npm)
+- `N_PRESERVE_COREPACK`: See [Preserving npm](#preserving-npm)
 
 ## How It Works
 
