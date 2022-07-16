@@ -77,7 +77,7 @@ Or on macOS with [MacPorts](https://www.macports.org/) you can install the [n po
 
 On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows installation directly from GitHub; for instance:
 
-    curl -L https://git.io/n-install | bash
+    curl -L https://bit.ly/n-install | bash
 
 n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS Node.js version.
 
