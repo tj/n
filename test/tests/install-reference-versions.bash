@@ -13,4 +13,4 @@ n --download 4
 n --download lts
 n --download latest
 n --download nightly/latest
-N_NODE_MIRROR=https://npm.taobao.org/mirrors/node n --download 6.11
+N_NODE_MIRROR=https://npmmirror.com/mirrors/node n --download 6.11

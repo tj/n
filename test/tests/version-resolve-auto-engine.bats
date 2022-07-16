@@ -162,20 +162,23 @@ function write_engine() {
 @test "auto engine (semver), <8.12" {
   cd "${MY_DIR}"
   write_engine "<8.12"
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  # newer versions of npx not liking proxy as used in tests
+  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
 
 @test "auto engine (semver), 8.11.1 - 8.11.3" {
   cd "${MY_DIR}"
   write_engine "8.11.1 - 8.11.3"
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  # newer versions of npx not liking proxy as used in tests
+  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.3"
 }
 
 @test "auto engine (semver), >8.1 <8.12 || >2.1 <3.4" {
   cd "${MY_DIR}"
   write_engine ">8.1 <8.12 || >2.1 <3.4"
-  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  # newer versions of npx not liking proxy as used in tests
+  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
