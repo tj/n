@@ -288,3 +288,7 @@ The downloads are kept in a cache folder to be used for reinstalls. The download
 
 The global `npm` packages are not changed by the install, with the
 exception of `npm` itself which is part of the Node.js install.
+
+## Contributing
+
+We're excited that you're considering helping work on our package. [Please see our contributing guidlines for additional guidance.](https://github.com/tj/n/blob/master/CONTRIBUTING.md)
