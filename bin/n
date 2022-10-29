@@ -256,7 +256,7 @@ function update_arch_settings_for_version() {
 function is_lts_codename() {
   # https://github.com/nodejs/Release/blob/master/CODENAMES.md
   # e.g. argon, Boron
-  [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron)$ ]]
+  [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron|[Jj]od)$ ]]
 }
 
 #
