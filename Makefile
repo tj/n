@@ -1,7 +1,7 @@
 PREFIX ?= /usr/local
 
 install: bin/n
-	mkdir -p $(PREFIX)/$(dir bin/n)
+	mkdir -p $(PREFIX)/bin
 	cp bin/n $(PREFIX)/bin/n
 
 uninstall:
