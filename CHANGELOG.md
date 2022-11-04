@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [9.0.1] (2022-11-04)
+
+### Fixes
+
+- `Makefile` compatible with more flavours of `make` ([#745])
+- quote paths in `Makefile` in case `PREFIX` contains spaces ([#746])
+
 ## [9.0.0] (2022-07-16)
 
 ### Changed
@@ -463,10 +470,13 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#717]: https://github.com/tj/n/issues/717
 [#720]: https://github.com/tj/n/issues/720
 [#736]: https://github.com/tj/n/pull/736
+[#745]: https://github.com/tj/n/pull/745
+[#746]: https://github.com/tj/n/pull/746
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.0.1]: https://github.com/tj/n/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/tj/n/compare/v8.2.0...v9.0.0
 [8.2.0]: https://github.com/tj/n/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/tj/n/compare/v8.0.2...v8.1.0
