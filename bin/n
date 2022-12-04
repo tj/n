@@ -217,7 +217,7 @@ update_xz_settings_for_version() {
   # tarballs in xz format were available in later version of iojs, but KISS and only use xz from v4.
   if [ "${N_USE_XZ}" = "true" ]; then
     local major_version="$(display_major_version "$1")"
-    if [[ "${major_version}" -lt 4 ]]; then
+    if [ "${major_version}" -lt 4 ]; then
       N_USE_XZ="false"
     fi
   fi
@@ -477,13 +477,13 @@ display_n_version() {
 set_active_node() {
   g_active_node=
   local node_path="$(command -v node)"
-  if [[ -x "${node_path}" ]]; then
+  if [ -x "${node_path}" ]; then
     local installed_version=$(node --version)
     installed_version=${installed_version#v}
     for dir in "${CACHE_DIR}"/*/ ; do
       local folder_name="${dir%/}"
       folder_name="${folder_name##*/}"
-      if diff &> /dev/null \
+      if diff > /dev/null 2>&1 \
         "${CACHE_DIR}/${folder_name}/${installed_version}/bin/node" \
         "${node_path}" ; then
         g_active_node="${folder_name}/${installed_version}"
@@ -839,9 +839,9 @@ set_quiet() {
 #
 
 do_get() {
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     curl ${CURL_OPTIONS} "$@"
-  elif command -v wget &> /dev/null; then
+  elif command -v wget > /dev/null 2>&1; then
     wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
@@ -855,10 +855,10 @@ do_get() {
 #
 
 do_get_index() {
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     # --silent to suppress progress et al
     curl --silent --compressed ${CURL_OPTIONS} "$@"
-  elif command -v wget &> /dev/null; then
+  elif command -v wget > /dev/null 2>&1; then
     wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
@@ -966,7 +966,7 @@ exec_with_version() {
 is_ok() {
   # Note: both curl and wget can follow redirects, as present on some mirrors (e.g. https://npm.taobao.org/mirrors/node).
   # The output is complicated with redirects, so keep it simple and use command status rather than parse output.
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     do_get --silent --head "$1" > /dev/null || return 1
   else
     do_get --spider "$1" > /dev/null || return 1
@@ -982,7 +982,7 @@ can_use_xz() {
   # Be conservative and only enable if xz is likely to work. Unfortunately we can't directly query tar itself.
   # For research, see https://github.com/shadowspawn/nvh/issues/8
   local uname_s="$(uname -s)"
-  if [[ "${uname_s}" = "Linux" ]] && command -v xz &> /dev/null ; then
+  if [[ "${uname_s}" = "Linux" ]] && command -v xz > /dev/null 2>&1 ; then
     # tar on linux is likely to support xz if it is available as a command
     return 0
   elif [[ "${uname_s}" = "Darwin" ]]; then
@@ -1088,7 +1088,7 @@ get_package_engine_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
-  command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
+  command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
   verbose_log "read" "${range}"
@@ -1111,7 +1111,7 @@ get_package_engine_version() {
     esac
     verbose_log "target" "${version}"
   else
-    command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
     verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
@@ -1397,7 +1397,7 @@ show_diagnostics() {
   command -v n && n --version
 
   printf "\nnode\n"
-  if command -v node &> /dev/null; then
+  if command -v node > /dev/null 2>&1; then
     command -v node && node --version
     node -e 'if (process.versions.v8) console.log("JavaScript engine: v8");'
 
@@ -1406,16 +1406,16 @@ show_diagnostics() {
   fi
 
   printf "\ntar\n"
-  if command -v tar &> /dev/null; then
+  if command -v tar > /dev/null 2>&1; then
     command -v tar && tar --version
   else
     echo_red "tar not found. Needed for extracting downloads."
   fi
 
   printf "\ncurl or wget\n"
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     command -v curl && curl --version
-  elif command -v wget &> /dev/null; then
+  elif command -v wget > /dev/null 2>&1; then
     command -v wget && wget --version
   else
     echo_red "Neither curl nor wget found. Need one of them for downloads."
@@ -1441,7 +1441,7 @@ show_diagnostics() {
   [[ -n "${http_proxy}" ]] && echo "http_proxy: ${http_proxy}"
   # shellcheck disable=SC2154
   [[ -n "${https_proxy}" ]] && echo "https_proxy: ${https_proxy}"
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     # curl supports lower case and upper case!
     # shellcheck disable=SC2154
     [[ -n "${all_proxy}" ]] && echo "all_proxy: ${all_proxy}"
@@ -1453,7 +1453,7 @@ show_diagnostics() {
     elif [[ -e "${HOME}/.curlrc" ]]; then
       echo "have \$HOME/.curlrc"
     fi
-  elif command -v wget &> /dev/null; then
+  elif command -v wget > /dev/null 2>&1; then
     if [[ -e "${WGETRC}" ]]; then
       echo "have \$WGETRC"
     elif [[ -e "${HOME}/.wgetrc" ]]; then
@@ -1471,7 +1471,7 @@ show_diagnostics() {
   else
     echo_red "'${install_bin}' is not in PATH"
   fi
-  if command -v node &> /dev/null; then
+  if command -v node > /dev/null 2>&1; then
     printf "\nChecking n install destination priority in PATH...\n"
     local node_dir="$(dirname "$(command -v node)")"
 
@@ -1545,7 +1545,7 @@ show_diagnostics() {
   else
     echo_red "mirror not reachable"
     printf "Showing failing command and output\n"
-    if command -v curl &> /dev/null; then
+    if command -v curl > /dev/null 2>&1; then
       ( set -x; do_get --head "${N_NODE_MIRROR}/" )
     else
       ( set -x; do_get --spider "${N_NODE_MIRROR}/" )
