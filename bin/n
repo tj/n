@@ -830,7 +830,7 @@ install() {
 
 set_quiet() {
   SHOW_VERBOSE_LOG="false"
-  command -v curl > /dev/null && CURL_OPTIONS+=( "--silent" ) && GET_SHOWS_PROGRESS="false"
+  command -v curl > /dev/null && CURL_OPTIONS="${CURL_OPTIONS} --silent" && GET_SHOWS_PROGRESS="false"
 }
 
 #
@@ -1114,7 +1114,7 @@ get_package_engine_version() {
     command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
     verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
-    local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
+    local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
     # Using semver@7 so works with older versions of node.
     # shellcheck disable=SC2086
     version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
