@@ -478,7 +478,7 @@ set_active_node() {
   g_active_node=
   local node_path="$(command -v node)"
   if [ -x "${node_path}" ]; then
-    local installed_version=$(node --version)
+    local installed_version="$(node --version)"
     installed_version=${installed_version#v}
     for dir in "${CACHE_DIR}"/*/ ; do
       local folder_name="${dir%/}"
@@ -549,11 +549,11 @@ menu_select_cache_versions() {
   trap handle_sigint INT
   trap handle_sigtstp SIGTSTP
 
-  ESCAPE_SEQ=$'\033'
-  UP=$'A'
-  DOWN=$'B'
-  CTRL_P=$'\020'
-  CTRL_N=$'\016'
+  ESCAPE_SEQ="$(printf '\033')"
+  UP=A
+  DOWN=B
+  CTRL_P="$(printf '\020')"
+  CTRL_N="$(printf '\016')"
 
   while true; do
     read -rsn 1 key
@@ -562,7 +562,7 @@ menu_select_cache_versions() {
         # Handle ESC sequences followed by other characters, i.e. arrow keys
         read -rsn 1 -t 1 tmp
         # See "[" if terminal in normal mode, and "0" in application mode
-        if [[ "$tmp" == "[" || "$tmp" == "O" ]]; then
+        if [ "$tmp" = "[" ] || [ "$tmp" = "O" ]; then
           read -rsn 1 -t 1 arrow
           case "$arrow" in
             "$UP")
@@ -579,16 +579,16 @@ menu_select_cache_versions() {
         fi
         ;;
       "d")
-        if [[ -n "${selected}" ]]; then
+        if [ -n "${selected}" ]; then
           clear
           # Note: prev/next is constrained to min/max
           local after_delete_selection="$(next_version_installed "${selected}")"
-          if [[ "${after_delete_selection}" == "${selected}"  ]]; then
+          if [ "${after_delete_selection}" = "${selected}"  ]; then
             after_delete_selection="$(prev_version_installed "${selected}")"
           fi
           remove_versions "${selected}"
 
-          if [[ "${after_delete_selection}" == "${selected}" ]]; then
+          if [ "${after_delete_selection}" = "${selected}" ]; then
             clear
             leave_fullscreen
             echo "All downloaded versions have been deleted from cache."
@@ -619,7 +619,7 @@ menu_select_cache_versions() {
       "")
         # enter key returns empty string
         leave_fullscreen
-        [[ -n "${selected}" ]] && activate "${selected}"
+        [ -n "${selected}" ] && activate "${selected}"
         exit
         ;;
     esac
@@ -666,7 +666,7 @@ disable_pax_mprotect() {
 clean_copy_folder() {
   local source="$1"
   local target="$2"
-  if [[ -d "${source}" ]]; then
+  if [ -d "${source}" ]; then
     rm -rf "${target}"
     cp -fR "${source}" "${target}"
   fi
@@ -698,13 +698,13 @@ activate() {
   mkdir -p "$N_PREFIX/lib"
   # Copy everything except node_modules.
   find "$dir/lib" -mindepth 1 -maxdepth 1 \! -name node_modules -exec cp -fR "{}" "$N_PREFIX/lib" \;
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
+  if [ -z "${N_PRESERVE_NPM}" ]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     # Copy just npm, skipping possible added global modules after download. Clean copy to avoid version change problems.
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
   # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
-  if [[ -e "$dir/lib/node_modules/corepack" && -z "${N_PRESERVE_COREPACK}" ]]; then
+  if [ -e "$dir/lib/node_modules/corepack" ] && [ -z "${N_PRESERVE_COREPACK}" ]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
   fi
@@ -715,13 +715,13 @@ activate() {
   rm -f "$N_PREFIX/bin/node"
   # Copy bin items by hand, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
-  [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
-  if [[ -z "${N_PRESERVE_COREPACK}" ]]; then
-    [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
+  [ -e "$dir/bin/node-waf" ] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
+  if [ -z "${N_PRESERVE_COREPACK}" ]; then
+    [ -e "$dir/bin/corepack" ] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
   fi
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
-    [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
-    [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
+  if [ -z "${N_PRESERVE_NPM}" ]; then
+    [ -e "$dir/bin/npm" ] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
+    [ -e "$dir/bin/npx" ] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
   fi
 
   # include
@@ -738,7 +738,7 @@ activate() {
   disable_pax_mprotect "${installed_node}"
 
   local active_node="$(command -v node)"
-  if [[ -e "${active_node}" && -e "${installed_node}" && "${active_node}" != "${installed_node}" ]]; then
+  if [ -e "${active_node}" ] && [ -e "${installed_node}" ] && [ "${active_node}" != "${installed_node}" ]; then
     # Installed and active are different which might be a PATH problem. List both to give user some clues.
     log "installed" "$("${installed_node}" --version) to ${installed_node}"
     log "active" "$("${active_node}" --version) at ${active_node}"
@@ -746,14 +746,14 @@ activate() {
     local npm_version_str=""
     local installed_npm="${N_PREFIX}/bin/npm"
     local active_npm="$(command -v npm)"
-    if [[ -z "${N_PRESERVE_NPM}" && -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" = "${installed_npm}" ]]; then
+    if [ -z "${N_PRESERVE_NPM}" ] && [ -e "${active_npm}" ] && [ -e "${installed_npm}" ] && [ "${active_npm}" = "${installed_npm}" ]; then
       npm_version_str=" (with npm $(npm --version))"
     fi
 
     log "installed" "$("${installed_node}" --version)${npm_version_str}"
 
     # Extra tips for changed location.
-    if [[ -e "${active_node}" && -e "${original_node}" && "${active_node}" != "${original_node}" ]]; then
+    if [ -e "${active_node}" ] && [ -e "${original_node}" ] && [ "${active_node}" != "${original_node}" ]; then
       printf '\nNote: the node command changed location and the old location may be remembered in your current shell.\n'
       log old "${original_node}"
       log new "${active_node}"
@@ -767,11 +767,11 @@ activate() {
 #
 
 install() {
-  [[ -z "$1" ]] && abort "version required"
+  [ -z "$1" ] && abort "version required"
   local version
   get_latest_resolved_version "$1" || return 2
   version="${g_target_node}"
-  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  [ -n "${version}" ] || abort "no version found for '$1'"
   update_mirror_settings_for_version "$1"
   update_xz_settings_for_version "${version}"
   update_arch_settings_for_version "${version}"
@@ -786,8 +786,8 @@ install() {
   fi
 
   if test -d "$dir"; then
-    if [[ ! -e "$dir/n.lock" ]] ; then
-      if [[ "$DOWNLOAD" == "false" ]] ; then
+    if [ ! -e "$dir/n.lock" ] ; then
+      if [ "$DOWNLOAD" = "false" ] ; then
         activate "${g_mirror_folder_name}/${version}"
       fi
       exit
@@ -819,7 +819,7 @@ install() {
 
   disable_pax_mprotect bin/node
 
-  if [[ "$DOWNLOAD" == "false" ]]; then
+  if [ "$DOWNLOAD" == "false" ]; then
     activate "${g_mirror_folder_name}/$version"
   fi
 }
@@ -870,15 +870,15 @@ do_get_index() {
 #
 
 remove_versions() {
-  [[ -z "$1" ]] && abort "version(s) required"
-  while [[ $# -ne 0 ]]; do
+  [ -z "$1" ] && abort "version(s) required"
+  while [ $# -ne 0 ]; do
     local version
     get_latest_resolved_version "$1" || break
     version="${g_target_node}"
-    if [[ -n "${version}" ]]; then
+    if [ -n "${version}" ]; then
       update_mirror_settings_for_version "$1"
       local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
-      if [[ -s "${dir}" ]]; then
+      if [ -s "${dir}" ]; then
         rm -rf "${dir}"
       else
         echo "$1 (${version}) not in downloads cache"
@@ -898,7 +898,7 @@ prune_cache() {
   set_active_node
 
   for folder_and_version in $(display_versions_paths); do
-    if [[ "${folder_and_version}" != "${g_active_node}" ]]; then
+    if [ "${folder_and_version}" != "${g_active_node}" ]; then
       echo "${folder_and_version}"
       rm -rf "${CACHE_DIR:?}/${folder_and_version}"
     fi
@@ -912,18 +912,18 @@ prune_cache() {
 # - g_cached_version
 
 find_cached_version() {
-  [[ -z "$1" ]] && abort "version required"
+  [ -z "$1" ] && abort "version required"
   local version
   get_latest_resolved_version "$1" || exit 1
   version="${g_target_node}"
-  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  [ -n "${version}" ] || abort "no version found for '$1'"
 
   update_mirror_settings_for_version "$1"
   g_cached_version="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
-  if [[ ! -d "${g_cached_version}" && "${DOWNLOAD}" == "true" ]]; then
+  if [ ! -d "${g_cached_version}" ] && [ "${DOWNLOAD}" = "true" ]; then
     (install "${version}")
   fi
-  [[ -d "${g_cached_version}" ]] || abort "'$1' (${version}) not in downloads cache"
+  [ -d "${g_cached_version}" ] || abort "'$1' (${version}) not in downloads cache"
 }
 
 
@@ -982,14 +982,14 @@ can_use_xz() {
   # Be conservative and only enable if xz is likely to work. Unfortunately we can't directly query tar itself.
   # For research, see https://github.com/shadowspawn/nvh/issues/8
   local uname_s="$(uname -s)"
-  if [[ "${uname_s}" = "Linux" ]] && command -v xz > /dev/null 2>&1 ; then
+  if [ "${uname_s}" = "Linux" ] && command -v xz > /dev/null 2>&1 ; then
     # tar on linux is likely to support xz if it is available as a command
     return 0
-  elif [[ "${uname_s}" = "Darwin" ]]; then
+  elif [ "${uname_s}" = "Darwin" ]; then
     local macos_version="$(sw_vers -productVersion)"
     local macos_major_version="$(echo "${macos_version}" | cut -d '.' -f 1)"
     local macos_minor_version="$(echo "${macos_version}" | cut -d '.' -f 2)"
-    if [[ "${macos_major_version}" -gt 10 || "${macos_minor_version}" -gt 8 ]]; then
+    if [ "${macos_major_version}" -gt 10 ] || [ "${macos_minor_version}" -gt 8 ]; then
       # tar on recent Darwin has xz support built-in
       return 0
     fi
@@ -1092,8 +1092,8 @@ get_package_engine_version() {
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
   verbose_log "read" "${range}"
-  [[ -n "${range}" ]] || return 2
-  if [[ "*" == "${range}" ]]; then
+  [ -n "${range}" ] || return 2
+  if [ "*" = "${range}" ]; then
     verbose_log "target" "current"
     g_target_node="current"
     return
@@ -1154,8 +1154,8 @@ get_engine_version() {
   local error_message="${1-package.json not found}"
   local parent
   parent="${PWD}"
-  while [[ -n "${parent}" ]]; do
-    if [[ -e "${parent}/package.json" ]]; then
+  while [ -n "${parent}" ]; do
+    if [ -e "${parent}/package.json" ]; then
       get_package_engine_version "${parent}/package.json"
     else
       parent=${parent%/*}
@@ -1163,8 +1163,8 @@ get_engine_version() {
     fi
     break
   done
-  [[ -n "${parent}" ]] || abort "${error_message}"
-  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
+  [ -n "${parent}" ] || abort "${error_message}"
+  [ -n "${g_target_node}" ] || abort "did not find supported version of node in 'engines' field of package.json"
 }
 
 #
@@ -1177,12 +1177,12 @@ get_auto_version() {
   # Search for a version control file first
   local parent
   parent="${PWD}"
-  while [[ -n "${parent}" ]]; do
-    if [[ -e "${parent}/.n-node-version" ]]; then
+  while [ -n "${parent}" ]; do
+    if [ -e "${parent}/.n-node-version" ]; then
       get_file_node_version "${parent}/.n-node-version"
-    elif [[ -e "${parent}/.node-version" ]]; then
+    elif [ -e "${parent}/.node-version" ]; then
       get_file_node_version "${parent}/.node-version"
-    elif [[ -e "${parent}/.nvmrc" ]]; then
+    elif [ -e "${parent}/.nvmrc" ]; then
       get_nvmrc_version "${parent}/.nvmrc"
     else
       parent=${parent%/*}
@@ -1191,8 +1191,8 @@ get_auto_version() {
     break
   done
   # Fallback to package.json
-  [[ -n "${parent}" ]] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
-  [[ -n "${g_target_node}" ]] || abort "file found for auto did not contain target version of node"
+  [ -n "${parent}" ] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
+  [ -n "${g_target_node}" ] || abort "file found for auto did not contain target version of node"
 }
 
 #
@@ -1202,7 +1202,7 @@ get_auto_version() {
 
 get_latest_resolved_version() {
   g_target_node=
-  local version=${1}
+  local version="${1}"
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
@@ -1236,7 +1236,7 @@ display_remote_index() {
 #
 
 display_match_limit(){
-  if [[ "$1" -gt 1 && "$1" -lt 32000 ]]; then
+  if [ "$1" -gt 1 ] && [ "$1" -lt 32000 ]; then
     echo "Listing remote... Displaying $1 matches (use --all to see all)."
   fi
 }
@@ -1255,23 +1255,23 @@ display_remote_versions() {
   if is_node_support_version "${version}"; then
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
-  elif [[ "${version}" = "auto" ]]; then
+  elif [ "${version}" = "auto" ]; then
     # suppress stdout logging so lsr layout same as usual for scripting
     get_auto_version || return 2
     version="${g_target_node}"
-  elif [[ "${version}" = "engine" ]]; then
+  elif [ "${version}" = "engine" ]; then
     # suppress stdout logging so lsr layout same as usual for scripting
     get_engine_version || return 2
     version="${g_target_node}"
   fi
 
-  if [[ -z "${version}" ]]; then
+  if [ -z "${version}" ]; then
     match='.'
-  elif [[ "${version}" = "lts" || "${version}" = "stable" ]]; then
+  elif [ "${version}" = "lts" ] || [ "${version}" = "stable" ]; then
     match_count=1
     # Codename is last field, first one with a name is newest lts
     match="${TAB_CHAR}[a-zA-Z]+\$"
-  elif [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+  elif [ "${version}" = "latest" ] || [ "${version}" = "current" ]; then
     match_count=1
     match='.'
   elif is_numeric_version "${version}"; then
@@ -1291,7 +1291,7 @@ display_remote_versions() {
     match='.'
   elif is_download_version "${version}"; then
     version="${version#"${g_mirror_folder_name}"/}"
-    if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+    if [ "${version}" = "latest" ] || [ "${version}" = "current" ]; then
       match_count=1
       match='.'
     else
@@ -1326,7 +1326,7 @@ display_remote_versions() {
 #
 
 delete_with_echo() {
-  if [[ -e "$1" ]]; then
+  if [ -e "$1" ]; then
     echo "$1"
     rm -rf "$1"
   fi
@@ -1430,33 +1430,33 @@ show_diagnostics() {
   echo "node mirror: ${N_NODE_MIRROR}"
   echo "node downloads mirror: ${N_NODE_DOWNLOAD_MIRROR}"
   echo "install destination: ${N_PREFIX}"
-  [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
+  [ -n "${N_PREFIX}" ] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
-   [[ -n "${N_PRESERVE_NPM}" ]] && echo "installs preserve npm by default"
-   [[ -n "${N_PRESERVE_COREPACK}" ]] && echo "installs preserve corepack by default"
+   [ -n "${N_PRESERVE_NPM}" ] && echo "installs preserve npm by default"
+   [ -n "${N_PRESERVE_COREPACK}" ] && echo "installs preserve corepack by default"
 
   printf "\nProxy\n"
   # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
   # shellcheck disable=SC2154
-  [[ -n "${http_proxy}" ]] && echo "http_proxy: ${http_proxy}"
+  [ -n "${http_proxy}" ] && echo "http_proxy: ${http_proxy}"
   # shellcheck disable=SC2154
-  [[ -n "${https_proxy}" ]] && echo "https_proxy: ${https_proxy}"
+  [ -n "${https_proxy}" ] && echo "https_proxy: ${https_proxy}"
   if command -v curl > /dev/null 2>&1; then
     # curl supports lower case and upper case!
     # shellcheck disable=SC2154
-    [[ -n "${all_proxy}" ]] && echo "all_proxy: ${all_proxy}"
-    [[ -n "${ALL_PROXY}" ]] && echo "ALL_PROXY: ${ALL_PROXY}"
-    [[ -n "${HTTP_PROXY}" ]] && echo "HTTP_PROXY: ${HTTP_PROXY}"
-    [[ -n "${HTTPS_PROXY}" ]] && echo "HTTPS_PROXY: ${HTTPS_PROXY}"
-    if [[ -e "${CURL_HOME}/.curlrc" ]]; then
+    [ -n "${all_proxy}" ] && echo "all_proxy: ${all_proxy}"
+    [ -n "${ALL_PROXY}" ] && echo "ALL_PROXY: ${ALL_PROXY}"
+    [ -n "${HTTP_PROXY}" ] && echo "HTTP_PROXY: ${HTTP_PROXY}"
+    [ -n "${HTTPS_PROXY}" ] && echo "HTTPS_PROXY: ${HTTPS_PROXY}"
+    if [ -e "${CURL_HOME}/.curlrc" ]; then
        echo "have \$CURL_HOME/.curlrc"
-    elif [[ -e "${HOME}/.curlrc" ]]; then
+    elif [ -e "${HOME}/.curlrc" ]; then
       echo "have \$HOME/.curlrc"
     fi
   elif command -v wget > /dev/null 2>&1; then
-    if [[ -e "${WGETRC}" ]]; then
+    if [ -e "${WGETRC}" ]; then
       echo "have \$WGETRC"
-    elif [[ -e "${HOME}/.wgetrc" ]]; then
+    elif [ -e "${HOME}/.wgetrc" ]; then
       echo "have \$HOME/.wgetrc"
     fi
   fi
@@ -1486,7 +1486,7 @@ show_diagnostics() {
       [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
       [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
     done
-    if [[ "${node_index}" -lt "${install_bin_index}" ]]; then
+    if [ "${node_index}" -lt "${install_bin_index}" ]; then
       echo_red "There is a version of node installed which will be found in PATH before the n installed version."
     else
       printf "good\n"
@@ -1496,21 +1496,21 @@ show_diagnostics() {
   printf "\nChecking permissions for cache folder...\n"
   # Most likely problem is ownership rather than than permissions as such.
   local cache_root="${N_PREFIX}/n"
-  if [[ -e "${N_PREFIX}" && ! -w "${N_PREFIX}" && ! -e "${cache_root}" ]]; then
+  if [ -e "${N_PREFIX}" ] && [ ! -w "${N_PREFIX}" ] && [ ! -e "${cache_root}" ]; then
     echo_red "You do not have write permission to create: ${cache_root}"
     show_permission_suggestions
     echo "- make a folder you own:"
     echo "      sudo mkdir -p \"${cache_root}\""
     echo "      sudo chown $(whoami) \"${cache_root}\""
-  elif [[ -e "${cache_root}" && ! -w "${cache_root}" ]]; then
+  elif [ -e "${cache_root}" ] && [ ! -w "${cache_root}" ]; then
     echo_red "You do not have write permission to: ${cache_root}"
     show_permission_suggestions
     echo "- change folder ownership to yourself:"
     echo "      sudo chown -R $(whoami) \"${cache_root}\""
-  elif [[ ! -e "${cache_root}" ]]; then
+  elif [ ! -e "${cache_root}" ]; then
     echo "Cache folder does not exist: ${cache_root}"
     echo "This is normal if you have not done an install yet, as cache is only created when needed."
-  elif [[ -e "${CACHE_DIR}" && ! -w "${CACHE_DIR}" ]]; then
+  elif [ -e "${CACHE_DIR}" ] && [ ! -w "${CACHE_DIR}" ]; then
     echo_red "You do not have write permission to: ${CACHE_DIR}"
     show_permission_suggestions
     echo "- change folder ownership to yourself:"
@@ -1519,18 +1519,18 @@ show_diagnostics() {
     echo "good"
   fi
 
-  if [[ -e "${N_PREFIX}" ]]; then
+  if [ -e "${N_PREFIX}" ]; then
     # Most likely problem is ownership rather than than permissions as such.
     printf "\nChecking permissions for install folders...\n"
     local install_writeable="true"
     for subdir in bin lib include share; do
-      if [[ -e "${N_PREFIX}/${subdir}" && ! -w "${N_PREFIX}/${subdir}" ]]; then
+      if [ -e "${N_PREFIX}/${subdir}" ] && [ ! -w "${N_PREFIX}/${subdir}" ]; then
         install_writeable="false"
         echo_red "You do not have write permission to: ${N_PREFIX}/${subdir}"
         break
       fi
     done
-    if [[ "${install_writeable}" = "true" ]]; then
+    if [ "${install_writeable}" = "true" ]; then
       echo "good"
     else
       show_permission_suggestions
@@ -1565,7 +1565,7 @@ show_diagnostics() {
 unprocessed_args=()
 positional_arg="false"
 
-while [[ $# -ne 0 ]]; do
+while [ $# -ne 0 ]; do
   case "$1" in
     --all) N_MAX_REMOTE_MATCHES=32000 ;;
     -V|--version) display_n_version ;;
