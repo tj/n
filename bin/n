@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC2155
+#!/usr/bin/env sh
+# shellcheck disable=SC2155,SC3043
 # Disabled "Declare and assign separately to avoid masking return values": https://github.com/koalaman/shellcheck/wiki/SC2155
+# Disabled "In POSIX sh, local is undefined." as widely defined and convenient: https://github.com/koalaman/shellcheck/wiki/SC3043
 
 #
 # log <type> <msg>
@@ -17,7 +18,7 @@ log() {
 #
 
 verbose_log() {
-  if [[ "${SHOW_VERBOSE_LOG}" == "true" ]]; then
+  if [ "${SHOW_VERBOSE_LOG}" = "true" ]; then
     >&2 printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
   fi
 }
@@ -35,7 +36,7 @@ abort() {
 # Debugging output to stderr, not used in production code.
 #
 
-function trace() {
+trace() {
   >&2 printf "trace: %s\n" "$*"
 }
 
@@ -44,7 +45,7 @@ function trace() {
 # Highlight message in colour (on stdout).
 #
 
-function echo_red() {
+echo_red() {
   printf "${SGR_RED}%s${SGR_RESET}\n" "$*"
 }
 
@@ -53,7 +54,7 @@ function echo_red() {
 # grep wrapper to ensure consistent grep options and circumvent aliases.
 #
 
-function n_grep() {
+n_grep() {
   GREP_OPTIONS='' command grep "$@"
 }
 
@@ -85,9 +86,9 @@ readonly N_NODE_DOWNLOAD_MIRROR
 # May also be overridden by command line flags.
 
 # Normalise external values to true/false
-if [[ "${N_USE_XZ}" = "0" ]]; then
+if [ "${N_USE_XZ}" = "0" ]; then
   N_USE_XZ="false"
-elif [[ -n "${N_USE_XZ+defined}" ]]; then
+elif [ -n "${N_USE_XZ+defined}" ]; then
   N_USE_XZ="true"
 fi
 # Not setting to readonly. Overriden by CLI flags, and update_xz_settings_for_version.
@@ -105,26 +106,14 @@ GET_SHOWS_PROGRESS="false"
 # --location to follow redirects
 # --fail to avoid happily downloading error page from web server for 404 et al
 # --show-error to show why failed (on stderr)
-CURL_OPTIONS=( "--location" "--fail" "--show-error" )
-if [[ -t 1 ]]; then
-  CURL_OPTIONS+=( "--progress-bar" )
-  command -v curl &> /dev/null && GET_SHOWS_PROGRESS="true"
+CURL_OPTIONS="--location --fail --show-error"
+if [ -t 1 ]; then
+  CURL_OPTIONS="$CURL_OPTIONS --progress-bar"
+  command -v curl > /dev/null 2>&1 && GET_SHOWS_PROGRESS="true"
 else
-  CURL_OPTIONS+=( "--silent" )
+  CURL_OPTIONS="$CURL_OPTIONS --silent"
 fi
-WGET_OPTIONS=( "-q" "-O-" )
-
-# Legacy support using unprefixed env. No longer documented in README.
-if [ -n "$HTTP_USER" ];then
-  if [ -z "$HTTP_PASSWORD" ]; then
-    abort "Must specify HTTP_PASSWORD when supplying HTTP_USER"
-  fi
-  CURL_OPTIONS+=( "-u $HTTP_USER:$HTTP_PASSWORD" )
-  WGET_OPTIONS+=( "--http-password=$HTTP_PASSWORD"
-                "--http-user=$HTTP_USER" )
-elif [ -n "$HTTP_PASSWORD" ]; then
-  abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
-fi
+WGET_OPTIONS="-q -O-"
 
 # Set by set_active_node
 g_active_node=
@@ -142,14 +131,16 @@ SHOW_VERBOSE_LOG="true"
 # https://bixense.com/clicolors
 
 USE_COLOR="true"
-if [[ -n "${CLICOLOR_FORCE+defined}" && "${CLICOLOR_FORCE}" != "0" ]]; then
+if [ -n "${CLICOLOR_FORCE+defined}" ] && [ "${CLICOLOR_FORCE}" != "0" ]; then
   USE_COLOR="true"
-elif [[ -n "${NO_COLOR+defined}" || "${CLICOLOR}" = "0" || ! -t 1 ]]; then
+elif [ -n "${NO_COLOR+defined}" ]; then
+  USE_COLOR="false"
+elif [ "${CLICOLOR}" = "0" ] || [ ! -t 1 ]; then
   USE_COLOR="false"
 fi
 readonly USE_COLOR
 # Select Graphic Rendition codes
-if [[ "${USE_COLOR}" = "true" ]]; then
+if [ "${USE_COLOR}" = "true" ]; then
   # KISS and use codes rather than tput, avoid dealing with missing tput or TERM.
   readonly SGR_RESET="\033[0m"
   readonly SGR_FAINT="\033[2m"
@@ -181,19 +172,19 @@ set_arch() {
 # - WGET_OPTIONS
 #
 
-function set_insecure() {
-  CURL_OPTIONS+=( "--insecure" )
-  WGET_OPTIONS+=( "--no-check-certificate" )
+set_insecure() {
+  CURL_OPTIONS="$CURL_OPTIONS --insecure"
+  WGET_OPTIONS="$WGET_OPTIONS --no-check-certificate"
 }
 
 #
 # Synposis: display_major_version numeric-version
 #
 display_major_version() {
-    local version=$1
-    version="${version#v}"
-    version="${version%%.*}"
-    echo "${version}"
+  local version="$1"
+  version="${version#v}"
+  version="${version%%.*}"
+  echo "${version}"
 }
 
 #
@@ -204,7 +195,7 @@ display_major_version() {
 # - g_mirror_folder_name
 #
 
-function update_mirror_settings_for_version() {
+update_mirror_settings_for_version() {
   if is_download_folder "$1" ; then
     g_mirror_folder_name="$1"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
@@ -222,9 +213,9 @@ function update_mirror_settings_for_version() {
 # - N_USE_XZ
 #
 
-function update_xz_settings_for_version() {
+update_xz_settings_for_version() {
   # tarballs in xz format were available in later version of iojs, but KISS and only use xz from v4.
-  if [[ "${N_USE_XZ}" = "true" ]]; then
+  if [ "${N_USE_XZ}" = "true" ]; then
     local major_version="$(display_major_version "$1")"
     if [[ "${major_version}" -lt 4 ]]; then
       N_USE_XZ="false"
@@ -238,12 +229,12 @@ function update_xz_settings_for_version() {
 # - ARCH
 #
 
-function update_arch_settings_for_version() {
+update_arch_settings_for_version() {
   local tarball_platform="$(display_tarball_platform)"
-  if [[ -z "${ARCH}" && "${tarball_platform}" = "darwin-arm64" ]]; then
+  if [ -z "${ARCH}" ] && [ "${tarball_platform}" = "darwin-arm64" ]; then
     # First native builds were for v16, but can use x64 in rosetta for older versions.
     local major_version="$(display_major_version "$1")"
-    if [[ "${major_version}" -lt 16 ]]; then
+    if [ "${major_version}" -lt 16 ]; then
       ARCH=x64
     fi
   fi
@@ -253,26 +244,41 @@ function update_arch_settings_for_version() {
 # Synopsis: is_lts_codename version
 #
 
-function is_lts_codename() {
+is_lts_codename() {
   # https://github.com/nodejs/Release/blob/master/CODENAMES.md
   # e.g. argon, Boron
-  [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron|[Jj]od)$ ]]
+  case "$1" in
+    [Aa]rgon) ;;
+    [Bb]oron) ;;
+    [Cc]arbon) ;;
+    [Dd]ubnium) ;;
+    [Ee]rbium) ;;
+    [Ff]ermium) ;;
+    [Gg]allium) ;;
+    [Hh]ydrogen) ;;
+    [Ii]ron) ;;
+    [Jj]od) ;;
+    *) return 2
+  esac
 }
 
 #
 # Synopsis: is_download_folder version
 #
 
-function is_download_folder() {
+is_download_folder() {
   # e.g. nightly
-  [[ "$1" =~ ^(next-nightly|nightly|rc|release|test|v8-canary)$ ]]
+  case "$1" in
+    next-nightly|nightly|rc|release|test|v8-canary) return 0;;
+  esac
+  return 2
 }
 
 #
 # Synopsis: is_download_version version
 #
 
-function is_download_version() {
+is_download_version() {
   # e.g. nightly/, nightly/latest, nightly/v11
   if [[ "$1" =~ ^([^/]+)/(.*) ]]; then
     local remote_folder="${BASH_REMATCH[1]}"
@@ -286,18 +292,18 @@ function is_download_version() {
 # Synopsis: is_numeric_version version
 #
 
-function is_numeric_version() {
+is_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  [[ "$1" =~ ^[v]{0,1}[0-9]+(\.[0-9]+){0,2}$ ]]
+  expr "$1" : "[v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}$" > /dev/null 2>&1
 }
 
 #
 # Synopsis: is_exact_numeric_version version
 #
 
-function is_exact_numeric_version() {
+is_exact_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+$ ]]
+  expr "$1" : "[v]\{0,1\}[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$" > /dev/null 2>&1
 }
 
 #
@@ -305,8 +311,11 @@ function is_exact_numeric_version() {
 # Reference: https://github.com/nodejs/package-maintenance/issues/236#issue-474783582
 #
 
-function is_node_support_version() {
-  [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current|supported)$ ]]
+is_node_support_version() {
+  case "$1" in
+    active|lts_active|lts_latest|lts|current|supported) return 0 ;;
+  esac
+  return 2
 }
 
 #
@@ -314,7 +323,7 @@ function is_node_support_version() {
 # Map aliases onto existing n aliases, current and lts
 #
 
-function display_latest_node_support_alias() {
+display_latest_node_support_alias() {
   case "$1" in
     "active") printf "current" ;;
     "lts_active") printf "lts" ;;
@@ -437,7 +446,7 @@ err_no_installed_print_help() {
 # Output version after selected (which may be blank under some circumstances).
 #
 
-function next_version_installed() {
+next_version_installed() {
   display_cache_versions | n_grep "$1" -A 1 | tail -n 1
 }
 
@@ -446,7 +455,7 @@ function next_version_installed() {
 # Output version before selected  (which may be blank under some circumstances).
 #
 
-function prev_version_installed() {
+prev_version_installed() {
   display_cache_versions | n_grep "$1" -B 1 | head -n 1
 }
 
@@ -465,7 +474,7 @@ display_n_version() {
 # - g_active_node
 #
 
-function set_active_node() {
+set_active_node() {
   g_active_node=
   local node_path="$(command -v node)"
   if [[ -x "${node_path}" ]]; then
@@ -519,7 +528,7 @@ display_versions_with_selected() {
 # Synopsis: display_cache_versions
 #
 
-function display_cache_versions() {
+display_cache_versions() {
   for folder_and_version in $(display_versions_paths); do
     echo "${folder_and_version}"
   done
@@ -829,11 +838,11 @@ set_quiet() {
 # Call curl or wget with combination of global and passed options.
 #
 
-function do_get() {
+do_get() {
   if command -v curl &> /dev/null; then
-    curl "${CURL_OPTIONS[@]}" "$@"
+    curl ${CURL_OPTIONS} "$@"
   elif command -v wget &> /dev/null; then
-    wget "${WGET_OPTIONS[@]}" "$@"
+    wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
   fi
@@ -845,12 +854,12 @@ function do_get() {
 # with options tweaked to be more suitable for getting index.
 #
 
-function do_get_index() {
+do_get_index() {
   if command -v curl &> /dev/null; then
     # --silent to suppress progress et al
-    curl --silent --compressed "${CURL_OPTIONS[@]}" "$@"
+    curl --silent --compressed ${CURL_OPTIONS} "$@"
   elif command -v wget &> /dev/null; then
-    wget "${WGET_OPTIONS[@]}" "$@"
+    wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
   fi
@@ -860,7 +869,7 @@ function do_get_index() {
 # Synopsis: remove_versions version ...
 #
 
-function remove_versions() {
+remove_versions() {
   [[ -z "$1" ]] && abort "version(s) required"
   while [[ $# -ne 0 ]]; do
     local version
@@ -885,7 +894,7 @@ function remove_versions() {
 # Synopsis: prune_cache
 #
 
-function prune_cache() {
+prune_cache() {
   set_active_node
 
   for folder_and_version in $(display_versions_paths); do
@@ -902,7 +911,7 @@ function prune_cache() {
 # Globals modified:
 # - g_cached_version
 
-function find_cached_version() {
+find_cached_version() {
   [[ -z "$1" ]] && abort "version required"
   local version
   get_latest_resolved_version "$1" || exit 1
@@ -922,7 +931,7 @@ function find_cached_version() {
 # Synopsis: display_bin_path_for_version version
 #
 
-function display_bin_path_for_version() {
+display_bin_path_for_version() {
   find_cached_version "$1"
   echo "${g_cached_version}/bin/node"
 }
@@ -932,7 +941,7 @@ function display_bin_path_for_version() {
 # Run the given <version> of node with [args ..]
 #
 
-function run_with_version() {
+run_with_version() {
   find_cached_version "$1"
   shift # remove version from parameters
   exec "${g_cached_version}/bin/node" "$@"
@@ -943,7 +952,7 @@ function run_with_version() {
 # Modify the path to include <version> and execute command.
 #
 
-function exec_with_version() {
+exec_with_version() {
   find_cached_version "$1"
   shift # remove version from parameters
   PATH="${g_cached_version}/bin:$PATH" exec "$@"
@@ -954,7 +963,7 @@ function exec_with_version() {
 # Check the HEAD response of <url>.
 #
 
-function is_ok() {
+is_ok() {
   # Note: both curl and wget can follow redirects, as present on some mirrors (e.g. https://npm.taobao.org/mirrors/node).
   # The output is complicated with redirects, so keep it simple and use command status rather than parse output.
   if command -v curl &> /dev/null; then
@@ -969,7 +978,7 @@ function is_ok() {
 # Test system to see if xz decompression is supported by tar.
 #
 
-function can_use_xz() {
+can_use_xz() {
   # Be conservative and only enable if xz is likely to work. Unfortunately we can't directly query tar itself.
   # For research, see https://github.com/shadowspawn/nvh/issues/8
   local uname_s="$(uname -s)"
@@ -992,7 +1001,7 @@ function can_use_xz() {
 # Synopsis: display_tarball_platform
 #
 
-function display_tarball_platform() {
+display_tarball_platform() {
   # https://en.wikipedia.org/wiki/Uname
 
   local os="unexpected_os"
@@ -1029,9 +1038,9 @@ function display_tarball_platform() {
 # display <file> for current platform, as per <file> field in index.tab, which is different than actual download
 #
 
-function display_compatible_file_field {
+display_compatible_file_field() {
   local compatible_file_field="$(display_tarball_platform)"
-  if [[ -z "${ARCH}" && "${compatible_file_field}" = "darwin-arm64" ]]; then
+  if [ -z "${ARCH}" ] && [ "${compatible_file_field}" = "darwin-arm64" ]; then
     # Look for arm64 for native but also x64 for older versions which can run in rosetta.
     # (Downside is will get an install error if install version above 16 with x64 and not arm64.)
     compatible_file_field="osx-arm64-tar|osx-x64-tar"
@@ -1045,7 +1054,7 @@ function display_compatible_file_field {
 # Synopsis: tarball_url version
 #
 
-function tarball_url() {
+tarball_url() {
   local version="$1"
   local ext=gz
   [ "$N_USE_XZ" = "true" ] && ext="xz"
@@ -1057,7 +1066,7 @@ function tarball_url() {
 # Sets g_target_node
 #
 
-function get_file_node_version() {
+get_file_node_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
@@ -1075,7 +1084,7 @@ function get_file_node_version() {
 # Sets g_target_node
 #
 
-function get_package_engine_version() {
+get_package_engine_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
@@ -1118,7 +1127,7 @@ function get_package_engine_version() {
 # Sets g_target_node
 #
 
-function get_nvmrc_version() {
+get_nvmrc_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
@@ -1140,7 +1149,7 @@ function get_nvmrc_version() {
 # Sets g_target_node
 #
 
-function get_engine_version() {
+get_engine_version() {
   g_target_node=
   local error_message="${1-package.json not found}"
   local parent
@@ -1163,7 +1172,7 @@ function get_engine_version() {
 # Sets g_target_node
 #
 
-function get_auto_version() {
+get_auto_version() {
   g_target_node=
   # Search for a version control file first
   local parent
@@ -1191,7 +1200,7 @@ function get_auto_version() {
 # Sets g_target_node
 #
 
-function get_latest_resolved_version() {
+get_latest_resolved_version() {
   g_target_node=
   local version=${1}
   simple_version=${version#node/} # Only place supporting node/ [sic]
@@ -1226,7 +1235,7 @@ display_remote_index() {
 # Synopsis: display_match_limit limit
 #
 
-function display_match_limit(){
+display_match_limit(){
   if [[ "$1" -gt 1 && "$1" -lt 32000 ]]; then
     echo "Listing remote... Displaying $1 matches (use --all to see all)."
   fi
@@ -1236,7 +1245,7 @@ function display_match_limit(){
 # Synopsis: display_remote_versions version
 #
 
-function display_remote_versions() {
+display_remote_versions() {
   local version="$1"
   update_mirror_settings_for_version "${version}"
   local match='.'
@@ -1316,7 +1325,7 @@ function display_remote_versions() {
 # Synopsis: delete_with_echo target
 #
 
-function delete_with_echo() {
+delete_with_echo() {
   if [[ -e "$1" ]]; then
     echo "$1"
     rm -rf "$1"
@@ -1364,7 +1373,7 @@ uninstall_installed() {
 # Synopsis: show_permission_suggestions
 #
 
-function show_permission_suggestions() {
+show_permission_suggestions() {
   echo "Suggestions:"
   echo "- run n with sudo, or"
   echo "- define N_PREFIX to a writeable location, or"
@@ -1375,7 +1384,7 @@ function show_permission_suggestions() {
 # Show environment and check for common problems.
 #
 
-function show_diagnostics() {
+show_diagnostics() {
   echo "This information is to help you diagnose issues, and useful when reporting an issue."
   echo "Note: some output may contain passwords. Redact before sharing."
 
@@ -1577,7 +1586,7 @@ while [[ $# -ne 0 ]]; do
       positional_arg="true"
       ;;
     *)
-      if [[ "${positional_arg}" == "true" ]]; then
+      if [ "${positional_arg}" = "true" ]; then
         unprocessed_args+=( "$@" )
         break
       fi
@@ -1587,7 +1596,7 @@ while [[ $# -ne 0 ]]; do
   shift
 done
 
-if [[ -z "${N_USE_XZ+defined}" ]]; then
+if [ -z "${N_USE_XZ+defined}" ]; then
   N_USE_XZ="true" # Default to using xz
   can_use_xz || N_USE_XZ="false"
 fi
