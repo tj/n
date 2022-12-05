@@ -1,7 +1,8 @@
-#!/usr/bin/env sh
+#!/usr/bin/env dash
 # shellcheck disable=SC2155,SC3043
 # Disabled "Declare and assign separately to avoid masking return values": https://github.com/koalaman/shellcheck/wiki/SC2155
 # Disabled "In POSIX sh, local is undefined." as widely defined and convenient: https://github.com/koalaman/shellcheck/wiki/SC3043
+# WIP specify dash in shebang so do not get BASH!
 
 #
 # log <type> <msg>
@@ -97,6 +98,7 @@ N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
 # modified by update_mirror_settings_for_version
 g_mirror_url=${N_NODE_MIRROR}
 g_mirror_folder_name="node"
+g_match=
 
 # Options for curl and wget.
 # Defining commands in variables is fraught (https://mywiki.wooledge.org/BashFAQ/050)
@@ -178,6 +180,15 @@ set_insecure() {
 }
 
 #
+# Synopsis: expr_match string pattern
+#
+
+expr_match() {
+  # c.f. bash a=~b and BASH_REMATCH
+  g_match="$(expr "$1" : "$2" 2> /dev/null)"
+}
+
+#
 # Synposis: display_major_version numeric-version
 #
 display_major_version() {
@@ -200,8 +211,8 @@ update_mirror_settings_for_version() {
     g_mirror_folder_name="$1"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
   elif is_download_version "$1"; then
-    [[ "$1" =~ ^([^/]+)/(.*) ]]
-    local remote_folder="${BASH_REMATCH[1]}"
+    expr_match "$1" "\([^/]*\)/.*"
+    local remote_folder="${g_match}"
     g_mirror_folder_name="${remote_folder}"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
   fi
@@ -280,8 +291,8 @@ is_download_folder() {
 
 is_download_version() {
   # e.g. nightly/, nightly/latest, nightly/v11
-  if [[ "$1" =~ ^([^/]+)/(.*) ]]; then
-    local remote_folder="${BASH_REMATCH[1]}"
+  if expr_match "$1" "\([^/]\{1,\}\)/"; then
+    local remote_folder="${g_match}"
     is_download_folder "${remote_folder}"
     return
   fi
@@ -294,7 +305,7 @@ is_download_version() {
 
 is_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  expr "$1" : "[v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}$" > /dev/null 2>&1
+  expr_match "$1" "[v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}$"
 }
 
 #
@@ -303,7 +314,7 @@ is_numeric_version() {
 
 is_exact_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  expr "$1" : "[v]\{0,1\}[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$" > /dev/null 2>&1
+  expr_match "$1" "[v]\{0,1\}[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$"
 }
 
 #
@@ -807,19 +818,20 @@ install() {
 
   log fetch "$url"
   do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
-  pipe_results=( "${PIPESTATUS[@]}" )
-  if [[ "${pipe_results[0]}" -ne 0 ]]; then
-    abort "failed to download archive for $version"
-  fi
-  if [[ "${pipe_results[1]}" -ne 0 ]]; then
-    abort "failed to extract archive for $version"
-  fi
+  # WIP
+  # pipe_results=( "${PIPESTATUS[@]}" )
+  # if [[ "${pipe_results[0]}" -ne 0 ]]; then
+  #   abort "failed to download archive for $version"
+  # fi
+  # if [[ "${pipe_results[1]}" -ne 0 ]]; then
+  #   abort "failed to extract archive for $version"
+  # fi
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
   disable_pax_mprotect bin/node
 
-  if [ "$DOWNLOAD" == "false" ]; then
+  if [ "$DOWNLOAD" = "false" ]; then
     activate "${g_mirror_folder_name}/$version"
   fi
 }
@@ -840,8 +852,10 @@ set_quiet() {
 
 do_get() {
   if command -v curl > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
     curl ${CURL_OPTIONS} "$@"
   elif command -v wget > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
     wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
@@ -857,8 +871,10 @@ do_get() {
 do_get_index() {
   if command -v curl > /dev/null 2>&1; then
     # --silent to suppress progress et al
+    # shellcheck disable=SC2086
     curl --silent --compressed ${CURL_OPTIONS} "$@"
   elif command -v wget > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
     wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
@@ -1044,8 +1060,8 @@ display_compatible_file_field() {
     # Look for arm64 for native but also x64 for older versions which can run in rosetta.
     # (Downside is will get an install error if install version above 16 with x64 and not arm64.)
     compatible_file_field="osx-arm64-tar|osx-x64-tar"
-  elif [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
-    compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
+  elif expr_match "${compatible_file_field}" "darwin-\(.*\)"; then
+    compatible_file_field="osx-${g_match}-tar"
   fi
   echo "${compatible_file_field}"
 }
@@ -1086,40 +1102,41 @@ get_file_node_version() {
 
 get_package_engine_version() {
   g_target_node=
-  local filepath="$1"
-  verbose_log "found" "${filepath}"
-  command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
-  local range
-  range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
-  verbose_log "read" "${range}"
-  [ -n "${range}" ] || return 2
-  if [ "*" = "${range}" ]; then
-    verbose_log "target" "current"
-    g_target_node="current"
-    return
-  fi
+  # WIP
+  # local filepath="$1"
+  # verbose_log "found" "${filepath}"
+  # command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
+  # local range
+  # range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  # verbose_log "read" "${range}"
+  # [ -n "${range}" ] || return 2
+  # if [ "*" = "${range}" ]; then
+  #   verbose_log "target" "current"
+  #   g_target_node="current"
+  #   return
+  # fi
 
-  local version
-  if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
-    local operator="${BASH_REMATCH[1]}"
-    version="${BASH_REMATCH[2]}"
-    case "${operator}" in
-      '' | =) ;;
-      \> | \>=) version="current" ;;
-      \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
-      ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
-    esac
-    verbose_log "target" "${version}"
-  else
-    command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
-    verbose_log "resolving" "${range}"
-    local version_per_line="$(n lsr --all)"
-    local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
-    # Using semver@7 so works with older versions of node.
-    # shellcheck disable=SC2086
-    version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
-  fi
-  g_target_node="${version}"
+  # local version
+  # if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
+  #   local operator="${BASH_REMATCH[1]}"
+  #   version="${BASH_REMATCH[2]}"
+  #   case "${operator}" in
+  #     '' | =) ;;
+  #     \> | \>=) version="current" ;;
+  #     \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
+  #     ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
+  #   esac
+  #   verbose_log "target" "${version}"
+  # else
+  #   command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+  #   verbose_log "resolving" "${range}"
+  #   local version_per_line="$(n lsr --all)"
+  #   local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
+  #   # Using semver@7 so works with older versions of node.
+  #   # shellcheck disable=SC2086
+  #   version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
+  # fi
+  # g_target_node="${version}"
 }
 
 #
@@ -1137,7 +1154,7 @@ get_nvmrc_version() {
   # Translate from nvm aliases
   case "${version}" in
     lts/\*) version="lts" ;;
-    lts/*) version="${version:4}" ;;
+    lts/*) version="${version#lts/}" ;;
     node) version="current" ;;
     *) ;;
   esac
@@ -1225,10 +1242,11 @@ display_remote_index() {
   local index_url="${g_mirror_url}/index.tab"
   # tail to remove header line
   do_get_index "${index_url}" | tail -n +2 | cut -f 1,3,10
-  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
-    # Reminder: abort will only exit subshell, but consistent error display
-    abort "failed to download version index (${index_url})"
-  fi
+  # WIP
+  # if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+  #   # Reminder: abort will only exit subshell, but consistent error display
+  #   abort "failed to download version index (${index_url})"
+  # fi
 }
 
 #
@@ -1279,12 +1297,12 @@ display_remote_versions() {
     # Avoid restriction message if exact version
     is_exact_numeric_version "${version}" && match_count=1
     # Quote any dots in version so they are literal for expression
-    match="${version//\./\.}"
+    match="$(echo "${version}" | tr -s "." "\.")"
     # Avoid 1.2 matching 1.23
     match="^${match}[^0-9]"
   elif is_lts_codename "${version}"; then
     # Capitalise (could alternatively make grep case insensitive)
-    codename="$(echo "${version:0:1}" | tr '[:lower:]' '[:upper:]')${version:1}"
+    codename="$(echo "${version}" | awk '{ print toupper( substr( $0, 1, 1 ) ) substr( $0, 2 ); }')"
     # Codename is last field
     match="${TAB_CHAR}${codename}\$"
   elif is_download_folder "${version}"; then
@@ -1296,7 +1314,7 @@ display_remote_versions() {
       match='.'
     else
       version="v${version#v}"
-      match="${version//\./\.}"
+      match="$(echo "${version}" | tr -s "." "\.")"
       match="^${match}" # prefix
       if is_numeric_version "${version}"; then
         # Exact numeric match
@@ -1318,7 +1336,8 @@ display_remote_versions() {
     | awk "NR<=${match_count}" \
     | cut -f 1 \
     | n_grep -E -o '[^v].*'
-  return "${PIPESTATUS[0]}"
+  # WIP
+  # return "${PIPESTATUS[0]}"
 }
 
 #
@@ -1463,35 +1482,36 @@ show_diagnostics() {
 
   printf "\n\nCHECKS\n"
 
-  printf "\nChecking n install destination is in PATH...\n"
-  local install_bin="${N_PREFIX}/bin"
-  local path_wth_guards=":${PATH}:"
-  if [[ "${path_wth_guards}" =~ :${install_bin}/?: ]]; then
-    printf "good\n"
-  else
-    echo_red "'${install_bin}' is not in PATH"
-  fi
-  if command -v node > /dev/null 2>&1; then
-    printf "\nChecking n install destination priority in PATH...\n"
-    local node_dir="$(dirname "$(command -v node)")"
+  # WIP
+  # printf "\nChecking n install destination is in PATH...\n"
+  # local install_bin="${N_PREFIX}/bin"
+  # local path_wth_guards=":${PATH}:"
+  # if [[ "${path_wth_guards}" =~ :${install_bin}/?: ]]; then
+  #   printf "good\n"
+  # else
+  #   echo_red "'${install_bin}' is not in PATH"
+  # fi
+  # if command -v node > /dev/null 2>&1; then
+  #   printf "\nChecking n install destination priority in PATH...\n"
+  #   local node_dir="$(dirname "$(command -v node)")"
 
-    local index=0
-    local path_entry
-    local path_entries
-    local install_bin_index=0
-    local node_index=999
-    IFS=':' read -ra path_entries <<< "${PATH}"
-    for path_entry in "${path_entries[@]}"; do
-      (( index++ ))
-      [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
-      [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
-    done
-    if [ "${node_index}" -lt "${install_bin_index}" ]; then
-      echo_red "There is a version of node installed which will be found in PATH before the n installed version."
-    else
-      printf "good\n"
-    fi
-  fi
+  #   local index=0
+  #   local path_entry
+  #   local path_entries
+  #   local install_bin_index=0
+  #   local node_index=999
+  #   IFS=':' read -ra path_entries <<< "${PATH}"
+  #   for path_entry in "${path_entries[@]}"; do
+  #     (( index++ ))
+  #     [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
+  #     [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
+  #   done
+  #   if [ "${node_index}" -lt "${install_bin_index}" ]; then
+  #     echo_red "There is a version of node installed which will be found in PATH before the n installed version."
+  #   else
+  #     printf "good\n"
+  #   fi
+  # fi
 
   printf "\nChecking permissions for cache folder...\n"
   # Most likely problem is ownership rather than than permissions as such.
@@ -1562,7 +1582,8 @@ show_diagnostics() {
 # particularly for `n lsr --all` and `n install --arch x686`
 # which feel pretty natural.
 
-unprocessed_args=()
+# Only expecting plain strings in the unprocessed args, so nothing fancy.
+unprocessed_args=
 positional_arg="false"
 
 while [ $# -ne 0 ]; do
@@ -1582,15 +1603,14 @@ while [ $# -ne 0 ]; do
     --lts) display_remote_versions lts; exit ;;
     -a|--arch) shift; set_arch "$1";; # set arch and continue
     exec|run|as|use)
-      unprocessed_args+=( "$1" )
+      unprocessed_args="${unprocessed_args} $1"
       positional_arg="true"
       ;;
     *)
       if [ "${positional_arg}" = "true" ]; then
-        unprocessed_args+=( "$@" )
         break
       fi
-      unprocessed_args+=( "$1" )
+      unprocessed_args="${unprocessed_args} $1"
       ;;
   esac
   shift
@@ -1601,7 +1621,10 @@ if [ -z "${N_USE_XZ+defined}" ]; then
   can_use_xz || N_USE_XZ="false"
 fi
 
-set -- "${unprocessed_args[@]}"
+# disable globbing in expansion (just in case)
+set -f
+# shellcheck disable=SC2086
+set -- ${unprocessed_args} "$@"
 
 if test $# -eq 0; then
   test -z "$(display_versions_paths)" && err_no_installed_print_help
