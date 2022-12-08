@@ -546,6 +546,18 @@ display_cache_versions() {
 }
 
 #
+# Synopsis: readkey
+# Read single byte from stdin
+#
+
+readkey() {
+  oldstty="$(stty -g)"
+  stty -icanon -echo min 1 time 0
+  dd bs=1 count=1 2> /dev/null
+  stty "$oldstty"
+}
+
+#
 # Display current node --version and others installed.
 #
 
@@ -558,7 +570,7 @@ menu_select_cache_versions() {
   display_versions_with_selected "${selected}"
 
   trap handle_sigint INT
-  trap handle_sigtstp SIGTSTP
+  trap handle_sigtstp TSTP
 
   ESCAPE_SEQ="$(printf '\033')"
   UP=A
@@ -567,14 +579,14 @@ menu_select_cache_versions() {
   CTRL_N="$(printf '\016')"
 
   while true; do
-    read -rsn 1 key
+    local key="$(readkey)"
     case "$key" in
       "$ESCAPE_SEQ")
         # Handle ESC sequences followed by other characters, i.e. arrow keys
-        read -rsn 1 -t 1 tmp
+        local tmp="$(readkey)"
         # See "[" if terminal in normal mode, and "0" in application mode
         if [ "$tmp" = "[" ] || [ "$tmp" = "O" ]; then
-          read -rsn 1 -t 1 arrow
+          local arrow="$(readkey)"
           case "$arrow" in
             "$UP")
               clear
@@ -1625,6 +1637,7 @@ fi
 set -f
 # shellcheck disable=SC2086
 set -- ${unprocessed_args} "$@"
+set +f
 
 if test $# -eq 0; then
   test -z "$(display_versions_paths)" && err_no_installed_print_help
