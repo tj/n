@@ -54,6 +54,8 @@ To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you
 
 If `npm` is not yet available, one way to bootstrap an install:
 
+    # In order to have rights to create 'n' file go to 'n' folder
+    cd /usr/local/n
     curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
     bash n lts
     # Now node and npm are available
