@@ -829,15 +829,19 @@ install() {
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
-  # WIP
-  # pipe_results=( "${PIPESTATUS[@]}" )
-  # if [[ "${pipe_results[0]}" -ne 0 ]]; then
-  #   abort "failed to download archive for $version"
-  # fi
-  # if [[ "${pipe_results[1]}" -ne 0 ]]; then
-  #   abort "failed to extract archive for $version"
-  # fi
+  exec 4>&1
+  local pipefails="$( { {
+     do_get "${url}" || echo "do_get:$?" >&3
+  } | {
+    tar "$tarflag" --strip-components=1 --no-same-owner -f - || echo "tar:$?" >&3
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  if expr_match "${pipefails}" ".*do_get:"; then
+    abort "failed to download archive for $version"
+  fi
+  if expr_match "${pipefails}" ".*tar:"; then
+    abort "failed to extract archive for $version"
+  fi
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
   rm -f "$dir/n.lock"
 
