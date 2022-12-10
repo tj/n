@@ -1119,22 +1119,32 @@ get_file_node_version() {
 get_package_engine_version() {
   g_target_node=
   # WIP
-  # local filepath="$1"
-  # verbose_log "found" "${filepath}"
-  # command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
-  # local range
-  # range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
-  # verbose_log "read" "${range}"
-  # [ -n "${range}" ] || return 2
-  # if [ "*" = "${range}" ]; then
-  #   verbose_log "target" "current"
-  #   g_target_node="current"
-  #   return
-  # fi
+  local filepath="$1"
+  verbose_log "found" "${filepath}"
+  command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
+  local range
+  range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  verbose_log "read" "${range}"
+  [ -n "${range}" ] || return 2
+  if [ "*" = "${range}" ]; then
+    verbose_log "target" "current"
+    g_target_node="current"
+    return
+  fi
 
-  # local version
+  local version
+
+  echo "range is ${range}"
+  local DIGITS='[[:digit:]]\{1,\}'
+  local VERSION="v\{0,1\}${DIGITS}\(\.${DIGITS}\)\{0,2\}"
+  local WILD="\(\.[xX*])\{0,1\}" # optional
+  local SPACES="[[:space:]]\{0,\}" # optional
+  echo "pattern is \(>=/)${WHITE}[[:digit:]]"
   # if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
-  #   local operator="${BASH_REMATCH[1]}"
+  if expr_match "${range}" "\([>~^=]\)${SPACES}${VERSION}${WILD}$" || expr_match "${range}" "\(>=\)${SPACES}${VERSION}${WILD}$" ; then
+    echo "Operator is ${g_match}"
+    local operator="${g_match}"
+    expr_match "${range}" "${operator}${SPACES}\(\)"
   #   version="${BASH_REMATCH[2]}"
   #   case "${operator}" in
   #     '' | =) ;;
@@ -1152,7 +1162,7 @@ get_package_engine_version() {
   #   # shellcheck disable=SC2086
   #   version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
   # fi
-  # g_target_node="${version}"
+  g_target_node="${version}"
 }
 
 #
