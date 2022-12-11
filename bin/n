@@ -182,6 +182,11 @@ set_insecure() {
 #
 # Synopsis: expr_match string pattern
 #
+# The pattern is anchored to start of string, and unspecified whether ^ is a special character at start.
+# expr: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/expr.html#tag_20_42_13_01
+# Basic Regular Expressions (BRE): https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03
+# Globals modified:
+# - g_match has output of expr, which is first subexpression, or number of characters matched if no subexpression
 
 expr_match() {
   # c.f. bash a=~b and BASH_REMATCH
@@ -1118,7 +1123,6 @@ get_file_node_version() {
 
 get_package_engine_version() {
   g_target_node=
-  # WIP
   local filepath="$1"
   verbose_log "found" "${filepath}"
   command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
@@ -1134,34 +1138,48 @@ get_package_engine_version() {
 
   local version
 
-  echo "range is ${range}"
-  local DIGITS='[[:digit:]]\{1,\}'
+  local DIGITS="[[:digit:]]\{1,\}"
   local VERSION="v\{0,1\}${DIGITS}\(\.${DIGITS}\)\{0,2\}"
-  local WILD="\(\.[xX*])\{0,1\}" # optional
+  local WILD="\(\.[xX*]\)\{0,1\}" # optional
   local SPACES="[[:space:]]\{0,\}" # optional
-  echo "pattern is \(>=/)${WHITE}[[:digit:]]"
-  # if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
-  if expr_match "${range}" "\([>~^=]\)${SPACES}${VERSION}${WILD}$" || expr_match "${range}" "\(>=\)${SPACES}${VERSION}${WILD}$" ; then
-    echo "Operator is ${g_match}"
-    local operator="${g_match}"
-    expr_match "${range}" "${operator}${SPACES}\(\)"
-  #   version="${BASH_REMATCH[2]}"
-  #   case "${operator}" in
-  #     '' | =) ;;
-  #     \> | \>=) version="current" ;;
-  #     \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
-  #     ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
-  #   esac
-  #   verbose_log "target" "${version}"
-  # else
-  #   command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
-  #   verbose_log "resolving" "${range}"
-  #   local version_per_line="$(n lsr --all)"
-  #   local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
-  #   # Using semver@7 so works with older versions of node.
-  #   # shellcheck disable=SC2086
-  #   version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
-  # fi
+
+  # Look for expressions we can match using built-in target formats. Numeric styles are direct. e.g.
+  #   10, 10.x, 10.*: any 10
+  # Simplistic shortcut treatment for these:
+  #   ~10.1.2 treated as 10.1.x (not actually restricted to >=10.1.2)
+  #   ^10.1.2 treated as 10.x (not actually restricted to >=10.1.2)
+  #   >10.1.2 treated as current (not actually restricted to >10.1.2)
+  #   >=10.1.2 treated as current (not actually restricted to >=10.1.2)
+  if expr_match "${range}" "[>~=^]\{0,1\}=\{0,1\}${SPACES}${VERSION}${WILD}$" ; then
+    local operator=
+    if expr_match "${range}" "\([>~=^]=\{0,1\}\)"; then
+      operator="${g_match}"
+    fi
+    expr_match "${range}" "[^[:digit:]]*\(${VERSION}\)"
+    version="${g_match}"
+
+    case "${operator}" in
+      '' | =) ;;
+      \> | \>=) version="current" ;;
+      \~) # match major.minor
+        expr_match "${version}" "\(${DIGITS}\(\.${DIGITS}\)\{0,1\}\)"
+        version="${g_match}"
+        ;;
+      ^) # match major
+        expr_match "${version}" "\(${DIGITS}\)"
+        version="${g_match}"
+        ;;
+    esac
+    verbose_log "target" "${version}"
+  else
+    command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    verbose_log "resolving" "${range}"
+    local version_per_line="$(n lsr --all)"
+    local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
+    # Using semver@7 so works with older versions of node.
+    # shellcheck disable=SC2086
+    version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
+  fi
   g_target_node="${version}"
 }
 
