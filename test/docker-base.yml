@@ -16,10 +16,3 @@ services:
       - ../node_modules/bats-assert:/mnt/node_modules/bats-assert
       # the n script
       - ../bin/n:/usr/local/bin/n
-      # override settings to allow insecure connection in case using mitm proxy
-      - ./config/.curlrc:/root/.curlrc
-      - ./config/.wgetrc:/root/.wgetrc
-    environment:
-      # pass through proxy settings to allow caching proxy
-      - http_proxy
-      - https_proxy
