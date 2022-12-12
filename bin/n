@@ -1535,36 +1535,29 @@ show_diagnostics() {
 
   printf "\n\nCHECKS\n"
 
-  # WIP
-  # printf "\nChecking n install destination is in PATH...\n"
-  # local install_bin="${N_PREFIX}/bin"
-  # local path_wth_guards=":${PATH}:"
-  # if [[ "${path_wth_guards}" =~ :${install_bin}/?: ]]; then
-  #   printf "good\n"
-  # else
-  #   echo_red "'${install_bin}' is not in PATH"
-  # fi
-  # if command -v node > /dev/null 2>&1; then
-  #   printf "\nChecking n install destination priority in PATH...\n"
-  #   local node_dir="$(dirname "$(command -v node)")"
+  printf "\nChecking n install destination is in PATH...\n"
+  local install_bin="${N_PREFIX}/bin"
+  local path_wth_guards=":${PATH}:"
+  if expr_match "${path_wth_guards}" ".*:${install_bin}/\{0,1\}:"; then
+    printf "good\n"
+  else
+    echo_red "'${install_bin}' is not in PATH"
+  fi
+  if command -v node > /dev/null 2>&1; then
+    printf "\nChecking n install destination priority in PATH...\n"
+    local active_node_dir="$(dirname "$(command -v node)")"
 
-  #   local index=0
-  #   local path_entry
-  #   local path_entries
-  #   local install_bin_index=0
-  #   local node_index=999
-  #   IFS=':' read -ra path_entries <<< "${PATH}"
-  #   for path_entry in "${path_entries[@]}"; do
-  #     (( index++ ))
-  #     [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
-  #     [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
-  #   done
-  #   if [ "${node_index}" -lt "${install_bin_index}" ]; then
-  #     echo_red "There is a version of node installed which will be found in PATH before the n installed version."
-  #   else
-  #     printf "good\n"
-  #   fi
-  # fi
+    local active_index=999
+    expr_match "${path_wth_guards}" ".*:${active_node_dir}/\{0,1\}:" && active_index="${g_match}"
+    local install_index=0
+    expr_match "${path_wth_guards}" ".*:${install_bin}/\{0,1\}:" && install_index="${g_match}"
+
+    if [ "${active_index}" -lt "${install_index}" ]; then
+      echo_red "There is a version of node installed which will be found in PATH before the n installed version."
+    else
+      printf "good\n"
+    fi
+  fi
 
   printf "\nChecking permissions for cache folder...\n"
   # Most likely problem is ownership rather than than permissions as such.
