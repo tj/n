@@ -834,7 +834,7 @@ install() {
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  exec 4>&1
+  exec 4>&1 # Extra work to get status from pipe stages
   local pipefails="$( { {
      do_get "${url}" || echo "do_get:$?" >&3
   } | {
@@ -1285,12 +1285,17 @@ get_latest_resolved_version() {
 display_remote_index() {
   local index_url="${g_mirror_url}/index.tab"
   # tail to remove header line
-  do_get_index "${index_url}" | tail -n +2 | cut -f 1,3,10
-  # WIP
-  # if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
-  #   # Reminder: abort will only exit subshell, but consistent error display
-  #   abort "failed to download version index (${index_url})"
-  # fi
+  exec 4>&1 # Extra work to get status from pipe stages
+  local pipefails="$( { {
+    do_get_index "${index_url}" || echo "do_get_index:$?" >&3
+  } | {
+    tail -n +2 | cut -f 1,3,10
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  if expr_match "${pipefails}" ".*do_get_index:"; then
+    # Reminder: abort will only exit subshell, but consistent error display
+    abort "failed to download version index (${index_url})"
+  fi
 }
 
 #
@@ -1373,15 +1378,19 @@ display_remote_versions() {
   # Implementation notes:
   # - using awk rather than head so do not close pipe early on curl
   # - restrict search to compatible files as not always available, or not at same time
-  # - return status of curl command (i.e. PIPESTATUS[0])
-  display_remote_index \
-    | n_grep -E "$(display_compatible_file_field)" \
+  # - return status of curl command
+  exec 4>&1 # Extra work to get status from pipe stages
+  local pipefails="$( { {
+    display_remote_index || echo "curl:$?" >&3
+  } | {
+    n_grep -E "$(display_compatible_file_field)" \
     | n_grep -E "${match}" \
     | awk "NR<=${match_count}" \
     | cut -f 1 \
     | n_grep -E -o '[^v].*'
-  # WIP
-  # return "${PIPESTATUS[0]}"
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  expr_match "${pipefails}" ".*curl:"
 }
 
 #
