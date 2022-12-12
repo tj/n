@@ -181,6 +181,7 @@ set_insecure() {
 
 #
 # Synopsis: expr_match string pattern
+# Fails if expression does not match, or if first subexpression is empty.
 #
 # The pattern is anchored to start of string, and unspecified whether ^ is a special character at start.
 # expr: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/expr.html#tag_20_42_13_01
@@ -310,7 +311,7 @@ is_download_version() {
 
 is_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  expr_match "$1" "[v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}$"
+  expr_match "$1" "\([v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}\)$"
 }
 
 #
@@ -1390,7 +1391,9 @@ display_remote_versions() {
     | n_grep -E -o '[^v].*'
   }; } 3>&1 >&4)"
   exec 4>&-
-  expr_match "${pipefails}" ".*curl:"
+  if expr_match "${pipefails}" ".*curl:"; then
+    return 2
+  fi
 }
 
 #
