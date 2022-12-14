@@ -28,22 +28,6 @@ Run single test on a single system::
     npx bats tests/install-contents.bats
     docker-compose run ubuntu-curl bats /mnt/test/tests/install-contents.bats
 
-## Proxy
-
-To speed up running tests multiple times, you can optionally run a caching proxy for the node downloads. The curl settings are modified
-to allow an insecure connection through the mitm proxy.
-
-    cd test
-    bin/proxy-build
-    bin/proxy-run
-    # follow the instructions for configuring environment variables for using proxy, then run tests
-
-`node` versions added to proxy cache (and used in tests):
-
-* v4.9.1
-* lts
-* latest
-
 ## Docker Tips
 
 Using `docker-compose` in addition to `docker` for convenient mounting of `n` script and the tests into the container. Changes to the tests or to `n` itself are reflected immediately without needing to rebuild the containers.
