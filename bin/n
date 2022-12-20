@@ -505,10 +505,11 @@ display_versions_with_selected() {
   local selected="$1"
   echo
   for version in $(display_versions_paths); do
+    current_version="$version - $(file $CACHE_DIR/$version/bin/node -b | awk '{print $4}')"
     if test "$version" = "$selected"; then
-      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$version"
+      printf "  ${SGR_CYAN}ο${SGR_RESET} %s\n" "$current_version"
     else
-      printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$version"
+      printf "    ${SGR_FAINT}%s${SGR_RESET}\n" "$current_version"
     fi
   done
   echo
