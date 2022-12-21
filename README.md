@@ -52,11 +52,10 @@ To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you
 
 -----
 
-If `npm` is not yet available, one way to bootstrap an install:
+If `npm` is not yet available, one way to bootstrap an install is to download and run `n` directly. To install the `lts` version of Node.js:
 
-    curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
-    bash n lts
-    # Now node and npm are available
+    curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
+    # If you want n installed, you can use npm now.
     npm install -g n
 
 Alternatively, you can clone this repo and
