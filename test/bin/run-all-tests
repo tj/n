@@ -2,7 +2,7 @@
 BIN_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # We want to cover curl and wget especially, gz and xz and variety of OS a bonus.
-services=( ubuntu-curl ubuntu-wget )
+services=( fedora-curl ubuntu-wget )
 
 cd "$(dirname "${BIN_DIRECTORY}")" || exit 2
 for service in "${services[@]}" ; do
