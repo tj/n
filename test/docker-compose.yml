@@ -14,3 +14,10 @@ services:
     build:
       context: dockerfiles
       dockerfile: Dockerfile-ubuntu-wget
+  fedora-curl:
+    extends:
+      file: ./docker-base.yml
+      service: testbed
+    build:
+      context: dockerfiles
+      dockerfile: Dockerfile-fedora-curl

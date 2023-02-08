@@ -1,0 +1,3 @@
+FROM fedora:latest
+
+CMD ["/bin/bash"]
