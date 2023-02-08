@@ -112,24 +112,24 @@ function setup() {
   assert_equal "${output}" "$(display_remote_version nightly)"
 }
 
-@test "n=1 n lsr nightly/v10.8.1-nightly201808 # partial match" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v10.8.1-nightly201808)"
-  assert_equal "${output}" "10.8.1-nightly2018081382830a809b"
+@test "n=1 n lsr nightly/v12.0.0-nightly2019040 # partial match" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v12.0.0-nightly2019040)"
+  assert_equal "${output}" "12.0.0-nightly2019040166b95362df"
 }
 
 # Numeric match should not find v7.10.1-nightly2017050369a8053e8a
-@test "n=1 n lsr nightly/7.1 # numeric match" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/7.1)"
-  assert_equal "${output}" "7.1.1-nightly201611093daf11635d"
+@test "n=1 n lsr nightly/12.0 # numeric match" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/12.0)"
+  assert_equal "${output}" "12.0.0-nightly2019040166b95362df"
 }
 
 # Numeric match should not find v7.10.1-nightly2017050369a8053e8a
-@test "n=1 n lsr nightly/v7.1 # numeric match" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v7.1)"
-  assert_equal "${output}" "7.1.1-nightly201611093daf11635d"
+@test "n=1 n lsr nightly/v12.0 # numeric match" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v12.0)"
+  assert_equal "${output}" "12.0.0-nightly2019040166b95362df"
 }
 
-@test "n lsr nightly/v6.10.3-nightly2017040479546c0b5a # exact" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v6.10.3-nightly2017040479546c0b5a)"
-  assert_equal "${output}" "6.10.3-nightly2017040479546c0b5a"
+@test "n lsr nightly/v12.0.0-nightly2019040166b95362df # exact" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr nightly/v12.0.0-nightly2019040166b95362df)"
+  assert_equal "${output}" "12.0.0-nightly2019040166b95362df"
 }
