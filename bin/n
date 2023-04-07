@@ -1484,6 +1484,20 @@ function show_diagnostics() {
     fi
   fi
 
+  # Check npm too. Simpler check than for PATH and node, more like the runtime logging for active/installed node.
+  if [[ -z "${N_PRESERVE_NPM}" ]]; then
+    printf "\nChecking npm install destination\n"
+    local installed_npm="${N_PREFIX}/bin/npm"
+    local active_npm="$(command -v npm)"
+    if [[ -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" != "${installed_npm}" ]]; then
+      echo_red "There is an active version of npm shadowing the version installed by n. Check order of entries in PATH."
+      log "installed" "${installed_npm}"
+      log "active" "${active_npm}"
+    else
+      printf "good\n"
+    fi
+  fi
+
   printf "\nChecking permissions for cache folder...\n"
   # Most likely problem is ownership rather than than permissions as such.
   local cache_root="${N_PREFIX}/n"
