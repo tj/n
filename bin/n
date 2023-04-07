@@ -1486,7 +1486,7 @@ function show_diagnostics() {
 
   # Check npm too. Simpler check than for PATH and node, more like the runtime logging for active/installed node.
   if [[ -z "${N_PRESERVE_NPM}" ]]; then
-    printf "\nChecking npm install destination\n"
+    printf "\nChecking npm install destination...\n"
     local installed_npm="${N_PREFIX}/bin/npm"
     local active_npm="$(command -v npm)"
     if [[ -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" != "${installed_npm}" ]]; then
