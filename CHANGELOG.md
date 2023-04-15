@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [9.1.0] (2023-04-15)
+
+### Added
+
+- check for possible problem with multiple `npm` locations when running `n doctor` ([#764])
+
 ## [9.0.1] (2022-11-04)
 
 ### Fixes
@@ -472,10 +478,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#736]: https://github.com/tj/n/pull/736
 [#745]: https://github.com/tj/n/pull/745
 [#746]: https://github.com/tj/n/pull/746
+[#764]: https://github.com/tj/n/pull/764
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.1.0]: https://github.com/tj/n/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/tj/n/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/tj/n/compare/v8.2.0...v9.0.0
 [8.2.0]: https://github.com/tj/n/compare/v8.1.0...v8.2.0
