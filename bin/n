@@ -109,7 +109,7 @@ GET_SHOWS_PROGRESS="false"
 # --location to follow redirects
 # --fail to avoid happily downloading error page from web server for 404 et al
 # --show-error to show why failed (on stderr)
-CURL_OPTIONS=( "--location" "--fail" "--show-error" "--max-time" "$N_CURL_MAX_TIMEOUT")
+CURL_OPTIONS=( "--location" "--fail" "--show-error" "--max-time" "$N_CURL_MAX_TIMEOUT" )
 if [[ -t 1 ]]; then
   CURL_OPTIONS+=( "--progress-bar" )
   command -v curl &> /dev/null && GET_SHOWS_PROGRESS="true"
