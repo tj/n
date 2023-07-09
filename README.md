@@ -278,6 +278,7 @@ In brief:
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
 - `N_PRESERVE_NPM`: See [Preserving npm](#preserving-npm)
 - `N_PRESERVE_COREPACK`: See [Preserving npm](#preserving-npm)
+- `N_CURL_MAX_TIMEOUT`: See curl **--max-time**
 
 ## How It Works
 
