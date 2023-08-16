@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC2155
+#!/usr/bin/env sh
+# shellcheck disable=SC2155,SC3043
 # Disabled "Declare and assign separately to avoid masking return values": https://github.com/koalaman/shellcheck/wiki/SC2155
+# Disabled "In POSIX sh, local is undefined." as widely defined and convenient: https://github.com/koalaman/shellcheck/wiki/SC3043
 
 #
 # log <type> <msg>
@@ -17,7 +18,7 @@ log() {
 #
 
 verbose_log() {
-  if [[ "${SHOW_VERBOSE_LOG}" == "true" ]]; then
+  if [ "${SHOW_VERBOSE_LOG}" = "true" ]; then
     >&2 printf "  ${SGR_CYAN}%10s${SGR_RESET} : ${SGR_FAINT}%s${SGR_RESET}\n" "$1" "$2"
   fi
 }
@@ -35,7 +36,7 @@ abort() {
 # Debugging output to stderr, not used in production code.
 #
 
-function trace() {
+trace() {
   >&2 printf "trace: %s\n" "$*"
 }
 
@@ -44,7 +45,7 @@ function trace() {
 # Highlight message in colour (on stdout).
 #
 
-function echo_red() {
+echo_red() {
   printf "${SGR_RED}%s${SGR_RESET}\n" "$*"
 }
 
@@ -53,7 +54,7 @@ function echo_red() {
 # grep wrapper to ensure consistent grep options and circumvent aliases.
 #
 
-function n_grep() {
+n_grep() {
   GREP_OPTIONS='' command grep "$@"
 }
 
@@ -85,9 +86,9 @@ readonly N_NODE_DOWNLOAD_MIRROR
 # May also be overridden by command line flags.
 
 # Normalise external values to true/false
-if [[ "${N_USE_XZ}" = "0" ]]; then
+if [ "${N_USE_XZ}" = "0" ]; then
   N_USE_XZ="false"
-elif [[ -n "${N_USE_XZ+defined}" ]]; then
+elif [ -n "${N_USE_XZ+defined}" ]; then
   N_USE_XZ="true"
 fi
 # Not setting to readonly. Overriden by CLI flags, and update_xz_settings_for_version.
@@ -96,6 +97,7 @@ N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
 # modified by update_mirror_settings_for_version
 g_mirror_url=${N_NODE_MIRROR}
 g_mirror_folder_name="node"
+g_match=
 
 # Options for curl and wget.
 # Defining commands in variables is fraught (https://mywiki.wooledge.org/BashFAQ/050)
@@ -105,26 +107,14 @@ GET_SHOWS_PROGRESS="false"
 # --location to follow redirects
 # --fail to avoid happily downloading error page from web server for 404 et al
 # --show-error to show why failed (on stderr)
-CURL_OPTIONS=( "--location" "--fail" "--show-error" )
-if [[ -t 1 ]]; then
-  CURL_OPTIONS+=( "--progress-bar" )
-  command -v curl &> /dev/null && GET_SHOWS_PROGRESS="true"
+CURL_OPTIONS="--location --fail --show-error"
+if [ -t 1 ]; then
+  CURL_OPTIONS="$CURL_OPTIONS --progress-bar"
+  command -v curl > /dev/null 2>&1 && GET_SHOWS_PROGRESS="true"
 else
-  CURL_OPTIONS+=( "--silent" )
+  CURL_OPTIONS="$CURL_OPTIONS --silent"
 fi
-WGET_OPTIONS=( "-q" "-O-" )
-
-# Legacy support using unprefixed env. No longer documented in README.
-if [ -n "$HTTP_USER" ];then
-  if [ -z "$HTTP_PASSWORD" ]; then
-    abort "Must specify HTTP_PASSWORD when supplying HTTP_USER"
-  fi
-  CURL_OPTIONS+=( "-u $HTTP_USER:$HTTP_PASSWORD" )
-  WGET_OPTIONS+=( "--http-password=$HTTP_PASSWORD"
-                "--http-user=$HTTP_USER" )
-elif [ -n "$HTTP_PASSWORD" ]; then
-  abort "Must specify HTTP_USER when supplying HTTP_PASSWORD"
-fi
+WGET_OPTIONS="-q -O-"
 
 # Set by set_active_node
 g_active_node=
@@ -142,14 +132,16 @@ SHOW_VERBOSE_LOG="true"
 # https://bixense.com/clicolors
 
 USE_COLOR="true"
-if [[ -n "${CLICOLOR_FORCE+defined}" && "${CLICOLOR_FORCE}" != "0" ]]; then
+if [ -n "${CLICOLOR_FORCE+defined}" ] && [ "${CLICOLOR_FORCE}" != "0" ]; then
   USE_COLOR="true"
-elif [[ -n "${NO_COLOR+defined}" || "${CLICOLOR}" = "0" || ! -t 1 ]]; then
+elif [ -n "${NO_COLOR+defined}" ]; then
+  USE_COLOR="false"
+elif [ "${CLICOLOR}" = "0" ] || [ ! -t 1 ]; then
   USE_COLOR="false"
 fi
 readonly USE_COLOR
 # Select Graphic Rendition codes
-if [[ "${USE_COLOR}" = "true" ]]; then
+if [ "${USE_COLOR}" = "true" ]; then
   # KISS and use codes rather than tput, avoid dealing with missing tput or TERM.
   readonly SGR_RESET="\033[0m"
   readonly SGR_FAINT="\033[2m"
@@ -181,19 +173,34 @@ set_arch() {
 # - WGET_OPTIONS
 #
 
-function set_insecure() {
-  CURL_OPTIONS+=( "--insecure" )
-  WGET_OPTIONS+=( "--no-check-certificate" )
+set_insecure() {
+  CURL_OPTIONS="$CURL_OPTIONS --insecure"
+  WGET_OPTIONS="$WGET_OPTIONS --no-check-certificate"
+}
+
+#
+# Synopsis: expr_match string pattern
+# Fails if expression does not match, or if first subexpression is empty.
+#
+# The pattern is anchored to start of string, and unspecified whether ^ is a special character at start.
+# expr: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/expr.html#tag_20_42_13_01
+# Basic Regular Expressions (BRE): https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03
+# Globals modified:
+# - g_match has output of expr, which is first subexpression, or number of characters matched if no subexpression
+
+expr_match() {
+  # c.f. bash a=~b and BASH_REMATCH
+  g_match="$(expr "$1" : "$2" 2> /dev/null)"
 }
 
 #
 # Synposis: display_major_version numeric-version
 #
 display_major_version() {
-    local version=$1
-    version="${version#v}"
-    version="${version%%.*}"
-    echo "${version}"
+  local version="$1"
+  version="${version#v}"
+  version="${version%%.*}"
+  echo "${version}"
 }
 
 #
@@ -204,13 +211,13 @@ display_major_version() {
 # - g_mirror_folder_name
 #
 
-function update_mirror_settings_for_version() {
+update_mirror_settings_for_version() {
   if is_download_folder "$1" ; then
     g_mirror_folder_name="$1"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
   elif is_download_version "$1"; then
-    [[ "$1" =~ ^([^/]+)/(.*) ]]
-    local remote_folder="${BASH_REMATCH[1]}"
+    expr_match "$1" "\([^/]*\)/.*"
+    local remote_folder="${g_match}"
     g_mirror_folder_name="${remote_folder}"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
   fi
@@ -222,11 +229,11 @@ function update_mirror_settings_for_version() {
 # - N_USE_XZ
 #
 
-function update_xz_settings_for_version() {
+update_xz_settings_for_version() {
   # tarballs in xz format were available in later version of iojs, but KISS and only use xz from v4.
-  if [[ "${N_USE_XZ}" = "true" ]]; then
+  if [ "${N_USE_XZ}" = "true" ]; then
     local major_version="$(display_major_version "$1")"
-    if [[ "${major_version}" -lt 4 ]]; then
+    if [ "${major_version}" -lt 4 ]; then
       N_USE_XZ="false"
     fi
   fi
@@ -238,12 +245,12 @@ function update_xz_settings_for_version() {
 # - ARCH
 #
 
-function update_arch_settings_for_version() {
+update_arch_settings_for_version() {
   local tarball_platform="$(display_tarball_platform)"
-  if [[ -z "${ARCH}" && "${tarball_platform}" = "darwin-arm64" ]]; then
+  if [ -z "${ARCH}" ] && [ "${tarball_platform}" = "darwin-arm64" ]; then
     # First native builds were for v16, but can use x64 in rosetta for older versions.
     local major_version="$(display_major_version "$1")"
-    if [[ "${major_version}" -lt 16 ]]; then
+    if [ "${major_version}" -lt 16 ]; then
       ARCH=x64
     fi
   fi
@@ -253,29 +260,44 @@ function update_arch_settings_for_version() {
 # Synopsis: is_lts_codename version
 #
 
-function is_lts_codename() {
+is_lts_codename() {
   # https://github.com/nodejs/Release/blob/master/CODENAMES.md
   # e.g. argon, Boron
-  [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron|[Jj]od)$ ]]
+  case "$1" in
+    [Aa]rgon) ;;
+    [Bb]oron) ;;
+    [Cc]arbon) ;;
+    [Dd]ubnium) ;;
+    [Ee]rbium) ;;
+    [Ff]ermium) ;;
+    [Gg]allium) ;;
+    [Hh]ydrogen) ;;
+    [Ii]ron) ;;
+    [Jj]od) ;;
+    *) return 2
+  esac
 }
 
 #
 # Synopsis: is_download_folder version
 #
 
-function is_download_folder() {
+is_download_folder() {
   # e.g. nightly
-  [[ "$1" =~ ^(next-nightly|nightly|rc|release|test|v8-canary)$ ]]
+  case "$1" in
+    next-nightly|nightly|rc|release|test|v8-canary) return 0;;
+  esac
+  return 2
 }
 
 #
 # Synopsis: is_download_version version
 #
 
-function is_download_version() {
+is_download_version() {
   # e.g. nightly/, nightly/latest, nightly/v11
-  if [[ "$1" =~ ^([^/]+)/(.*) ]]; then
-    local remote_folder="${BASH_REMATCH[1]}"
+  if expr_match "$1" "\([^/]\{1,\}\)/"; then
+    local remote_folder="${g_match}"
     is_download_folder "${remote_folder}"
     return
   fi
@@ -286,18 +308,18 @@ function is_download_version() {
 # Synopsis: is_numeric_version version
 #
 
-function is_numeric_version() {
+is_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  [[ "$1" =~ ^[v]{0,1}[0-9]+(\.[0-9]+){0,2}$ ]]
+  expr_match "$1" "\([v]\{0,1\}[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{0,2\}\)$"
 }
 
 #
 # Synopsis: is_exact_numeric_version version
 #
 
-function is_exact_numeric_version() {
+is_exact_numeric_version() {
   # e.g. 6, v7.1, 8.11.3
-  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+$ ]]
+  expr_match "$1" "[v]\{0,1\}[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$"
 }
 
 #
@@ -305,8 +327,11 @@ function is_exact_numeric_version() {
 # Reference: https://github.com/nodejs/package-maintenance/issues/236#issue-474783582
 #
 
-function is_node_support_version() {
-  [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current|supported)$ ]]
+is_node_support_version() {
+  case "$1" in
+    active|lts_active|lts_latest|lts|current|supported) return 0 ;;
+  esac
+  return 2
 }
 
 #
@@ -314,7 +339,7 @@ function is_node_support_version() {
 # Map aliases onto existing n aliases, current and lts
 #
 
-function display_latest_node_support_alias() {
+display_latest_node_support_alias() {
   case "$1" in
     "active") printf "current" ;;
     "lts_active") printf "lts" ;;
@@ -437,7 +462,7 @@ err_no_installed_print_help() {
 # Output version after selected (which may be blank under some circumstances).
 #
 
-function next_version_installed() {
+next_version_installed() {
   display_cache_versions | n_grep "$1" -A 1 | tail -n 1
 }
 
@@ -446,7 +471,7 @@ function next_version_installed() {
 # Output version before selected  (which may be blank under some circumstances).
 #
 
-function prev_version_installed() {
+prev_version_installed() {
   display_cache_versions | n_grep "$1" -B 1 | head -n 1
 }
 
@@ -465,16 +490,16 @@ display_n_version() {
 # - g_active_node
 #
 
-function set_active_node() {
+set_active_node() {
   g_active_node=
   local node_path="$(command -v node)"
-  if [[ -x "${node_path}" ]]; then
-    local installed_version=$(node --version)
+  if [ -x "${node_path}" ]; then
+    local installed_version="$(node --version)"
     installed_version=${installed_version#v}
     for dir in "${CACHE_DIR}"/*/ ; do
       local folder_name="${dir%/}"
       folder_name="${folder_name##*/}"
-      if diff &> /dev/null \
+      if diff > /dev/null 2>&1 \
         "${CACHE_DIR}/${folder_name}/${installed_version}/bin/node" \
         "${node_path}" ; then
         g_active_node="${folder_name}/${installed_version}"
@@ -519,10 +544,22 @@ display_versions_with_selected() {
 # Synopsis: display_cache_versions
 #
 
-function display_cache_versions() {
+display_cache_versions() {
   for folder_and_version in $(display_versions_paths); do
     echo "${folder_and_version}"
   done
+}
+
+#
+# Synopsis: readkey
+# Read single byte from stdin
+#
+
+readkey() {
+  oldstty="$(stty -g)"
+  stty -icanon -echo min 1 time 0
+  dd bs=1 count=1 2> /dev/null
+  stty "$oldstty"
 }
 
 #
@@ -538,23 +575,23 @@ menu_select_cache_versions() {
   display_versions_with_selected "${selected}"
 
   trap handle_sigint INT
-  trap handle_sigtstp SIGTSTP
+  trap handle_sigtstp TSTP
 
-  ESCAPE_SEQ=$'\033'
-  UP=$'A'
-  DOWN=$'B'
-  CTRL_P=$'\020'
-  CTRL_N=$'\016'
+  ESCAPE_SEQ="$(printf '\033')"
+  UP=A
+  DOWN=B
+  CTRL_P="$(printf '\020')"
+  CTRL_N="$(printf '\016')"
 
   while true; do
-    read -rsn 1 key
+    local key="$(readkey)"
     case "$key" in
       "$ESCAPE_SEQ")
         # Handle ESC sequences followed by other characters, i.e. arrow keys
-        read -rsn 1 -t 1 tmp
+        local tmp="$(readkey)"
         # See "[" if terminal in normal mode, and "0" in application mode
-        if [[ "$tmp" == "[" || "$tmp" == "O" ]]; then
-          read -rsn 1 -t 1 arrow
+        if [ "$tmp" = "[" ] || [ "$tmp" = "O" ]; then
+          local arrow="$(readkey)"
           case "$arrow" in
             "$UP")
               clear
@@ -570,16 +607,16 @@ menu_select_cache_versions() {
         fi
         ;;
       "d")
-        if [[ -n "${selected}" ]]; then
+        if [ -n "${selected}" ]; then
           clear
           # Note: prev/next is constrained to min/max
           local after_delete_selection="$(next_version_installed "${selected}")"
-          if [[ "${after_delete_selection}" == "${selected}"  ]]; then
+          if [ "${after_delete_selection}" = "${selected}"  ]; then
             after_delete_selection="$(prev_version_installed "${selected}")"
           fi
           remove_versions "${selected}"
 
-          if [[ "${after_delete_selection}" == "${selected}" ]]; then
+          if [ "${after_delete_selection}" = "${selected}" ]; then
             clear
             leave_fullscreen
             echo "All downloaded versions have been deleted from cache."
@@ -610,7 +647,7 @@ menu_select_cache_versions() {
       "")
         # enter key returns empty string
         leave_fullscreen
-        [[ -n "${selected}" ]] && activate "${selected}"
+        [ -n "${selected}" ] && activate "${selected}"
         exit
         ;;
     esac
@@ -657,7 +694,7 @@ disable_pax_mprotect() {
 clean_copy_folder() {
   local source="$1"
   local target="$2"
-  if [[ -d "${source}" ]]; then
+  if [ -d "${source}" ]; then
     rm -rf "${target}"
     cp -fR "${source}" "${target}"
   fi
@@ -689,13 +726,13 @@ activate() {
   mkdir -p "$N_PREFIX/lib"
   # Copy everything except node_modules.
   find "$dir/lib" -mindepth 1 -maxdepth 1 \! -name node_modules -exec cp -fR "{}" "$N_PREFIX/lib" \;
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
+  if [ -z "${N_PRESERVE_NPM}" ]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     # Copy just npm, skipping possible added global modules after download. Clean copy to avoid version change problems.
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
   # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
-  if [[ -e "$dir/lib/node_modules/corepack" && -z "${N_PRESERVE_COREPACK}" ]]; then
+  if [ -e "$dir/lib/node_modules/corepack" ] && [ -z "${N_PRESERVE_COREPACK}" ]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
   fi
@@ -706,13 +743,13 @@ activate() {
   rm -f "$N_PREFIX/bin/node"
   # Copy bin items by hand, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
-  [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
-  if [[ -z "${N_PRESERVE_COREPACK}" ]]; then
-    [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
+  [ -e "$dir/bin/node-waf" ] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
+  if [ -z "${N_PRESERVE_COREPACK}" ]; then
+    [ -e "$dir/bin/corepack" ] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
   fi
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
-    [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
-    [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
+  if [ -z "${N_PRESERVE_NPM}" ]; then
+    [ -e "$dir/bin/npm" ] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
+    [ -e "$dir/bin/npx" ] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
   fi
 
   # include
@@ -729,7 +766,7 @@ activate() {
   disable_pax_mprotect "${installed_node}"
 
   local active_node="$(command -v node)"
-  if [[ -e "${active_node}" && -e "${installed_node}" && "${active_node}" != "${installed_node}" ]]; then
+  if [ -e "${active_node}" ] && [ -e "${installed_node}" ] && [ "${active_node}" != "${installed_node}" ]; then
     # Installed and active are different which might be a PATH problem. List both to give user some clues.
     log "installed" "$("${installed_node}" --version) to ${installed_node}"
     log "active" "$("${active_node}" --version) at ${active_node}"
@@ -737,14 +774,14 @@ activate() {
     local npm_version_str=""
     local installed_npm="${N_PREFIX}/bin/npm"
     local active_npm="$(command -v npm)"
-    if [[ -z "${N_PRESERVE_NPM}" && -e "${active_npm}" && -e "${installed_npm}" && "${active_npm}" = "${installed_npm}" ]]; then
+    if [ -z "${N_PRESERVE_NPM}" ] && [ -e "${active_npm}" ] && [ -e "${installed_npm}" ] && [ "${active_npm}" = "${installed_npm}" ]; then
       npm_version_str=" (with npm $(npm --version))"
     fi
 
     log "installed" "$("${installed_node}" --version)${npm_version_str}"
 
     # Extra tips for changed location.
-    if [[ -e "${active_node}" && -e "${original_node}" && "${active_node}" != "${original_node}" ]]; then
+    if [ -e "${active_node}" ] && [ -e "${original_node}" ] && [ "${active_node}" != "${original_node}" ]; then
       printf '\nNote: the node command changed location and the old location may be remembered in your current shell.\n'
       log old "${original_node}"
       log new "${active_node}"
@@ -758,11 +795,11 @@ activate() {
 #
 
 install() {
-  [[ -z "$1" ]] && abort "version required"
+  [ -z "$1" ] && abort "version required"
   local version
   get_latest_resolved_version "$1" || return 2
   version="${g_target_node}"
-  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  [ -n "${version}" ] || abort "no version found for '$1'"
   update_mirror_settings_for_version "$1"
   update_xz_settings_for_version "${version}"
   update_arch_settings_for_version "${version}"
@@ -777,8 +814,8 @@ install() {
   fi
 
   if test -d "$dir"; then
-    if [[ ! -e "$dir/n.lock" ]] ; then
-      if [[ "$DOWNLOAD" == "false" ]] ; then
+    if [ ! -e "$dir/n.lock" ] ; then
+      if [ "$DOWNLOAD" = "false" ] ; then
         activate "${g_mirror_folder_name}/${version}"
       fi
       exit
@@ -797,12 +834,17 @@ install() {
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
   log fetch "$url"
-  do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
-  pipe_results=( "${PIPESTATUS[@]}" )
-  if [[ "${pipe_results[0]}" -ne 0 ]]; then
+  exec 4>&1 # Extra work to get status from pipe stages
+  local pipefails="$( { {
+     do_get "${url}" || echo "do_get:$?" >&3
+  } | {
+    tar "$tarflag" --strip-components=1 --no-same-owner -f - || echo "tar:$?" >&3
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  if expr_match "${pipefails}" ".*do_get:"; then
     abort "failed to download archive for $version"
   fi
-  if [[ "${pipe_results[1]}" -ne 0 ]]; then
+  if expr_match "${pipefails}" ".*tar:"; then
     abort "failed to extract archive for $version"
   fi
   [ "$GET_SHOWS_PROGRESS" = "true" ] && erase_line
@@ -810,7 +852,7 @@ install() {
 
   disable_pax_mprotect bin/node
 
-  if [[ "$DOWNLOAD" == "false" ]]; then
+  if [ "$DOWNLOAD" = "false" ]; then
     activate "${g_mirror_folder_name}/$version"
   fi
 }
@@ -821,7 +863,7 @@ install() {
 
 set_quiet() {
   SHOW_VERBOSE_LOG="false"
-  command -v curl > /dev/null && CURL_OPTIONS+=( "--silent" ) && GET_SHOWS_PROGRESS="false"
+  command -v curl > /dev/null && CURL_OPTIONS="${CURL_OPTIONS} --silent" && GET_SHOWS_PROGRESS="false"
 }
 
 #
@@ -829,11 +871,13 @@ set_quiet() {
 # Call curl or wget with combination of global and passed options.
 #
 
-function do_get() {
-  if command -v curl &> /dev/null; then
-    curl "${CURL_OPTIONS[@]}" "$@"
-  elif command -v wget &> /dev/null; then
-    wget "${WGET_OPTIONS[@]}" "$@"
+do_get() {
+  if command -v curl > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
+    curl ${CURL_OPTIONS} "$@"
+  elif command -v wget > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
+    wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
   fi
@@ -845,12 +889,14 @@ function do_get() {
 # with options tweaked to be more suitable for getting index.
 #
 
-function do_get_index() {
-  if command -v curl &> /dev/null; then
+do_get_index() {
+  if command -v curl > /dev/null 2>&1; then
     # --silent to suppress progress et al
-    curl --silent --compressed "${CURL_OPTIONS[@]}" "$@"
-  elif command -v wget &> /dev/null; then
-    wget "${WGET_OPTIONS[@]}" "$@"
+    # shellcheck disable=SC2086
+    curl --silent --compressed ${CURL_OPTIONS} "$@"
+  elif command -v wget > /dev/null 2>&1; then
+    # shellcheck disable=SC2086
+    wget ${WGET_OPTIONS} "$@"
   else
     abort "curl or wget command required"
   fi
@@ -860,16 +906,16 @@ function do_get_index() {
 # Synopsis: remove_versions version ...
 #
 
-function remove_versions() {
-  [[ -z "$1" ]] && abort "version(s) required"
-  while [[ $# -ne 0 ]]; do
+remove_versions() {
+  [ -z "$1" ] && abort "version(s) required"
+  while [ $# -ne 0 ]; do
     local version
     get_latest_resolved_version "$1" || break
     version="${g_target_node}"
-    if [[ -n "${version}" ]]; then
+    if [ -n "${version}" ]; then
       update_mirror_settings_for_version "$1"
       local dir="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
-      if [[ -s "${dir}" ]]; then
+      if [ -s "${dir}" ]; then
         rm -rf "${dir}"
       else
         echo "$1 (${version}) not in downloads cache"
@@ -885,11 +931,11 @@ function remove_versions() {
 # Synopsis: prune_cache
 #
 
-function prune_cache() {
+prune_cache() {
   set_active_node
 
   for folder_and_version in $(display_versions_paths); do
-    if [[ "${folder_and_version}" != "${g_active_node}" ]]; then
+    if [ "${folder_and_version}" != "${g_active_node}" ]; then
       echo "${folder_and_version}"
       rm -rf "${CACHE_DIR:?}/${folder_and_version}"
     fi
@@ -902,19 +948,19 @@ function prune_cache() {
 # Globals modified:
 # - g_cached_version
 
-function find_cached_version() {
-  [[ -z "$1" ]] && abort "version required"
+find_cached_version() {
+  [ -z "$1" ] && abort "version required"
   local version
   get_latest_resolved_version "$1" || exit 1
   version="${g_target_node}"
-  [[ -n "${version}" ]] || abort "no version found for '$1'"
+  [ -n "${version}" ] || abort "no version found for '$1'"
 
   update_mirror_settings_for_version "$1"
   g_cached_version="${CACHE_DIR}/${g_mirror_folder_name}/${version}"
-  if [[ ! -d "${g_cached_version}" && "${DOWNLOAD}" == "true" ]]; then
+  if [ ! -d "${g_cached_version}" ] && [ "${DOWNLOAD}" = "true" ]; then
     (install "${version}")
   fi
-  [[ -d "${g_cached_version}" ]] || abort "'$1' (${version}) not in downloads cache"
+  [ -d "${g_cached_version}" ] || abort "'$1' (${version}) not in downloads cache"
 }
 
 
@@ -922,7 +968,7 @@ function find_cached_version() {
 # Synopsis: display_bin_path_for_version version
 #
 
-function display_bin_path_for_version() {
+display_bin_path_for_version() {
   find_cached_version "$1"
   echo "${g_cached_version}/bin/node"
 }
@@ -932,7 +978,7 @@ function display_bin_path_for_version() {
 # Run the given <version> of node with [args ..]
 #
 
-function run_with_version() {
+run_with_version() {
   find_cached_version "$1"
   shift # remove version from parameters
   exec "${g_cached_version}/bin/node" "$@"
@@ -943,7 +989,7 @@ function run_with_version() {
 # Modify the path to include <version> and execute command.
 #
 
-function exec_with_version() {
+exec_with_version() {
   find_cached_version "$1"
   shift # remove version from parameters
   PATH="${g_cached_version}/bin:$PATH" exec "$@"
@@ -954,10 +1000,10 @@ function exec_with_version() {
 # Check the HEAD response of <url>.
 #
 
-function is_ok() {
+is_ok() {
   # Note: both curl and wget can follow redirects, as present on some mirrors (e.g. https://npm.taobao.org/mirrors/node).
   # The output is complicated with redirects, so keep it simple and use command status rather than parse output.
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     do_get --silent --head "$1" > /dev/null || return 1
   else
     do_get --spider "$1" > /dev/null || return 1
@@ -969,18 +1015,18 @@ function is_ok() {
 # Test system to see if xz decompression is supported by tar.
 #
 
-function can_use_xz() {
+can_use_xz() {
   # Be conservative and only enable if xz is likely to work. Unfortunately we can't directly query tar itself.
   # For research, see https://github.com/shadowspawn/nvh/issues/8
   local uname_s="$(uname -s)"
-  if [[ "${uname_s}" = "Linux" ]] && command -v xz &> /dev/null ; then
+  if [ "${uname_s}" = "Linux" ] && command -v xz > /dev/null 2>&1 ; then
     # tar on linux is likely to support xz if it is available as a command
     return 0
-  elif [[ "${uname_s}" = "Darwin" ]]; then
+  elif [ "${uname_s}" = "Darwin" ]; then
     local macos_version="$(sw_vers -productVersion)"
     local macos_major_version="$(echo "${macos_version}" | cut -d '.' -f 1)"
     local macos_minor_version="$(echo "${macos_version}" | cut -d '.' -f 2)"
-    if [[ "${macos_major_version}" -gt 10 || "${macos_minor_version}" -gt 8 ]]; then
+    if [ "${macos_major_version}" -gt 10 ] || [ "${macos_minor_version}" -gt 8 ]; then
       # tar on recent Darwin has xz support built-in
       return 0
     fi
@@ -992,7 +1038,7 @@ function can_use_xz() {
 # Synopsis: display_tarball_platform
 #
 
-function display_tarball_platform() {
+display_tarball_platform() {
   # https://en.wikipedia.org/wiki/Uname
 
   local os="unexpected_os"
@@ -1029,14 +1075,14 @@ function display_tarball_platform() {
 # display <file> for current platform, as per <file> field in index.tab, which is different than actual download
 #
 
-function display_compatible_file_field {
+display_compatible_file_field() {
   local compatible_file_field="$(display_tarball_platform)"
-  if [[ -z "${ARCH}" && "${compatible_file_field}" = "darwin-arm64" ]]; then
+  if [ -z "${ARCH}" ] && [ "${compatible_file_field}" = "darwin-arm64" ]; then
     # Look for arm64 for native but also x64 for older versions which can run in rosetta.
     # (Downside is will get an install error if install version above 16 with x64 and not arm64.)
     compatible_file_field="osx-arm64-tar|osx-x64-tar"
-  elif [[ "${compatible_file_field}" =~ darwin-(.*) ]]; then
-    compatible_file_field="osx-${BASH_REMATCH[1]}-tar"
+  elif expr_match "${compatible_file_field}" "darwin-\(.*\)"; then
+    compatible_file_field="osx-${g_match}-tar"
   fi
   echo "${compatible_file_field}"
 }
@@ -1045,7 +1091,7 @@ function display_compatible_file_field {
 # Synopsis: tarball_url version
 #
 
-function tarball_url() {
+tarball_url() {
   local version="$1"
   local ext=gz
   [ "$N_USE_XZ" = "true" ] && ext="xz"
@@ -1057,7 +1103,7 @@ function tarball_url() {
 # Sets g_target_node
 #
 
-function get_file_node_version() {
+get_file_node_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
@@ -1075,37 +1121,61 @@ function get_file_node_version() {
 # Sets g_target_node
 #
 
-function get_package_engine_version() {
+get_package_engine_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
-  command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
+  command -v node > /dev/null 2>&1 || abort "an active version of node is required to read 'engines' from package.json"
   local range
   range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
   verbose_log "read" "${range}"
-  [[ -n "${range}" ]] || return 2
-  if [[ "*" == "${range}" ]]; then
+  [ -n "${range}" ] || return 2
+  if [ "*" = "${range}" ]; then
     verbose_log "target" "current"
     g_target_node="current"
     return
   fi
 
   local version
-  if [[ "${range}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
-    local operator="${BASH_REMATCH[1]}"
-    version="${BASH_REMATCH[2]}"
+
+  local DIGITS="[[:digit:]]\{1,\}"
+  local VERSION="v\{0,1\}${DIGITS}\(\.${DIGITS}\)\{0,2\}"
+  local WILD="\(\.[xX*]\)\{0,1\}" # optional
+  local SPACES="[[:space:]]\{0,\}" # optional
+
+  # Look for expressions we can match using built-in target formats. Numeric styles are direct. e.g.
+  #   10, 10.x, 10.*: any 10
+  # Simplistic shortcut treatment for these:
+  #   ~10.1.2 treated as 10.1.x (not actually restricted to >=10.1.2)
+  #   ^10.1.2 treated as 10.x (not actually restricted to >=10.1.2)
+  #   >10.1.2 treated as current (not actually restricted to >10.1.2)
+  #   >=10.1.2 treated as current (not actually restricted to >=10.1.2)
+  if expr_match "${range}" "[>~=^]\{0,1\}=\{0,1\}${SPACES}${VERSION}${WILD}$" ; then
+    local operator=
+    if expr_match "${range}" "\([>~=^]=\{0,1\}\)"; then
+      operator="${g_match}"
+    fi
+    expr_match "${range}" "[^[:digit:]]*\(${VERSION}\)"
+    version="${g_match}"
+
     case "${operator}" in
       '' | =) ;;
       \> | \>=) version="current" ;;
-      \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
-      ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
+      \~) # match major.minor
+        expr_match "${version}" "\(${DIGITS}\(\.${DIGITS}\)\{0,1\}\)"
+        version="${g_match}"
+        ;;
+      ^) # match major
+        expr_match "${version}" "\(${DIGITS}\)"
+        version="${g_match}"
+        ;;
     esac
     verbose_log "target" "${version}"
   else
-    command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    command -v npx > /dev/null 2>&1 || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
     verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
-    local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
+    local versions_one_line="$(echo "${version_per_line}" | tr '\n' ' ')"
     # Using semver@7 so works with older versions of node.
     # shellcheck disable=SC2086
     version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
@@ -1118,7 +1188,7 @@ function get_package_engine_version() {
 # Sets g_target_node
 #
 
-function get_nvmrc_version() {
+get_nvmrc_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
@@ -1128,7 +1198,7 @@ function get_nvmrc_version() {
   # Translate from nvm aliases
   case "${version}" in
     lts/\*) version="lts" ;;
-    lts/*) version="${version:4}" ;;
+    lts/*) version="${version#lts/}" ;;
     node) version="current" ;;
     *) ;;
   esac
@@ -1140,13 +1210,13 @@ function get_nvmrc_version() {
 # Sets g_target_node
 #
 
-function get_engine_version() {
+get_engine_version() {
   g_target_node=
   local error_message="${1-package.json not found}"
   local parent
   parent="${PWD}"
-  while [[ -n "${parent}" ]]; do
-    if [[ -e "${parent}/package.json" ]]; then
+  while [ -n "${parent}" ]; do
+    if [ -e "${parent}/package.json" ]; then
       get_package_engine_version "${parent}/package.json"
     else
       parent=${parent%/*}
@@ -1154,8 +1224,8 @@ function get_engine_version() {
     fi
     break
   done
-  [[ -n "${parent}" ]] || abort "${error_message}"
-  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
+  [ -n "${parent}" ] || abort "${error_message}"
+  [ -n "${g_target_node}" ] || abort "did not find supported version of node in 'engines' field of package.json"
 }
 
 #
@@ -1163,17 +1233,17 @@ function get_engine_version() {
 # Sets g_target_node
 #
 
-function get_auto_version() {
+get_auto_version() {
   g_target_node=
   # Search for a version control file first
   local parent
   parent="${PWD}"
-  while [[ -n "${parent}" ]]; do
-    if [[ -e "${parent}/.n-node-version" ]]; then
+  while [ -n "${parent}" ]; do
+    if [ -e "${parent}/.n-node-version" ]; then
       get_file_node_version "${parent}/.n-node-version"
-    elif [[ -e "${parent}/.node-version" ]]; then
+    elif [ -e "${parent}/.node-version" ]; then
       get_file_node_version "${parent}/.node-version"
-    elif [[ -e "${parent}/.nvmrc" ]]; then
+    elif [ -e "${parent}/.nvmrc" ]; then
       get_nvmrc_version "${parent}/.nvmrc"
     else
       parent=${parent%/*}
@@ -1182,8 +1252,8 @@ function get_auto_version() {
     break
   done
   # Fallback to package.json
-  [[ -n "${parent}" ]] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
-  [[ -n "${g_target_node}" ]] || abort "file found for auto did not contain target version of node"
+  [ -n "${parent}" ] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
+  [ -n "${g_target_node}" ] || abort "file found for auto did not contain target version of node"
 }
 
 #
@@ -1191,9 +1261,9 @@ function get_auto_version() {
 # Sets g_target_node
 #
 
-function get_latest_resolved_version() {
+get_latest_resolved_version() {
   g_target_node=
-  local version=${1}
+  local version="${1}"
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
@@ -1215,8 +1285,14 @@ function get_latest_resolved_version() {
 display_remote_index() {
   local index_url="${g_mirror_url}/index.tab"
   # tail to remove header line
-  do_get_index "${index_url}" | tail -n +2 | cut -f 1,3,10
-  if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+  exec 4>&1 # Extra work to get status from pipe stages
+  local pipefails="$( { {
+    do_get_index "${index_url}" || echo "do_get_index:$?" >&3
+  } | {
+    tail -n +2 | cut -f 1,3,10
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  if expr_match "${pipefails}" ".*do_get_index:"; then
     # Reminder: abort will only exit subshell, but consistent error display
     abort "failed to download version index (${index_url})"
   fi
@@ -1226,8 +1302,8 @@ display_remote_index() {
 # Synopsis: display_match_limit limit
 #
 
-function display_match_limit(){
-  if [[ "$1" -gt 1 && "$1" -lt 32000 ]]; then
+display_match_limit(){
+  if [ "$1" -gt 1 ] && [ "$1" -lt 32000 ]; then
     echo "Listing remote... Displaying $1 matches (use --all to see all)."
   fi
 }
@@ -1236,7 +1312,7 @@ function display_match_limit(){
 # Synopsis: display_remote_versions version
 #
 
-function display_remote_versions() {
+display_remote_versions() {
   local version="$1"
   update_mirror_settings_for_version "${version}"
   local match='.'
@@ -1246,23 +1322,23 @@ function display_remote_versions() {
   if is_node_support_version "${version}"; then
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
-  elif [[ "${version}" = "auto" ]]; then
+  elif [ "${version}" = "auto" ]; then
     # suppress stdout logging so lsr layout same as usual for scripting
     get_auto_version || return 2
     version="${g_target_node}"
-  elif [[ "${version}" = "engine" ]]; then
+  elif [ "${version}" = "engine" ]; then
     # suppress stdout logging so lsr layout same as usual for scripting
     get_engine_version || return 2
     version="${g_target_node}"
   fi
 
-  if [[ -z "${version}" ]]; then
+  if [ -z "${version}" ]; then
     match='.'
-  elif [[ "${version}" = "lts" || "${version}" = "stable" ]]; then
+  elif [ "${version}" = "lts" ] || [ "${version}" = "stable" ]; then
     match_count=1
     # Codename is last field, first one with a name is newest lts
     match="${TAB_CHAR}[a-zA-Z]+\$"
-  elif [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+  elif [ "${version}" = "latest" ] || [ "${version}" = "current" ]; then
     match_count=1
     match='.'
   elif is_numeric_version "${version}"; then
@@ -1270,24 +1346,24 @@ function display_remote_versions() {
     # Avoid restriction message if exact version
     is_exact_numeric_version "${version}" && match_count=1
     # Quote any dots in version so they are literal for expression
-    match="${version//\./\.}"
+    match="$(echo "${version}" | tr -s "." "\.")"
     # Avoid 1.2 matching 1.23
     match="^${match}[^0-9]"
   elif is_lts_codename "${version}"; then
     # Capitalise (could alternatively make grep case insensitive)
-    codename="$(echo "${version:0:1}" | tr '[:lower:]' '[:upper:]')${version:1}"
+    codename="$(echo "${version}" | awk '{ print toupper( substr( $0, 1, 1 ) ) substr( $0, 2 ); }')"
     # Codename is last field
     match="${TAB_CHAR}${codename}\$"
   elif is_download_folder "${version}"; then
     match='.'
   elif is_download_version "${version}"; then
     version="${version#"${g_mirror_folder_name}"/}"
-    if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+    if [ "${version}" = "latest" ] || [ "${version}" = "current" ]; then
       match_count=1
       match='.'
     else
       version="v${version#v}"
-      match="${version//\./\.}"
+      match="$(echo "${version}" | tr -s "." "\.")"
       match="^${match}" # prefix
       if is_numeric_version "${version}"; then
         # Exact numeric match
@@ -1302,22 +1378,29 @@ function display_remote_versions() {
   # Implementation notes:
   # - using awk rather than head so do not close pipe early on curl
   # - restrict search to compatible files as not always available, or not at same time
-  # - return status of curl command (i.e. PIPESTATUS[0])
-  display_remote_index \
-    | n_grep -E "$(display_compatible_file_field)" \
+  # - return status of curl command
+  exec 4>&1 # Extra work to get status from pipe stages
+  local pipefails="$( { {
+    display_remote_index || echo "curl:$?" >&3
+  } | {
+    n_grep -E "$(display_compatible_file_field)" \
     | n_grep -E "${match}" \
     | awk "NR<=${match_count}" \
     | cut -f 1 \
     | n_grep -E -o '[^v].*'
-  return "${PIPESTATUS[0]}"
+  }; } 3>&1 >&4)"
+  exec 4>&-
+  if expr_match "${pipefails}" ".*curl:"; then
+    return 2
+  fi
 }
 
 #
 # Synopsis: delete_with_echo target
 #
 
-function delete_with_echo() {
-  if [[ -e "$1" ]]; then
+delete_with_echo() {
+  if [ -e "$1" ]; then
     echo "$1"
     rm -rf "$1"
   fi
@@ -1337,7 +1420,8 @@ uninstall_installed() {
   # This covers tarballs for at least node 4 through 10.
 
   while true; do
-      read -r -p "Do you wish to delete node and npm from ${N_PREFIX}? " yn
+      printf "Do you wish to delete node and npm from %s? " "${N_PREFIX}"
+      read -r yn
       case $yn in
           [Yy]* ) break ;;
           [Nn]* ) exit ;;
@@ -1364,7 +1448,7 @@ uninstall_installed() {
 # Synopsis: show_permission_suggestions
 #
 
-function show_permission_suggestions() {
+show_permission_suggestions() {
   echo "Suggestions:"
   echo "- run n with sudo, or"
   echo "- define N_PREFIX to a writeable location, or"
@@ -1375,7 +1459,7 @@ function show_permission_suggestions() {
 # Show environment and check for common problems.
 #
 
-function show_diagnostics() {
+show_diagnostics() {
   echo "This information is to help you diagnose issues, and useful when reporting an issue."
   echo "Note: some output may contain passwords. Redact before sharing."
 
@@ -1388,7 +1472,7 @@ function show_diagnostics() {
   command -v n && n --version
 
   printf "\nnode\n"
-  if command -v node &> /dev/null; then
+  if command -v node > /dev/null 2>&1; then
     command -v node && node --version
     node -e 'if (process.versions.v8) console.log("JavaScript engine: v8");'
 
@@ -1397,16 +1481,16 @@ function show_diagnostics() {
   fi
 
   printf "\ntar\n"
-  if command -v tar &> /dev/null; then
+  if command -v tar > /dev/null 2>&1; then
     command -v tar && tar --version
   else
     echo_red "tar not found. Needed for extracting downloads."
   fi
 
   printf "\ncurl or wget\n"
-  if command -v curl &> /dev/null; then
+  if command -v curl > /dev/null 2>&1; then
     command -v curl && curl --version
-  elif command -v wget &> /dev/null; then
+  elif command -v wget > /dev/null 2>&1; then
     command -v wget && wget --version
   else
     echo_red "Neither curl nor wget found. Need one of them for downloads."
@@ -1421,33 +1505,33 @@ function show_diagnostics() {
   echo "node mirror: ${N_NODE_MIRROR}"
   echo "node downloads mirror: ${N_NODE_DOWNLOAD_MIRROR}"
   echo "install destination: ${N_PREFIX}"
-  [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
+  [ -n "${N_PREFIX}" ] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
-   [[ -n "${N_PRESERVE_NPM}" ]] && echo "installs preserve npm by default"
-   [[ -n "${N_PRESERVE_COREPACK}" ]] && echo "installs preserve corepack by default"
+   [ -n "${N_PRESERVE_NPM}" ] && echo "installs preserve npm by default"
+   [ -n "${N_PRESERVE_COREPACK}" ] && echo "installs preserve corepack by default"
 
   printf "\nProxy\n"
   # disable "var is referenced but not assigned": https://github.com/koalaman/shellcheck/wiki/SC2154
   # shellcheck disable=SC2154
-  [[ -n "${http_proxy}" ]] && echo "http_proxy: ${http_proxy}"
+  [ -n "${http_proxy}" ] && echo "http_proxy: ${http_proxy}"
   # shellcheck disable=SC2154
-  [[ -n "${https_proxy}" ]] && echo "https_proxy: ${https_proxy}"
-  if command -v curl &> /dev/null; then
+  [ -n "${https_proxy}" ] && echo "https_proxy: ${https_proxy}"
+  if command -v curl > /dev/null 2>&1; then
     # curl supports lower case and upper case!
     # shellcheck disable=SC2154
-    [[ -n "${all_proxy}" ]] && echo "all_proxy: ${all_proxy}"
-    [[ -n "${ALL_PROXY}" ]] && echo "ALL_PROXY: ${ALL_PROXY}"
-    [[ -n "${HTTP_PROXY}" ]] && echo "HTTP_PROXY: ${HTTP_PROXY}"
-    [[ -n "${HTTPS_PROXY}" ]] && echo "HTTPS_PROXY: ${HTTPS_PROXY}"
-    if [[ -e "${CURL_HOME}/.curlrc" ]]; then
+    [ -n "${all_proxy}" ] && echo "all_proxy: ${all_proxy}"
+    [ -n "${ALL_PROXY}" ] && echo "ALL_PROXY: ${ALL_PROXY}"
+    [ -n "${HTTP_PROXY}" ] && echo "HTTP_PROXY: ${HTTP_PROXY}"
+    [ -n "${HTTPS_PROXY}" ] && echo "HTTPS_PROXY: ${HTTPS_PROXY}"
+    if [ -e "${CURL_HOME}/.curlrc" ]; then
        echo "have \$CURL_HOME/.curlrc"
-    elif [[ -e "${HOME}/.curlrc" ]]; then
+    elif [ -e "${HOME}/.curlrc" ]; then
       echo "have \$HOME/.curlrc"
     fi
-  elif command -v wget &> /dev/null; then
-    if [[ -e "${WGETRC}" ]]; then
+  elif command -v wget > /dev/null 2>&1; then
+    if [ -e "${WGETRC}" ]; then
       echo "have \$WGETRC"
-    elif [[ -e "${HOME}/.wgetrc" ]]; then
+    elif [ -e "${HOME}/.wgetrc" ]; then
       echo "have \$HOME/.wgetrc"
     fi
   fi
@@ -1457,27 +1541,21 @@ function show_diagnostics() {
   printf "\nChecking n install destination is in PATH...\n"
   local install_bin="${N_PREFIX}/bin"
   local path_wth_guards=":${PATH}:"
-  if [[ "${path_wth_guards}" =~ :${install_bin}/?: ]]; then
+  if expr_match "${path_wth_guards}" ".*:${install_bin}/\{0,1\}:"; then
     printf "good\n"
   else
     echo_red "'${install_bin}' is not in PATH"
   fi
-  if command -v node &> /dev/null; then
+  if command -v node > /dev/null 2>&1; then
     printf "\nChecking n install destination priority in PATH...\n"
-    local node_dir="$(dirname "$(command -v node)")"
+    local active_node_dir="$(dirname "$(command -v node)")"
 
-    local index=0
-    local path_entry
-    local path_entries
-    local install_bin_index=0
-    local node_index=999
-    IFS=':' read -ra path_entries <<< "${PATH}"
-    for path_entry in "${path_entries[@]}"; do
-      (( index++ ))
-      [[ "${path_entry}" =~ ^${node_dir}/?$ ]] && node_index="${index}"
-      [[ "${path_entry}" =~ ^${install_bin}/?$ ]] && install_bin_index="${index}"
-    done
-    if [[ "${node_index}" -lt "${install_bin_index}" ]]; then
+    local active_index=999
+    expr_match "${path_wth_guards}" ".*:${active_node_dir}/\{0,1\}:" && active_index="${g_match}"
+    local install_index=0
+    expr_match "${path_wth_guards}" ".*:${install_bin}/\{0,1\}:" && install_index="${g_match}"
+
+    if [ "${active_index}" -lt "${install_index}" ]; then
       echo_red "There is a version of node installed which will be found in PATH before the n installed version."
     else
       printf "good\n"
@@ -1501,21 +1579,21 @@ function show_diagnostics() {
   printf "\nChecking permissions for cache folder...\n"
   # Most likely problem is ownership rather than than permissions as such.
   local cache_root="${N_PREFIX}/n"
-  if [[ -e "${N_PREFIX}" && ! -w "${N_PREFIX}" && ! -e "${cache_root}" ]]; then
+  if [ -e "${N_PREFIX}" ] && [ ! -w "${N_PREFIX}" ] && [ ! -e "${cache_root}" ]; then
     echo_red "You do not have write permission to create: ${cache_root}"
     show_permission_suggestions
     echo "- make a folder you own:"
     echo "      sudo mkdir -p \"${cache_root}\""
     echo "      sudo chown $(whoami) \"${cache_root}\""
-  elif [[ -e "${cache_root}" && ! -w "${cache_root}" ]]; then
+  elif [ -e "${cache_root}" ] && [ ! -w "${cache_root}" ]; then
     echo_red "You do not have write permission to: ${cache_root}"
     show_permission_suggestions
     echo "- change folder ownership to yourself:"
     echo "      sudo chown -R $(whoami) \"${cache_root}\""
-  elif [[ ! -e "${cache_root}" ]]; then
+  elif [ ! -e "${cache_root}" ]; then
     echo "Cache folder does not exist: ${cache_root}"
     echo "This is normal if you have not done an install yet, as cache is only created when needed."
-  elif [[ -e "${CACHE_DIR}" && ! -w "${CACHE_DIR}" ]]; then
+  elif [ -e "${CACHE_DIR}" ] && [ ! -w "${CACHE_DIR}" ]; then
     echo_red "You do not have write permission to: ${CACHE_DIR}"
     show_permission_suggestions
     echo "- change folder ownership to yourself:"
@@ -1524,18 +1602,18 @@ function show_diagnostics() {
     echo "good"
   fi
 
-  if [[ -e "${N_PREFIX}" ]]; then
+  if [ -e "${N_PREFIX}" ]; then
     # Most likely problem is ownership rather than than permissions as such.
     printf "\nChecking permissions for install folders...\n"
     local install_writeable="true"
     for subdir in bin lib include share; do
-      if [[ -e "${N_PREFIX}/${subdir}" && ! -w "${N_PREFIX}/${subdir}" ]]; then
+      if [ -e "${N_PREFIX}/${subdir}" ] && [ ! -w "${N_PREFIX}/${subdir}" ]; then
         install_writeable="false"
         echo_red "You do not have write permission to: ${N_PREFIX}/${subdir}"
         break
       fi
     done
-    if [[ "${install_writeable}" = "true" ]]; then
+    if [ "${install_writeable}" = "true" ]; then
       echo "good"
     else
       show_permission_suggestions
@@ -1550,7 +1628,7 @@ function show_diagnostics() {
   else
     echo_red "mirror not reachable"
     printf "Showing failing command and output\n"
-    if command -v curl &> /dev/null; then
+    if command -v curl > /dev/null 2>&1; then
       ( set -x; do_get --head "${N_NODE_MIRROR}/" )
     else
       ( set -x; do_get --spider "${N_NODE_MIRROR}/" )
@@ -1567,10 +1645,11 @@ function show_diagnostics() {
 # particularly for `n lsr --all` and `n install --arch x686`
 # which feel pretty natural.
 
-unprocessed_args=()
+# Only expecting plain strings in the unprocessed args, so nothing fancy.
+unprocessed_args=
 positional_arg="false"
 
-while [[ $# -ne 0 ]]; do
+while [ $# -ne 0 ]; do
   case "$1" in
     --all) N_MAX_REMOTE_MATCHES=32000 ;;
     -V|--version) display_n_version ;;
@@ -1587,26 +1666,29 @@ while [[ $# -ne 0 ]]; do
     --lts) display_remote_versions lts; exit ;;
     -a|--arch) shift; set_arch "$1";; # set arch and continue
     exec|run|as|use)
-      unprocessed_args+=( "$1" )
+      unprocessed_args="${unprocessed_args} $1"
       positional_arg="true"
       ;;
     *)
-      if [[ "${positional_arg}" == "true" ]]; then
-        unprocessed_args+=( "$@" )
+      if [ "${positional_arg}" = "true" ]; then
         break
       fi
-      unprocessed_args+=( "$1" )
+      unprocessed_args="${unprocessed_args} $1"
       ;;
   esac
   shift
 done
 
-if [[ -z "${N_USE_XZ+defined}" ]]; then
+if [ -z "${N_USE_XZ+defined}" ]; then
   N_USE_XZ="true" # Default to using xz
   can_use_xz || N_USE_XZ="false"
 fi
 
-set -- "${unprocessed_args[@]}"
+# disable globbing in expansion (just in case)
+set -f
+# shellcheck disable=SC2086
+set -- ${unprocessed_args} "$@"
+set +f
 
 if test $# -eq 0; then
   test -z "$(display_versions_paths)" && err_no_installed_print_help
