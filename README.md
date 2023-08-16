@@ -66,7 +66,7 @@ to install `n` to `bin/n` of the directory specified in the environment variable
 
 ### Third Party Installers
 
-On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
+On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n/n.rb).
 
     brew install n
 
