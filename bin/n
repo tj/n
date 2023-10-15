@@ -135,6 +135,7 @@ g_target_node=
 DOWNLOAD=false # set to opt-out of activate (install), and opt-in to download (run, exec)
 ARCH=
 SHOW_VERBOSE_LOG="true"
+OFFLINE=false
 
 # ANSI escape codes
 # https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -393,6 +394,7 @@ Options:
   -q, --quiet           Disable curl output. Disable log messages processing "auto" and "engine" labels.
   -d, --download        Download if necessary, and don't make active
   -a, --arch            Override system architecture
+  --offline             Resolve target version against cached downloads instead of internet lookup
   --all                 ls-remote displays all matches instead of last 20
   --insecure            Turn off certificate checking for https requests (may be needed from behind a proxy server)
   --use-xz/--no-use-xz  Override automatic detection of xz support and enable/disable use of xz compressed node downloads.
@@ -784,6 +786,9 @@ install() {
       exit
     fi
   fi
+  if [[ "$OFFLINE" == "true" ]]; then
+    abort "version unavailable offline"
+  fi
 
   log installing "${g_mirror_folder_name}-v$version"
 
@@ -1103,6 +1108,7 @@ function get_package_engine_version() {
     verbose_log "target" "${version}"
   else
     command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    [[ "$OFFLINE" != "true" ]] || abort "offline: an internet connection is required for looking up complex 'engine' ranges from package.json"
     verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
@@ -1199,6 +1205,8 @@ function get_latest_resolved_version() {
     # Just numbers, already resolved, no need to lookup first.
     simple_version="${simple_version#v}"
     g_target_node="${simple_version}"
+  elif [[ "$OFFLINE" == "true" ]]; then
+    g_target_node=$(display_local_versions "${version}")
   else
     # Complicated recognising exact version, KISS and lookup.
     g_target_node=$(N_MAX_REMOTE_MATCHES=1 display_remote_versions "$version")
@@ -1230,6 +1238,56 @@ function display_match_limit(){
   if [[ "$1" -gt 1 && "$1" -lt 32000 ]]; then
     echo "Listing remote... Displaying $1 matches (use --all to see all)."
   fi
+}
+
+#
+# Synopsis: display_local_versions version
+#
+
+function display_local_versions() {
+  local version="$1"
+  local match='.'
+  verbose_log "offline" "matching cached versions"
+
+    # Transform some labels before processing further.
+  if is_node_support_version "${version}"; then
+    version="$(display_latest_node_support_alias "${version}")"
+    match_count=1
+  elif [[ "${version}" = "auto" ]]; then
+    # suppress stdout logging so lsr layout same as usual for scripting
+    get_auto_version || return 2
+    version="${g_target_node}"
+  elif [[ "${version}" = "engine" ]]; then
+    # suppress stdout logging so lsr layout same as usual for scripting
+    get_engine_version || return 2
+    version="${g_target_node}"
+  fi
+
+  if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+    match='^node/.'
+  elif is_exact_numeric_version "${version}"; then
+    # Quote any dots in version so they are literal for expression
+    match="^node/${version//\./\.}"
+  elif is_numeric_version "${version}"; then
+    version="${version#v}"
+    # Quote any dots in version so they are literal for expression
+    match="${version//\./\.}"
+    # Avoid 1.2 matching 1.23
+    match="^node/${match}[^0-9]"
+  # elif is_lts_codename "${version}"; then
+  # see if demand
+  elif is_download_folder "${version}"; then
+    match="^${version}/"
+  # elif is_download_version "${version}"; then
+  # see if demand
+  else
+    abort "invalid version '$1' for offline matching"
+  fi
+
+  display_versions_paths \
+    | n_grep -E "${match}" \
+    | tail -n 1 \
+    | sed 's|node/||'
 }
 
 #
@@ -1577,6 +1635,7 @@ while [[ $# -ne 0 ]]; do
     -h|--help|help) display_help; exit ;;
     -q|--quiet) set_quiet ;;
     -d|--download) DOWNLOAD="true" ;;
+    --offline) OFFLINE="true" ;;
     --insecure) set_insecure ;;
     -p|--preserve) N_PRESERVE_NPM="true" N_PRESERVE_COREPACK="true" ;;
     --no-preserve) N_PRESERVE_NPM="" N_PRESERVE_COREPACK="" ;;
