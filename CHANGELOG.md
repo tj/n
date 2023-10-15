@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [9.2.0] (2023-10-15)
+
+### Added
+
+- `--offline` for resolving target version against cached downloads instead of internet lookup ([#785])
+
 ## [9.1.0] (2023-04-15)
 
 ### Added
@@ -479,10 +485,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#745]: https://github.com/tj/n/pull/745
 [#746]: https://github.com/tj/n/pull/746
 [#764]: https://github.com/tj/n/pull/764
+[#785]: https://github.com/tj/n/pull/785
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.2.0]: https://github.com/tj/n/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/tj/n/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/tj/n/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/tj/n/compare/v8.2.0...v9.0.0
