@@ -1108,6 +1108,7 @@ function get_package_engine_version() {
     verbose_log "target" "${version}"
   else
     command -v npx &> /dev/null || abort "an active version of npx is required to use complex 'engine' ranges from package.json"
+    [[ "$OFFLINE" != "true" ]] || abort "offline: an internet connection is required for looking up complex 'engine' ranges from package.json"
     verbose_log "resolving" "${range}"
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
