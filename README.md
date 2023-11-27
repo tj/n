@@ -215,6 +215,10 @@ List downloaded versions in cache:
 
     n ls
 
+Use `n` to access cached versions (already downloaded) without internet available.
+
+    n --offline 12
+
 Display diagnostics to help resolve problems:
 
     n doctor
