@@ -45,7 +45,7 @@ The default root location used when running `n` is `/usr/local` where a normal u
 
 `n` caches Node.js versions in subdirectory `n/versions`. The _active_ Node.js version is installed in subdirectories `bin`, `include`, `lib`, and `share`.
 
-To take ownership of the system directories:
+To take ownership of the system directories (option 1):
 
     # make cache folder (if missing) and take ownership
     sudo mkdir -p /usr/local/n
