@@ -37,10 +37,15 @@ If you already have Node.js installed, an easy way to install `n` is using `npm`
 
     npm install -g n
 
-The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
+The default root location used when running `n` is `/usr/local` where a normal user does not have write permission. You can strike the same sort of issue when using npm to install global modules. You have three main options:
+
+1) change the ownership of the relevant directories to yourself (see below)
+2) tell `n` to use a custom location where you do have write permissions (see `N_PREFIX`)
+3) put `sudo` in front of the command to run as super user
+
 `n` caches Node.js versions in subdirectory `n/versions`. The _active_ Node.js version is installed in subdirectories `bin`, `include`, `lib`, and `share`.
 
-To avoid requiring `sudo` for `n` and `npm` global installs, it is suggested you either install to your home directory using `N_PREFIX`, or take ownership of the system directories:
+To take ownership of the system directories:
 
     # make cache folder (if missing) and take ownership
     sudo mkdir -p /usr/local/n
