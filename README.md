@@ -62,7 +62,7 @@ Alternatively, you can clone this repo and
 
     make install
 
-to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
+which defaults to `/usr/local/bin/n`. To install `n` in a custom location such as `$CUSTOM_LOCATION/bin/n`, run `PREFIX=$CUSTOM_LOCATION make install`.
 
 ### Third Party Installers
 
