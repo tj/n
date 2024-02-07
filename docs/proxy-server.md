@@ -14,6 +14,10 @@ If your proxy requires authentication you can add the [url-encoded](https://urle
 
 If you have defined a custom node mirror which uses http, then you would define `http_proxy` rather than `https_proxy`.
 
+If you use `sudo` to run `n`, you need to do something extra to make the environment variables available. A simple way is to use `-E` (`--preserve-env`):
+
+    sudo -E n lts
+
 ## Certificate Checks
 
 Your proxy server may supply its own ssl certificates for remote sites (as a man-in-the-middle). If you can not arrange to trust the proxy in this role, you can turn off (all) certificate checking with `--insecure`. e.g.
