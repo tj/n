@@ -1425,7 +1425,11 @@ uninstall_installed() {
 function show_permission_suggestions() {
   echo "Suggestions:"
   echo "- run n with sudo, or"
-  echo "- define N_PREFIX to a writeable location, or"
+  if [[ "${N_CACHE_PREFIX}" == "${N_PREFIX}" ]]; then
+    echo "- define N_PREFIX to a writeable location, or"
+  else
+    echo "- define N_PREFIX and N_CACHE_PREFIX to writeable locations, or"
+  fi
 }
 
 #
@@ -1556,34 +1560,47 @@ function show_diagnostics() {
     fi
   fi
 
-  printf "\nChecking permissions for cache folder...\n"
-  # Most likely problem is ownership rather than than permissions as such.
-  local cache_root="${N_PREFIX}/n"
-  if [[ -e "${N_PREFIX}" && ! -w "${N_PREFIX}" && ! -e "${cache_root}" ]]; then
-    echo_red "You do not have write permission to create: ${cache_root}"
-    show_permission_suggestions
-    echo "- make a folder you own:"
-    echo "      sudo mkdir -p \"${cache_root}\""
-    echo "      sudo chown $(whoami) \"${cache_root}\""
-  elif [[ -e "${cache_root}" && ! -w "${cache_root}" ]]; then
-    echo_red "You do not have write permission to: ${cache_root}"
-    show_permission_suggestions
-    echo "- change folder ownership to yourself:"
-    echo "      sudo chown -R $(whoami) \"${cache_root}\""
-  elif [[ ! -e "${cache_root}" ]]; then
-    echo "Cache folder does not exist: ${cache_root}"
-    echo "This is normal if you have not done an install yet, as cache is only created when needed."
-  elif [[ -e "${CACHE_DIR}" && ! -w "${CACHE_DIR}" ]]; then
-    echo_red "You do not have write permission to: ${CACHE_DIR}"
-    show_permission_suggestions
-    echo "- change folder ownership to yourself:"
-    echo "      sudo chown -R $(whoami) \"${CACHE_DIR}\""
-  else
+  printf "\nChecking prefix folders...\n"
+  if [[ ! -e "${N_PREFIX}" ]]; then
+    echo "Folder does not exist: ${N_PREFIX}"
+    echo "- This folder will be created when you do an install."
+  fi
+  if [[ "${N_PREFIX}" != "${N_CACHE_PREFIX}" && ! -e "${N_CACHE_PREFIX}" ]]; then
+    echo "Folder does not exist: ${N_CACHE_PREFIX}"
+    echo "- This folder will be created when you do an install."
+  fi
+  if [[ -e "${N_PREFIX}" && -e "${N_CACHE_PREFIX}" ]]; then
     echo "good"
   fi
 
+  if [[ -e "${N_CACHE_PREFIX}" ]]; then
+    printf "\nChecking permissions for cache folder...\n"
+    # Using knowledge cache path ends in /n/versions in following check.
+    if [[ ! -e "${CACHE_DIR}" && (( -e "${N_CACHE_PREFIX}/n" && ! -w "${N_CACHE_PREFIX}/n" ) || ( ! -e "${N_CACHE_PREFIX}/n" && ! -w "${N_CACHE_PREFIX}" )) ]]; then
+      echo_red "You do not have write permission to create: ${CACHE_DIR}"
+      show_permission_suggestions
+      echo "- make a folder you own:"
+      echo "      sudo mkdir -p \"${CACHE_DIR}\""
+      echo "      sudo chown $(whoami) \"${CACHE_DIR}\""
+    elif [[ -e "${CACHE_DIR}" && ! -w "${CACHE_DIR}" ]]; then
+      echo_red "You do not have write permission to: ${CACHE_DIR}"
+      show_permission_suggestions
+      echo "- change folder ownership to yourself:"
+      echo "      sudo chown -R $(whoami) \"${CACHE_DIR}\""
+    elif [[ ! -e "${CACHE_DIR}" ]]; then
+      echo "Cache folder does not exist: ${CACHE_DIR}"
+      echo "- This is normal if you have not done an install yet, as cache is only created when needed."
+    elif [[ ! -w "${CACHE_DIR}" ]]; then
+      echo_red "You do not have write permission to: ${CACHE_DIR}"
+      show_permission_suggestions
+      echo "- change folder ownership to yourself:"
+      echo "      sudo chown -R $(whoami) \"${CACHE_DIR}\""
+    else
+      echo "good"
+    fi
+  fi
+
   if [[ -e "${N_PREFIX}" ]]; then
-    # Most likely problem is ownership rather than than permissions as such.
     printf "\nChecking permissions for install folders...\n"
     local install_writeable="true"
     for subdir in bin lib include share; do
@@ -1592,13 +1609,20 @@ function show_diagnostics() {
         echo_red "You do not have write permission to: ${N_PREFIX}/${subdir}"
         break
       fi
+      if [[ ! -e "${N_PREFIX}/${subdir}" && ! -w "${N_PREFIX}" ]]; then
+        install_writeable="false"
+        echo_red "You do not have write permission to create: ${N_PREFIX}/${subdir}"
+        break
+      fi
     done
     if [[ "${install_writeable}" = "true" ]]; then
       echo "good"
     else
       show_permission_suggestions
       echo "- change folder ownerships to yourself:"
-      echo "      (cd \"${N_PREFIX}\" && sudo chown -R $(whoami) bin lib include share)"
+      echo "      cd \"${N_PREFIX}\""
+      echo "      sudo mkdir -p bin lib include share"
+      echo "      sudo chown -R $(whoami) bin lib include share"
     fi
   fi
 
