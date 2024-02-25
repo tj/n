@@ -18,7 +18,7 @@ function confirm {
 }
 
 
-readonly N_VERSION="$(n --version)"
+readonly N_VERSION="$(./bin/n --version)"
 if [[ "${N_VERSION}" =~ ^[0-9.]+-[0-9]+$ ]]; then
   echo "Error: internal version number still prerelease, set it to desired version first."
   exit 2

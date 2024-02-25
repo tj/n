@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [9.2.1] (2024-02-25)
+
+### Fixed
+
+- `n doctor` works with custom `N_CACHE_PREFIX`
+
+### Added
+
+- expand tests in `n doctor` for folder existence and permissions
 
 ## [9.2.0] (2023-10-15)
 
@@ -23,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [9.0.1] (2022-11-04)
 
-### Fixes
+### Fixed
 
 - `Makefile` compatible with more flavours of `make` ([#745])
 - quote paths in `Makefile` in case `PREFIX` contains spaces ([#746])
@@ -490,6 +498,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.2.1]: https://github.com/tj/n/compare/v9.2.0...v9.2.1
 [9.2.0]: https://github.com/tj/n/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/tj/n/compare/v9.0.1...v9.1.0
 [9.0.1]: https://github.com/tj/n/compare/v9.0.0...v9.0.1
