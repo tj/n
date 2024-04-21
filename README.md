@@ -90,7 +90,7 @@ As a result, both `n` itself and all Node.js versions it manages are hosted insi
 
 ### Multiple Copies of Node.js
 
-If you end up with multiple copies of `node` in your `PATH`, see [docs](./docs/changing-node-location.md) for a detailed walk-through of how to tidy up. This can easily happen is you already had Node.js installed in some other way before using `n`.
+If you end up with multiple copies of `node` in your `PATH` so the freshly installed version is not active, see [docs](./docs/changing-node-location.md) for a detailed walk-through of how to tidy up. This can easily happen is you already had Node.js installed in some other way before using `n`.
 
 ## Installing Node.js Versions
 
