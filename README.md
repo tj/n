@@ -13,6 +13,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Supported Platforms](#supported-platforms)
     - [Installation](#installation)
         - [Third Party Installers](#third-party-installers)
+        - [Multiple Copies of Node.js](#multiple-copies-of-nodejs)
     - [Installing Node.js Versions](#installing-nodejs-versions)
     - [Specifying Node.js Versions](#specifying-nodejs-versions)
     - [Removing Versions](#removing-versions)
@@ -86,6 +87,10 @@ On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows i
 n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS Node.js version.
 
 As a result, both `n` itself and all Node.js versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
+
+### Multiple Copies of Node.js
+
+If you end up with multiple copies of `node` in your `PATH`, see [docs](./docs/changing-node-location.md) for a detailed walk-through of how to tidy up. This can easily happen is you already had Node.js installed in some other way before using `n`.
 
 ## Installing Node.js Versions
 

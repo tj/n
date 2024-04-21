@@ -1,4 +1,4 @@
-# Switching to `n` managed node
+# Switching To `n` Managed Node.js
 
 If you already have Node.js installed to a different root than `n` uses, you can easily end up with multiple copies of node (and npm, and npx, and globally installed packages!). Some common situations are you already had Node.js installed  using your Linux package manager, or using another node version manager, or using say Homebrew. The two main ways you might resolve this are:
 - uninstall from the old directory and reinstall to the new directory
