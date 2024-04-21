@@ -61,7 +61,7 @@ function n_grep() {
 # Setup and state
 #
 
-VERSION="v9.2.2-0"
+VERSION="v9.2.2"
 
 N_PREFIX="${N_PREFIX-/usr/local}"
 N_PREFIX=${N_PREFIX%/}
@@ -853,7 +853,7 @@ function do_get() {
 function do_get_index() {
   if command -v curl &> /dev/null; then
     # --silent to suppress progress et al
-    curl --silent --compressed "${CURL_OPTIONS[@]}" "$@"
+    curl --silent "${CURL_OPTIONS[@]}" "$@"
   elif command -v wget &> /dev/null; then
     wget "${WGET_OPTIONS[@]}" "$@"
   else
