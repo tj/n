@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [9.2.2] (2024-04-21)
+
+### Fixed
+
+- avoid problems with `curl` 8.7.1 and `--compressed` by removing option until fixed
 
 ## [9.2.1] (2024-02-25)
 
@@ -500,6 +504,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[9.2.2]: https://github.com/tj/n/compare/v9.2.1...v9.2.2
 [9.2.1]: https://github.com/tj/n/compare/v9.2.0...v9.2.1
 [9.2.0]: https://github.com/tj/n/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/tj/n/compare/v9.0.1...v9.1.0
