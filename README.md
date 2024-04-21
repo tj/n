@@ -90,9 +90,9 @@ As a result, both `n` itself and all Node.js versions it manages are hosted insi
 
 ### Multiple Copies of Node.js
 
-If you end up with multiple copies of `node` in your `PATH`, see [docs](./docs/changing-node-location.md) for a detailed walk-through of how to tidy up. This can easily happen if you already had Node.js installed in some other way before using `n`.
+Changing  from a previous Node.js installed to a different location may involve a few extra steps. See docs for [changing node location]((./docs/changing-node-location.md)) for a walk-through example of switching from using Homebrew to using `n` to manage Node.js.
 
-The big clue you have this problem is if after installing node you see the progress telling you the "installed" and "active" locations are different, like:
+You have a problem with multiple versions if after installing node you see the "installed" and "active" locations are different:
 ```console
 % n lts
      copying : node/20.12.2

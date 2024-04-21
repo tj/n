@@ -4,10 +4,9 @@ If you already have Node.js installed to a different root than `n` uses, you can
 - uninstall from the old directory and reinstall to the new directory
 - put the `bin` directory that `n` uses early in the `PATH` environment variable, so the `n` installed node is found first
 
-
 The simplest setup to understand is the first one. Just have one version of `node` installed.
 
-Let's walk-through the process of switching over using Homebrew as an example. Let's start off with Node.js installed, `npm` updated, and an example global npm package. 
+Let's walk-through the process of switching over from using Homebrew as an example. Let's start off with Node.js installed, `npm` updated, and an example global npm package. 
 
 ```console
 % brew install node
