@@ -1,12 +1,16 @@
 # Switching To `n` Managed Node.js
 
 If you already have Node.js installed to a different root than `n` uses, you can easily end up with multiple copies of node (and npm, and npx, and globally installed packages!). Some common situations are you already had Node.js installed  using your Linux package manager, or using another node version manager, or using say Homebrew. The two main ways you might resolve this are:
+
 - uninstall from the old directory and reinstall to the new directory
 - put the `bin` directory that `n` uses early in the `PATH` environment variable, so the `n` installed node is found first
 
 The simplest setup to understand is the first one. Just have one version of `node` installed.
 
-Let's walk-through the process of switching over from using Homebrew as an example. Let's start off with Node.js installed, `npm` updated, and an example global npm package. 
+Let's walk-through the process of switching over from using Homebrew as an example. Let's start off with Node.js installed, `npm` updated, and an example global npm package. The key point is there are two install prefixes involved:
+
+- old: `/opt/homebrew`
+- new: `/usr/local`
 
 ```console
 % brew install node
@@ -24,9 +28,13 @@ Let's walk-through the process of switching over from using Homebrew as an examp
 /opt/homebrew/Cellar/node/21.7.3/share/man/man1/node.1
 % command -v node
 /opt/homebrew/bin/node
+% command -v npm 
+/opt/homebrew/bin/npm
+% npm prefix --global
+/opt/homebrew
 ```
 
-Before we start, list the global npm packages in the "old" location. We will refer back to this list. (Suggest doing this early in case you break things!)
+Before we start transferring, list the global npm packages in the "old" location. We will refer back to this list.
 
 ```console
 % npm list --global
@@ -35,7 +43,7 @@ Before we start, list the global npm packages in the "old" location. We will ref
 └── npm@10.5.0
 ```
 
-We could clean out the old location first, but let's install `n` and another copy of node to see what happens. We end up with two versions of node, and the active one is still the Homebrew managed version.
+We could clean out the old location first, but let's install `n` and another copy of node and see what that looks like. We end up with two versions of node, and the active one is still the Homebrew managed version.
 
 ```console
 % brew install n
@@ -84,7 +92,7 @@ npm uninstall --global npm
 brew uninstall node
 ```
 
-Check the only versions left of the Node.js binaries are the versions installed by `n`:
+Check the active binaries are now the ones installed by `n`:
 ```console
 % command -v node
 /usr/local/bin/node
@@ -96,6 +104,8 @@ Check the only versions left of the Node.js binaries are the versions installed 
 
 And lastly, reinstall the global npm packages you started with:
 ```
+% npm prefix --global
+/usr/local
 % npm install --global npm@latest
 % npm install --global @shadowspawn/forest-arborist
 % npm list -g
