@@ -13,6 +13,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Supported Platforms](#supported-platforms)
     - [Installation](#installation)
         - [Third Party Installers](#third-party-installers)
+        - [Replacing a previous node install](#replacing-a-previous-node-install)
     - [Installing Node.js Versions](#installing-nodejs-versions)
     - [Specifying Node.js Versions](#specifying-nodejs-versions)
     - [Removing Versions](#removing-versions)
@@ -86,6 +87,18 @@ On Linux and macOS, [n-install](https://github.com/mklement0/n-install) allows i
 n-install sets both `PREFIX` and `N_PREFIX` to `$HOME/n`, installs `n` to `$HOME/n/bin`, modifies the initialization files of supported shells to export `N_PREFIX` and add `$HOME/n/bin` to the `PATH`, and installs the latest LTS Node.js version.
 
 As a result, both `n` itself and all Node.js versions it manages are hosted inside a single, optionally configurable directory, which you can later remove with the included `n-uninstall` script. `n-update` updates `n` itself to the latest version. See the [n-install repo](https://github.com/mklement0/n-install) for more details.
+
+### Replacing a previous node install
+
+Changing from a previous Node.js installed to a different location may involve a few extra steps. See docs for [changing node location]((./docs/changing-node-location.md)) for a walk-through example of switching from using Homebrew to using `n` to manage Node.js.
+
+You have a problem with multiple versions if after installing node you see the "installed" and "active" locations are different:
+```console
+% n lts
+     copying : node/20.12.2
+   installed : v20.12.2 to /usr/local/bin/node
+      active : v21.7.3 at /opt/homebrew/bin/node
+```
 
 ## Installing Node.js Versions
 
