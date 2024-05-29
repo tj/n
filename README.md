@@ -90,7 +90,7 @@ As a result, both `n` itself and all Node.js versions it manages are hosted insi
 
 ### Replacing a previous node install
 
-Changing from a previous Node.js installed to a different location may involve a few extra steps. See docs for [changing node location]((./docs/changing-node-location.md)) for a walk-through example of switching from using Homebrew to using `n` to manage Node.js.
+Changing from a previous Node.js installed to a different location may involve a few extra steps. See docs for [changing node location](./docs/changing-node-location.md) for a walk-through example of switching from using Homebrew to using `n` to manage Node.js.
 
 You have a problem with multiple versions if after installing node you see the "installed" and "active" locations are different:
 ```console
