@@ -1076,7 +1076,7 @@ function get_file_node_version() {
 }
 
 #
-# Synopsis: get_package_engine_version\
+# Synopsis: get_package_engine_version
 # Sets g_target_node
 #
 
@@ -1142,13 +1142,14 @@ function get_nvmrc_version() {
 }
 
 #
-# Synopsis: get_engine_version [error-message]
+# Synopsis: get_engine_version [default-version]
 # Sets g_target_node
+# Uses error_message, if set
 #
 
 function get_engine_version() {
   g_target_node=
-  local error_message="${1-package.json not found}"
+  local error_message="${error_message-package.json not found}"
   local parent
   parent="${PWD}"
   while [[ -n "${parent}" ]]; do
@@ -1160,12 +1161,16 @@ function get_engine_version() {
     fi
     break
   done
+  if [[ -z "${g_target_node}" && -n "${1-}" ]]; then
+    g_target_node="$1"
+    return
+  fi
   [[ -n "${parent}" ]] || abort "${error_message}"
   [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
 }
 
 #
-# Synopsis: get_auto_version
+# Synopsis: get_auto_version [default-version]
 # Sets g_target_node
 #
 
@@ -1188,7 +1193,9 @@ function get_auto_version() {
     break
   done
   # Fallback to package.json
-  [[ -n "${parent}" ]] || get_engine_version "no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)"
+  [[ -n "${parent}" ]] \
+    || error_message="no file found for auto version (.n-node-version, .node-version, .nvmrc, or package.json)" \
+         get_engine_version "$@"
   [[ -n "${g_target_node}" ]] || abort "file found for auto did not contain target version of node"
 }
 
@@ -1246,20 +1253,24 @@ function display_match_limit(){
 
 function display_local_versions() {
   local version="$1"
+  local fallback_version=
   local match='.'
   verbose_log "offline" "matching cached versions"
 
-    # Transform some labels before processing further.
+  # Transform some labels before processing further.
+  if [[ "${version}" = "auto:"* || "${version}" = "engine:"* ]]; then
+    fallback_version="${version#*:}" version="${version%%:*}"
+  fi
   if is_node_support_version "${version}"; then
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
   elif [[ "${version}" = "auto" ]]; then
     # suppress stdout logging so lsr layout same as usual for scripting
-    get_auto_version || return 2
+    get_auto_version "${fallback_version}" || return 2
     version="${g_target_node}"
   elif [[ "${version}" = "engine" ]]; then
     # suppress stdout logging so lsr layout same as usual for scripting
-    get_engine_version || return 2
+    get_engine_version "${fallback_version}" || return 2
     version="${g_target_node}"
   fi
 
@@ -1296,21 +1307,25 @@ function display_local_versions() {
 
 function display_remote_versions() {
   local version="$1"
+  local fallback_version=
   update_mirror_settings_for_version "${version}"
   local match='.'
   local match_count="${N_MAX_REMOTE_MATCHES}"
 
   # Transform some labels before processing further.
+  if [[ "${version}" = "auto:"* || "${version}" = "engine:"* ]]; then
+    fallback_version="${version#*:}" version="${version%%:*}"
+  fi
   if is_node_support_version "${version}"; then
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
   elif [[ "${version}" = "auto" ]]; then
     # suppress stdout logging so lsr layout same as usual for scripting
-    get_auto_version || return 2
+    get_auto_version "${fallback_version}" || return 2
     version="${g_target_node}"
   elif [[ "${version}" = "engine" ]]; then
     # suppress stdout logging so lsr layout same as usual for scripting
-    get_engine_version || return 2
+    get_engine_version "${fallback_version}" || return 2
     version="${g_target_node}"
   fi
 
