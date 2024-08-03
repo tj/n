@@ -1084,9 +1084,14 @@ function get_package_engine_version() {
   g_target_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
-  command -v node &> /dev/null || abort "an active version of node is required to read 'engines' from package.json"
   local range
-  range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  if command -v jq &> /dev/null; then
+    range="$(jq -r '.engines.node // ""' < "${filepath}")"
+  elif command -v node &> /dev/null; then
+    range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+  else
+    abort "either jq or an active version of node is required to read 'engines' from package.json"
+  fi
   verbose_log "read" "${range}"
   [[ -n "${range}" ]] || return 2
   if [[ "*" == "${range}" ]]; then
@@ -1472,6 +1477,13 @@ function show_diagnostics() {
     command -v wget && wget --version
   else
     echo_red "Neither curl nor wget found. Need one of them for downloads."
+  fi
+
+  printf "\njq\n"
+  if command -v jq &> /dev/null; then
+    command -v jq && jq --version
+  else
+    echo "jq not found, can be used to get package.json values faster than node"
   fi
 
   printf "\nuname\n"
