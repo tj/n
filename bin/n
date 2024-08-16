@@ -1480,11 +1480,7 @@ function show_diagnostics() {
   fi
 
   printf "\njq\n"
-  if command -v jq &> /dev/null; then
-    jq --version
-  else
-    echo "jq not found, can be used to get package.json values faster than node"
-  fi
+  command -v jq && jq --version
 
   printf "\nuname\n"
   uname -a
