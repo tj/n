@@ -143,7 +143,7 @@ There is an `auto` label to read the target version from a file in the current d
 - `.nvmrc`: version on single line. Used by `nvm`.
 - if no version file found, look for `engine` as below.
 
-The `engine` label looks for a `package.json` file and reads the `engines` field to determine compatible Node.js. Requires an installed version of `node`, and uses `npx semver` to resolve complex ranges.
+The `engine` label looks for a `package.json` file and reads the `engines` field to determine compatible Node.js. Requires an installed version of `jq` or `node`, and uses `npx semver` to resolve complex ranges.
 
 There is support for the named release streams:
 

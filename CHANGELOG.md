@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+### Changed
+
+- if `jq` is available, use `jq` for reading `engines` from `package.json` instead of using `node` ([#810])
+
 ## [9.2.3] (2024-04-21)
 
 ### Fixed
@@ -506,6 +510,7 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#746]: https://github.com/tj/n/pull/746
 [#764]: https://github.com/tj/n/pull/764
 [#785]: https://github.com/tj/n/pull/785
+[#810]: https://github.com/tj/n/pull/810
 
 <!-- reference links for releases -->
 
