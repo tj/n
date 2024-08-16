@@ -1456,7 +1456,7 @@ function show_diagnostics() {
 
   printf "\nnode\n"
   if command -v node &> /dev/null; then
-    command -v node && node --version
+    node --version
     node -e 'if (process.versions.v8) console.log("JavaScript engine: v8");'
 
     printf "\nnpm\n"
@@ -1465,23 +1465,23 @@ function show_diagnostics() {
 
   printf "\ntar\n"
   if command -v tar &> /dev/null; then
-    command -v tar && tar --version
+    tar --version
   else
     echo_red "tar not found. Needed for extracting downloads."
   fi
 
   printf "\ncurl or wget\n"
   if command -v curl &> /dev/null; then
-    command -v curl && curl --version
+    curl --version
   elif command -v wget &> /dev/null; then
-    command -v wget && wget --version
+    wget --version
   else
     echo_red "Neither curl nor wget found. Need one of them for downloads."
   fi
 
   printf "\njq\n"
   if command -v jq &> /dev/null; then
-    command -v jq && jq --version
+    jq --version
   else
     echo "jq not found, can be used to get package.json values faster than node"
   fi
