@@ -1205,6 +1205,16 @@ function get_auto_version() {
 function get_latest_resolved_version() {
   g_target_node=
   local version=${1}
+
+  # Transform some labels before processing further to allow fast-track for exact numeric versions.
+  if [[ "${version}" = "auto" ]]; then
+    get_auto_version || return 2
+    version="${g_target_node}"
+  elif [[ "${version}" = "engine" ]]; then
+    get_engine_version || return 2
+    version="${g_target_node}"
+  fi
+
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
@@ -1259,11 +1269,9 @@ function display_local_versions() {
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
   elif [[ "${version}" = "auto" ]]; then
-    # suppress stdout logging so lsr layout same as usual for scripting
     get_auto_version || return 2
     version="${g_target_node}"
   elif [[ "${version}" = "engine" ]]; then
-    # suppress stdout logging so lsr layout same as usual for scripting
     get_engine_version || return 2
     version="${g_target_node}"
   fi
@@ -1310,11 +1318,9 @@ function display_remote_versions() {
     version="$(display_latest_node_support_alias "${version}")"
     match_count=1
   elif [[ "${version}" = "auto" ]]; then
-    # suppress stdout logging so lsr layout same as usual for scripting
     get_auto_version || return 2
     version="${g_target_node}"
   elif [[ "${version}" = "engine" ]]; then
-    # suppress stdout logging so lsr layout same as usual for scripting
     get_engine_version || return 2
     version="${g_target_node}"
   fi
