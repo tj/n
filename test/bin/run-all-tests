@@ -7,7 +7,7 @@ services=( fedora-curl ubuntu-wget )
 cd "$(dirname "${BIN_DIRECTORY}")" || exit 2
 for service in "${services[@]}" ; do
   echo "${service}"
-  docker-compose run --rm "${service}" "bats" "/mnt/test/tests"
+  docker compose run --rm "${service}" "bats" "/mnt/test/tests"
   echo ""
 done
 
