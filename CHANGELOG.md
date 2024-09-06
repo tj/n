@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [10.0.0] (2024-09-06)
+
+The major version bump is due to using `jq` in preference to `node` for reading `package.json`.
 
 ### Changed
 
 - if `jq` is available, use `jq` for reading `engines` from `package.json` instead of using `node` ([#810])
+- avoid a network lookup if auto or engine find a fully specified numeric version. ([#813])
 
 ## [9.2.3] (2024-04-21)
 
@@ -511,10 +514,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#764]: https://github.com/tj/n/pull/764
 [#785]: https://github.com/tj/n/pull/785
 [#810]: https://github.com/tj/n/pull/810
+[#813]: https://github.com/tj/n/pull/813
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[10.0.0]: https://github.com/tj/n/compare/v9.2.3...v10.0.0
 [9.2.3]: https://github.com/tj/n/compare/v9.2.2...v9.2.3
 [9.2.2]: https://github.com/tj/n/compare/v9.2.1...v9.2.2
 [9.2.1]: https://github.com/tj/n/compare/v9.2.0...v9.2.1
