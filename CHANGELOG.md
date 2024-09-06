@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased] (date goes here)
+
 ## [10.0.0] (2024-09-06)
 
 The major version bump is due to using `jq` in preference to `node` for reading `package.json`.
