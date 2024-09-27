@@ -793,7 +793,8 @@ install() {
   log installing "${g_mirror_folder_name}-v$version"
 
   local url="$(tarball_url "$version")"
-  is_ok "${url}" || abort "download preflight failed for '$version' (${url})"
+  local masked_url=$(echo "$url" | sed -r 's/(https?:\/\/[^:]+):([^@]+)@/\1:*****@/')
+  is_ok "${url}" || abort "download preflight failed for '$version' (${masked_url})"
 
   log mkdir "$dir"
   mkdir -p "$dir" || abort "sudo required (or change ownership, or define N_PREFIX)"
@@ -801,7 +802,7 @@ install() {
 
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
-  log fetch "$url"
+  log fetch "${masked_url}"
   do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
   pipe_results=( "${PIPESTATUS[@]}" )
   if [[ "${pipe_results[0]}" -ne 0 ]]; then
