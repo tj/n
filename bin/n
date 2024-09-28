@@ -1498,8 +1498,8 @@ function show_diagnostics() {
   printf "\n\nSETTINGS\n"
 
   printf "\nn\n"
-  echo "node mirror: ${N_NODE_MIRROR}"
-  echo "node downloads mirror: $(masked_url "${N_NODE_DOWNLOAD_MIRROR}")"
+  echo "node mirror: $(masked_url ${N_NODE_MIRROR})"
+  echo "node downloads mirror: $(masked_url ${N_NODE_DOWNLOAD_MIRROR})"
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
