@@ -1498,7 +1498,7 @@ function show_diagnostics() {
   printf "\n\nSETTINGS\n"
 
   printf "\nn\n"
-  echo "node mirror: $(display_masked_url ${N_NODE_MIRROR})"
+  echo "node mirror: $(display_masked_url "${N_NODE_MIRROR}")"
   echo "node downloads mirror: $(display_masked_url "${N_NODE_DOWNLOAD_MIRROR}")"
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
