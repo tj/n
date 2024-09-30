@@ -805,7 +805,7 @@ install() {
 
   cd "${dir}" || abort "Failed to cd to ${dir}"
 
-  log fetch "$(display_masked_url ${url})"
+  log fetch "$(display_masked_url "${url}")"
   do_get "${url}" | tar "$tarflag" --strip-components=1 --no-same-owner -f -
   pipe_results=( "${PIPESTATUS[@]}" )
   if [[ "${pipe_results[0]}" -ne 0 ]]; then
