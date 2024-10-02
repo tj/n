@@ -1245,7 +1245,7 @@ display_remote_index() {
   do_get_index "${index_url}" | tail -n +2 | cut -f 1,3,10
   if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
     # Reminder: abort will only exit subshell, but consistent error display
-    abort "failed to download version index $(display_masked_url "${index_url}")"
+    abort "failed to download version index ($(display_masked_url "${index_url}"))"
   fi
 }
 
