@@ -80,6 +80,10 @@ N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR:-https://nodejs.org/download}
 N_NODE_DOWNLOAD_MIRROR=${N_NODE_DOWNLOAD_MIRROR%/}
 readonly N_NODE_DOWNLOAD_MIRROR
 
+N_NODE_UNOFFICIAL_MIRROR=${N_NODE_UNOFFICIAL_MIRROR:-https://unofficial-builds.nodejs.org/download/release}
+N_NODE_UNOFFICIAL_MIRROR=${N_NODE_UNOFFICIAL_MIRROR%/}
+readonly N_NODE_UNOFFICIAL_MIRROR
+
 # Using xz instead of gzip is enabled by default, if xz compatibility checks pass.
 # User may set N_USE_XZ to 0 to disable, or set to anything else to enable.
 # May also be overridden by command line flags.
@@ -214,6 +218,8 @@ function update_mirror_settings_for_version() {
     local remote_folder="${BASH_REMATCH[1]}"
     g_mirror_folder_name="${remote_folder}"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+  elif is_unofficial "$1"; then
+    g_mirror_url="${N_NODE_UNOFFICIAL_MIRROR}"
   fi
 }
 
@@ -258,6 +264,15 @@ function is_lts_codename() {
   # https://github.com/nodejs/Release/blob/master/CODENAMES.md
   # e.g. argon, Boron
   [[ "$1" =~ ^([Aa]rgon|[Bb]oron|[Cc]arbon|[Dd]ubnium|[Ee]rbium|[Ff]ermium|[Gg]allium|[Hh]ydrogen|[Ii]ron|[Jj]od)$ ]]
+}
+
+#
+# Synopsis: is_unofficial version
+#
+
+function is_unofficial() {
+  # e.g. unofficial
+  [[ "$1" == "unofficial" ]]
 }
 
 #
@@ -424,7 +439,7 @@ Versions:
     boron, carbon     Codenames for release streams
     lts_latest        Node.js support aliases
 
-    and nightly, rc/10 et al
+    and nightly, unofficial, rc/10 et al
 
 EOF
 }
@@ -1363,6 +1378,8 @@ function display_remote_versions() {
         match="${match}[^0-9]"
       fi
     fi
+  elif is_unofficial "${version}"; then
+    match='.'
   else
     abort "invalid version '$1'"
   fi
@@ -1496,6 +1513,7 @@ function show_diagnostics() {
   printf "\nn\n"
   echo "node mirror: ${N_NODE_MIRROR}"
   echo "node downloads mirror: ${N_NODE_DOWNLOAD_MIRROR}"
+  echo "node unofficial mirror: ${N_NODE_UNOFFICIAL_MIRROR}"
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
