@@ -156,6 +156,7 @@ These Node.js support aliases may be used, although simply resolve to the latest
 The last version form is for specifying [other releases](https://nodejs.org/download) available using the name of the remote download folder optionally followed by the complete or incomplete version.
 
 - `nightly`
+- `unofficial`
 - `test/v11.0.0-test20180528`
 - `rc/10`
 
