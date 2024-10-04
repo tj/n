@@ -219,6 +219,7 @@ function update_mirror_settings_for_version() {
     g_mirror_folder_name="${remote_folder}"
     g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
   elif is_unofficial "$1"; then
+    g_mirror_folder_name="unofficial"
     g_mirror_url="${N_NODE_UNOFFICIAL_MIRROR}"
   fi
 }
