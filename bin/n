@@ -1309,6 +1309,8 @@ function display_local_versions() {
     match="^${version}/"
   # elif is_download_version "${version}"; then
   # see if demand
+  elif is_unofficial "${version}"; then
+    match="^${version}/"
   else
     abort "invalid version '$1' for offline matching"
   fi
