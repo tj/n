@@ -216,8 +216,13 @@ function update_mirror_settings_for_version() {
   elif is_download_version "$1"; then
     [[ "$1" =~ ^([^/]+)/(.*) ]]
     local remote_folder="${BASH_REMATCH[1]}"
-    g_mirror_folder_name="${remote_folder}"
-    g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+    if is_download_folder "$remote_folder"; then
+      g_mirror_folder_name="${remote_folder}"
+      g_mirror_url="${N_NODE_DOWNLOAD_MIRROR}/${g_mirror_folder_name}"
+    elif is_unofficial "$remote_folder"; then
+      g_mirror_folder_name="unofficial"
+      g_mirror_url="${N_NODE_UNOFFICIAL_MIRROR}"
+    fi
   elif is_unofficial "$1"; then
     g_mirror_folder_name="unofficial"
     g_mirror_url="${N_NODE_UNOFFICIAL_MIRROR}"
@@ -293,7 +298,7 @@ function is_download_version() {
   # e.g. nightly/, nightly/latest, nightly/v11
   if [[ "$1" =~ ^([^/]+)/(.*) ]]; then
     local remote_folder="${BASH_REMATCH[1]}"
-    is_download_folder "${remote_folder}"
+    is_download_folder "${remote_folder}" || is_unofficial "${remote_folder}"
     return
   fi
   return 2
