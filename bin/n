@@ -1708,24 +1708,21 @@ if test $# -eq 0; then
   test -z "$(display_versions_paths)" && err_no_installed_print_help
   menu_select_cache_versions
 else
-  while test $# -ne 0; do
-    case "$1" in
-      bin|which) display_bin_path_for_version "$2"; exit ;;
-      run|as|use) shift; run_with_version "$@"; exit ;;
-      exec) shift; exec_with_version "$@"; exit ;;
-      doctor) show_diagnostics; exit ;;
-      rm|-) shift; remove_versions "$@"; exit ;;
-      prune) prune_cache; exit ;;
-      latest) install latest; exit ;;
-      stable) install stable; exit ;;
-      lts) install lts; exit ;;
-      ls|list) display_versions_paths; exit ;;
-      lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
-      uninstall) uninstall_installed; exit ;;
-      i|install) shift; install "$1"; exit ;;
-      N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1" > /dev/null || exit 2; echo "${g_target_node}"; exit ;;
-      *) install "$1"; exit ;;
-    esac
-    shift
-  done
+  case "$1" in
+    bin|which) display_bin_path_for_version "$2"; exit ;;
+    run|as|use) shift; run_with_version "$@"; exit ;;
+    exec) shift; exec_with_version "$@"; exit ;;
+    doctor) show_diagnostics; exit ;;
+    rm|-) shift; remove_versions "$@"; exit ;;
+    prune) prune_cache; exit ;;
+    latest) install latest; exit ;;
+    stable) install stable; exit ;;
+    lts) install lts; exit ;;
+    ls|list) display_versions_paths; exit ;;
+    lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
+    uninstall) uninstall_installed; exit ;;
+    i|install) shift; install "$1"; exit ;;
+    N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1" > /dev/null || exit 2; echo "${g_target_node}"; exit ;;
+    *) install "$1"; exit ;;
+  esac
 fi
