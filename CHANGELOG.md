@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [10.1.0] (2024-10-20)
+
+### Added
+
+- `--cleanup` removes cached version after install ([#818])
+- mention of `--download` in README
+
+### Changed
+
+- removed stale code ([#817])
+
 ## [10.0.0] (2024-09-06)
 
 The major version bump is due to using `jq` in preference to `node` for reading `package.json`.
@@ -517,10 +528,13 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#785]: https://github.com/tj/n/pull/785
 [#810]: https://github.com/tj/n/pull/810
 [#813]: https://github.com/tj/n/pull/813
+[#817]: https://github.com/tj/n/pull/817
+[#818]: https://github.com/tj/n/pull/818
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[10.1.0]: https://github.com/tj/n/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/tj/n/compare/v9.2.3...v10.0.0
 [9.2.3]: https://github.com/tj/n/compare/v9.2.2...v9.2.3
 [9.2.2]: https://github.com/tj/n/compare/v9.2.1...v9.2.2
