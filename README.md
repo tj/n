@@ -60,7 +60,7 @@ To take ownership of the system directories (option 1):
 
 If `npm` is not yet available, one way to bootstrap an install is to download and run `n` directly. To install the `lts` version of Node.js:
 
-    curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
+    curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install lts
     # If you want n installed, you can use npm now.
     npm install -g n
 
@@ -236,6 +236,18 @@ List downloaded versions in cache:
 Use `n` to access cached versions (already downloaded) without internet available.
 
     n --offline 12
+
+Remove the cache version after installing using `--cleanup`. This is particularly useful for a one-shot install, like in a docker container.
+
+    curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install --cleanup lts
+
+The `--download` option can be used in two ways, to download a version into cache but not make active:
+
+    n --download lts
+
+or to download a possibly missing version for  `n run`, `n exec`, and `n which`:
+
+    n --download run 18.3 my-script.js
 
 Display diagnostics to help resolve problems:
 

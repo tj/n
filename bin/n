@@ -133,6 +133,7 @@ g_active_node=
 g_target_node=
 
 DOWNLOAD=false # set to opt-out of activate (install), and opt-in to download (run, exec)
+CLEANUP=false # remove cached download after install
 ARCH=
 SHOW_VERBOSE_LOG="true"
 OFFLINE=false
@@ -397,6 +398,7 @@ Options:
   -p, --preserve        Preserve npm and npx during install of Node.js
   -q, --quiet           Disable curl output. Disable log messages processing "auto" and "engine" labels.
   -d, --download        Download if necessary, and don't make active
+  --cleanup             Remove cached version after install
   -a, --arch            Override system architecture
   --offline             Resolve target version against cached downloads instead of internet lookup
   --all                 ls-remote displays all matches instead of last 20
@@ -757,6 +759,12 @@ activate() {
       printf 'If "node --version" shows the old version then start a new shell, or reset the location hash with:\nhash -r  (for bash, zsh, ash, dash, and ksh)\nrehash   (for csh and tcsh)\n'
     fi
   fi
+
+  if [[ "$CLEANUP" == "true" ]]; then
+    log "cleanup" "removing cached $version"
+    remove_versions "$version"
+  fi
+
 }
 
 #
@@ -1672,6 +1680,7 @@ while [[ $# -ne 0 ]]; do
     -h|--help|help) display_help; exit ;;
     -q|--quiet) set_quiet ;;
     -d|--download) DOWNLOAD="true" ;;
+    --cleanup) CLEANUP="true" ;;
     --offline) OFFLINE="true" ;;
     --insecure) set_insecure ;;
     -p|--preserve) N_PRESERVE_NPM="true" N_PRESERVE_COREPACK="true" ;;
