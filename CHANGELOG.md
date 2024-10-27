@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `--cleanup` removes cached version after install ([#818])
-- mention of `--download` in README
+- document using `--download` with run/exec/which in README
 
 ### Changed
 

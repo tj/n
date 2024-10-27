@@ -397,7 +397,7 @@ Options:
   -h, --help            Display help information
   -p, --preserve        Preserve npm and npx during install of Node.js
   -q, --quiet           Disable curl output. Disable log messages processing "auto" and "engine" labels.
-  -d, --download        Download if necessary, and don't make active
+  -d, --download        Download if necessary. Used with run/exec/which.
   --cleanup             Remove cached version after install
   -a, --arch            Override system architecture
   --offline             Resolve target version against cached downloads instead of internet lookup

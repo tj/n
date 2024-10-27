@@ -93,6 +93,7 @@ As a result, both `n` itself and all Node.js versions it manages are hosted insi
 Changing from a previous Node.js installed to a different location may involve a few extra steps. See docs for [changing node location](./docs/changing-node-location.md) for a walk-through example of switching from using Homebrew to using `n` to manage Node.js.
 
 You have a problem with multiple versions if after installing node you see the "installed" and "active" locations are different:
+
 ```console
 % n lts
      copying : node/20.12.2
@@ -241,11 +242,7 @@ Remove the cache version after installing using `--cleanup`. This is particularl
 
     curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install --cleanup lts
 
-The `--download` option can be used in two ways, to download a version into cache but not make active:
-
-    n --download lts
-
-or to download a possibly missing version for  `n run`, `n exec`, and `n which`:
+Normally `n run`, `n exec`, and `n which` will fail if the target version is not already in the cache. You can add `--download` to use the cache if available or download first if required:
 
     n --download run 18.3 my-script.js
 
@@ -290,8 +287,8 @@ To change the location to say `$HOME/.n`, add lines like the following to your s
     export N_PREFIX=$HOME/.n
     export PATH=$N_PREFIX/bin:$PATH
 
-If you want to store the downloads under a different location, use `N_CACHE_PREFIX`. This does *not* affect the currently active
-node version.
+If you want to store the downloads under a different location, use `N_CACHE_PREFIX`. This does _not_ affect where the active
+node version is installed.
 
 `n` defaults to using xz compressed Node.js tarballs for the download if it is likely tar on the system supports xz decompression.
 You can override the automatic choice by setting an environment variable to zero or non-zero:
