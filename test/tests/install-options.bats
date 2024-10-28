@@ -19,7 +19,7 @@ function teardown() {
 @test "n --download 4.9.1" {
   n --download 4.9.1
   [ -d "${N_PREFIX}/n/versions/node/4.9.1" ]
-  # Remember, we installed a dumy node so do have a bin/node
+  # Remember, we installed a dummy node so do have a bin/node
   [ ! -f "${N_PREFIX}/bin/npm" ]
   [ ! -d "${N_PREFIX}/include" ]
   [ ! -d "${N_PREFIX}/lib" ]
