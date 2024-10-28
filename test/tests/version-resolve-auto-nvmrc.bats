@@ -68,3 +68,11 @@ function setup() {
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.1"
 }
+
+@test "auto .nvmrc, trailing comment" {
+  local TARGET_VERSION="8.10.0"
+  cd "${MY_DIR}"
+  printf "${TARGET_VERSION} # comment" > .nvmrc
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  assert_equal "${output}" "${TARGET_VERSION}"
+}

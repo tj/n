@@ -1147,6 +1147,8 @@ function get_nvmrc_version() {
   verbose_log "found" "${filepath}"
   local version
   <"${filepath}" read -r version
+  # remove trailing comment, after #
+  version="$(echo "${version}" | sed 's/[[:space:]]*#.*//')"
   verbose_log "read" "${version}"
   # Translate from nvm aliases
   case "${version}" in
