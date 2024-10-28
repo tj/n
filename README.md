@@ -242,7 +242,7 @@ Remove the cache version after installing using `--cleanup`. This is particularl
 
     curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install --cleanup lts
 
-Normally `n run`, `n exec`, and `n which` will fail if the target version is not already in the cache. You can add `--download` to use the cache if available or download first if required:
+Normally `n run`, `n exec`, and `n which` will fail if the target version is not already in the cache. You can add `--download` to use the cache if available or download if required:
 
     n --download run 18.3 my-script.js
 
