@@ -64,11 +64,11 @@ If `npm` is not yet available, one way to bootstrap an install is to download an
     # If you want n installed, you can use npm now.
     npm install -g n
 
-Alternatively, you can clone this repo and
+If you don't need support for updates to `n` itself you can just save the download:
 
-    make install
-
-which defaults to `/usr/local/bin/n`. To install `n` in a custom location such as `$CUSTOM_LOCATION/bin/n`, run `PREFIX=$CUSTOM_LOCATION make install`.
+    curl -fsSL -o /usr/local/bin/n https://raw.githubusercontent.com/tj/n/master/bin/n 
+    chmod 0755 /usr/local/bin/n
+    n install lts
 
 ### Third Party Installers
 
