@@ -9,8 +9,8 @@ function setup_file() {
   # fixed directory so can reuse the two installs
   tmpdir="${TMPDIR:-/tmp}"
   export N_PREFIX="${tmpdir}/n/test/run-which"
-  n --download 4.9.1
-  n --download lts
+  n download 4.9.1
+  n download lts
   # using "latest" for download tests with run and exec
 }
 

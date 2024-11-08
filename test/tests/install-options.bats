@@ -17,9 +17,22 @@ function teardown() {
 
 
 @test "n --download 4.9.1" {
+  # deprecated use of --download, replaced by download command
   n --download 4.9.1
   [ -d "${N_PREFIX}/n/versions/node/4.9.1" ]
-  # Remember, we installed a dummy node so do have a bin/node
+  [ ! -f "${N_PREFIX}/bin/node" ]
+  [ ! -f "${N_PREFIX}/bin/npm" ]
+  [ ! -d "${N_PREFIX}/include" ]
+  [ ! -d "${N_PREFIX}/lib" ]
+  [ ! -d "${N_PREFIX}/shared" ]
+}
+
+
+@test "n download 4.9.1" {
+  # not an option, but keep with --download so stays in sync
+  n download 4.9.1
+  [ -d "${N_PREFIX}/n/versions/node/4.9.1" ]
+  [ ! -f "${N_PREFIX}/bin/node" ]
   [ ! -f "${N_PREFIX}/bin/npm" ]
   [ ! -d "${N_PREFIX}/include" ]
   [ ! -d "${N_PREFIX}/lib" ]
@@ -32,6 +45,14 @@ function teardown() {
   n --quiet 4.9.1
   output="$(node --version)"
   assert_equal "${output}" "v4.9.1"
+}
+
+
+@test "n --cleanup 4.9.1" {
+  n install --cleanup 4.9.1
+  output="$(node --version)"
+  assert_equal "${output}" "v4.9.1"
+  [ ! -d "${N_PREFIX}/n/versions/node/4.9.1" ]
 }
 
 

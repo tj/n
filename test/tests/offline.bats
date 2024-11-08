@@ -8,7 +8,7 @@ function setup_file() {
   unset_n_env
   setup_tmp_prefix
   # Note, NOT latest version of 16.
-  n --download 16.19.0
+  n download 16.19.0
   export N_NODE_MIRROR="https://no.internet.available"
 }
 

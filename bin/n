@@ -390,6 +390,7 @@ Commands:
   n ls                           Output downloaded versions
   n ls-remote [version]          Output matching versions available for download
   n uninstall                    Remove the installed Node.js
+  n download <version>           Download Node.js <version> into cache
 
 Options:
 
@@ -794,6 +795,8 @@ install() {
     if [[ ! -e "$dir/n.lock" ]] ; then
       if [[ "$DOWNLOAD" == "false" ]] ; then
         activate "${g_mirror_folder_name}/${version}"
+      else
+        log downloaded "${g_mirror_folder_name}/${version} already in cache"
       fi
       exit
     fi
@@ -802,7 +805,11 @@ install() {
     abort "version unavailable offline"
   fi
 
-  log installing "${g_mirror_folder_name}-v$version"
+  if [[ "$DOWNLOAD" == "false" ]]; then
+    log installing "${g_mirror_folder_name}-v$version"
+  else
+    log download "${g_mirror_folder_name}-v$version"
+  fi
 
   local url="$(tarball_url "$version")"
   is_ok "${url}" || abort "download preflight failed for '$version' ($(display_masked_url "${url}"))"
@@ -1733,6 +1740,7 @@ else
     lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
     uninstall) uninstall_installed; exit ;;
     i|install) shift; install "$1"; exit ;;
+    download) shift; DOWNLOAD="true"; install "$1"; exit ;;
     N_TEST_DISPLAY_LATEST_RESOLVED_VERSION) shift; get_latest_resolved_version "$1" > /dev/null || exit 2; echo "${g_target_node}"; exit ;;
     *) install "$1"; exit ;;
   esac
