@@ -20,7 +20,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Using Downloaded Node.js Versions Without Reinstalling](#using-downloaded-nodejs-versions-without-reinstalling)
     - [Preserving npm](#preserving-npm)
     - [Miscellaneous](#miscellaneous)
-    - [Custom Source](#custom-source)
+    - [Custom Mirror](#custom-mirror)
     - [Custom Architecture](#custom-architecture)
     - [Optional Environment Variables](#optional-environment-variables)
     - [How It Works](#how-it-works)
@@ -254,12 +254,23 @@ Display diagnostics to help resolve problems:
 
     n doctor
 
-## Custom Source
+## Custom Mirror
 
 If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
-The most common example is from users in China who can define:
+
+One example is for users in China who can define:
 
     export N_NODE_MIRROR=https://npmmirror.com/mirrors/node
+
+Another example is the Node.js [unofficial-builds project](https://github.com/nodejs/unofficial-builds/) which has downloads for some platforms not made available officially, such as armv6l (Raspberry Pi) and 32-bit x86.
+
+    export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
+
+You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine:
+
+    export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
+    apk add bash curl libstdc++
+    n --arch x64-musl install lts
 
 If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 
