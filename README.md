@@ -258,10 +258,14 @@ One example is for users in China who can define:
 
     export N_NODE_MIRROR=https://npmmirror.com/mirrors/node
 
-Another example is the Node.js [unofficial-builds project](https://github.com/nodejs/unofficial-builds/) which has downloads for some platforms not made available officially. Auto-detected architectures like x86 or  armv6l (Raspberry Pi) need no further setup with `n`, or you can specify the architecture explicitly using `--arch` like using `musl` `libc` on Alpine. (See also [Builds](https://github.com/nodejs/unofficial-builds/#builds) for further details.) Alpine example:
+Another example is the Node.js [unofficial-builds project](https://github.com/nodejs/unofficial-builds/) which has downloads for some platforms not made available officially, such as armv6l (Raspberry Pi) and 32-bit x86.
 
-    apk add bash curl libstdc++
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
+
+You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine.
+
+    export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
+    apk add bash curl libstdc++
     n --arch x64-musl install lts
 
 If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
