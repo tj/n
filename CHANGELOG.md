@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
-## [10.1.0] (2024-10-20)
+## [10.1.0] (2024-11-09)
 
 ### Added
 
-- `--cleanup` removes cached version after install ([#818])
+- `--cleanup` option to delete cached version after install for a one-shot install ([#818])
+- `download` command to download Node.js version into cache ([#821])
 - document using `--download` with run/exec/which in README
+- support trailing comments in `.nvmrc` file ([#820])
+- mask password in download URL when displayed ([#815])
 
 ### Changed
 
@@ -528,8 +531,11 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#785]: https://github.com/tj/n/pull/785
 [#810]: https://github.com/tj/n/pull/810
 [#813]: https://github.com/tj/n/pull/813
+[#815]: https://github.com/tj/n/pull/815
 [#817]: https://github.com/tj/n/pull/817
 [#818]: https://github.com/tj/n/pull/818
+[#820]: https://github.com/tj/n/pull/820
+[#821]: https://github.com/tj/n/pull/821
 
 <!-- reference links for releases -->
 
