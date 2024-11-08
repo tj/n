@@ -262,7 +262,7 @@ Another example is the Node.js [unofficial-builds project](https://github.com/no
 
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
 
-You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine.
+You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine:
 
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
     apk add bash curl libstdc++
