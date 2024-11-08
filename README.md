@@ -258,8 +258,9 @@ One example is for users in China who can define:
 
     export N_NODE_MIRROR=https://npmmirror.com/mirrors/node
 
-Another example is the Node.js [unofficial-builds project](https://github.com/nodejs/unofficial-builds/) which has downloads for some platforms not made available officially. Auto-detected architectures like x86 or  armv6l (Raspberry Pi) need no further setup with `n`, or you can specify the architecture explicitly using `--arch` like using `musl` `libc` on Alpine. (See also [Builds](https://github.com/nodejs/unofficial-builds/#builds) for further details.)
+Another example is the Node.js [unofficial-builds project](https://github.com/nodejs/unofficial-builds/) which has downloads for some platforms not made available officially. Auto-detected architectures like x86 or  armv6l (Raspberry Pi) need no further setup with `n`, or you can specify the architecture explicitly using `--arch` like using `musl` `libc` on Alpine. (See also [Builds](https://github.com/nodejs/unofficial-builds/#builds) for further details.) Alpine example:
 
+    apk add bash curl libstdc++
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
     n --arch x64-musl install lts
 
