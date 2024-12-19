@@ -178,7 +178,7 @@ wish to use node and npm, or are switching to a different way of managing them.
 
 ## Using Downloaded Node.js Versions Without Reinstalling
 
-There are three commands for working directly with your downloaded versions of Node.js, without reinstalling.
+There are four commands for working directly with your downloaded versions of Node.js, without reinstalling.
 
 You can show the path to the downloaded `node` version:
 
@@ -194,6 +194,10 @@ Or execute a command with `PATH` modified so `node` and `npm` will be from the d
 
     n exec 10 my-script --fast test
     n exec lts zsh
+
+Or open a subshell with `PATH` modified so `node` and `npm` will be from the downloaded Node.js version.
+
+    n shell 14
 
 ## Preserving npm
 

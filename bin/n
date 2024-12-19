@@ -383,6 +383,7 @@ Commands:
   n run <version> [args ...]     Execute downloaded Node.js <version> with [args ...]
   n which <version>              Output path for downloaded node <version>
   n exec <vers> <cmd> [args...]  Execute command with modified PATH, so downloaded node <version> and npm first
+  n shell <version>              Open a new shell with modified PATH, so downloaded node <version> and npm first
   n rm <version ...>             Remove the given downloaded version(s)
   n prune                        Remove all downloaded versions except the installed version
   n --latest                     Output the latest Node.js version available
@@ -971,6 +972,16 @@ function exec_with_version() {
   find_cached_version "$1"
   shift # remove version from parameters
   PATH="${g_cached_version}/bin:$PATH" exec "$@"
+}
+
+#
+# Synopsis: shell_with_version <version>
+# Modify the path to include <version> and open new shell.
+#
+
+function shell_with_version() {
+  find_cached_version "$1"
+  bash --rcfile <(echo "[ -f ~/.bashrc ] && source ~/.bashrc; export PATH=\"${g_cached_version}/bin:$PATH}\"; export PS1=\"(nodejs ${g_target_node}) \$PS1\"")
 }
 
 #
@@ -1730,6 +1741,7 @@ else
     bin|which) display_bin_path_for_version "$2"; exit ;;
     run|as|use) shift; run_with_version "$@"; exit ;;
     exec) shift; exec_with_version "$@"; exit ;;
+    shell) shift; shell_with_version "$@"; exit ;;
     doctor) show_diagnostics; exit ;;
     rm|-) shift; remove_versions "$@"; exit ;;
     prune) prune_cache; exit ;;
