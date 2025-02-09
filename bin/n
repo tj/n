@@ -797,6 +797,7 @@ install() {
         activate "${g_mirror_folder_name}/${version}"
       else
         log downloaded "${g_mirror_folder_name}/${version} already in cache"
+        log dir "$dir"
       fi
       exit
     fi
