@@ -266,11 +266,13 @@ Another example is the Node.js [unofficial-builds project](https://github.com/no
 
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
 
-You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine:
+You may need to specify the architecture explicitly if not autodetected by `n`, such as using `musl` `libc` on Alpine. You can do that with `N_ARCH` or `--arch`:
 
     export N_NODE_MIRROR=https://unofficial-builds.nodejs.org/download/release
+    export N_ARCH=x64-musl
     apk add bash curl libstdc++
-    n --arch x64-musl install lts
+    n install lts
+    n --arch x64-musl install lts   # using a flag
 
 If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 

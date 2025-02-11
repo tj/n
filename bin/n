@@ -134,7 +134,7 @@ g_target_node=
 
 DOWNLOAD=false # set to opt-out of activate (install), and opt-in to download (run, exec)
 CLEANUP=false # remove cached download after install
-ARCH=
+ARCH="${N_ARCH-}"
 SHOW_VERBOSE_LOG="true"
 OFFLINE=false
 
@@ -1030,20 +1030,25 @@ function display_tarball_platform() {
     MINGW*) >&2 echo_red "Git BASH (MSYS) is not supported by n" ;;
   esac
 
-  local arch="unexpected_arch"
-  local uname_m="$(uname -m)"
-  case "${uname_m}" in
-    x86_64) arch=x64 ;;
-    i386 | i686) arch="x86" ;;
-    aarch64) arch=arm64 ;;
-    armv8l) arch=arm64 ;; # armv8l probably supports arm64, and there is no specific armv8l build so give it a go
-    *)
-      # e.g. armv6l, armv7l, arm64
-      arch="${uname_m}"
-      ;;
-  esac
-    # Override from command line, or version specific adjustment.
-  [ -n "$ARCH" ] && arch="$ARCH"
+  # architecture might already be known from (priority order):
+  # * --arch flag on the command line,
+  # * otherwise, from $N_ARCH
+  # * otherwise from version specific adjustment (if applicable, see update_arch_settings_for_version)
+  local arch="$ARCH"
+  if [[ -z "$arch" ]]; then
+    arch="unexpected_arch"
+    local uname_m="$(uname -m)"
+    case "${uname_m}" in
+      x86_64) arch=x64 ;;
+      i386 | i686) arch="x86" ;;
+      aarch64) arch=arm64 ;;
+      armv8l) arch=arm64 ;; # armv8l probably supports arm64, and there is no specific armv8l build so give it a go
+      *)
+        # e.g. armv6l, armv7l, arm64
+        arch="${uname_m}"
+        ;;
+    esac
+  fi
 
   echo "${os}-${arch}"
 }
@@ -1519,6 +1524,7 @@ function show_diagnostics() {
   echo "node downloads mirror: $(display_masked_url "${N_NODE_DOWNLOAD_MIRROR}")"
   echo "install destination: ${N_PREFIX}"
   [[ -n "${N_PREFIX}" ]] && echo "PATH: ${PATH}"
+  [[ -n "$N_ARCH" ]] && echo "default arch: $N_ARCH"
   echo "ls-remote max matches: ${N_MAX_REMOTE_MATCHES}"
    [[ -n "${N_PRESERVE_NPM}" ]] && echo "installs preserve npm by default"
    [[ -n "${N_PRESERVE_COREPACK}" ]] && echo "installs preserve corepack by default"
