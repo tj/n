@@ -272,7 +272,6 @@ You may need to specify the architecture explicitly if not autodetected by `n`, 
     export N_ARCH=x64-musl
     apk add bash curl libstdc++
     n install lts
-    n --arch x64-musl install lts   # using a flag
 
 If the custom mirror requires authentication you can add the [url-encoded](https://urlencode.org) username and password into the URL. e.g.
 
@@ -289,7 +288,7 @@ On a Mac with Apple silicon:
 - for Node.js 16 and higher, `n` defaults to arm64 binaries which run natively
 - for older versions of Node.js, `n` defaults to x64 binaries which run in Rosetta 2
 
-You can override the default architecture by using the `-a` or `--arch` option.
+You can override the default architecture by using the `-a` or `--arch` option, or set `N_ARCH` environment variable.
 
 e.g. reinstall latest version of Node.js with x64 binaries:
 
@@ -320,12 +319,13 @@ You can be explicit to get the desired behaviour whatever the environment variab
 
 In brief:
 
-- `N_NODE_MIRROR`: See [Custom source](#custom-source)
-- `N_NODE_DOWNLOAD_MIRROR`: See [Custom source](#custom-source)
+- `N_NODE_MIRROR`: see [Custom Mirror](#custom-mirror)
+- `N_NODE_DOWNLOAD_MIRROR`: see [Custom Mirror](#custom-mirror)
 - support for [NO_COLOR](https://no-color.org) and [CLICOLOR=0](https://bixense.com/clicolors) for controlling use of ANSI color codes
 - `N_MAX_REMOTE_MATCHES` to change the default `ls-remote` maximum of 20 matching versions
-- `N_PRESERVE_NPM`: See [Preserving npm](#preserving-npm)
-- `N_PRESERVE_COREPACK`: See [Preserving npm](#preserving-npm)
+- `N_PRESERVE_NPM`: see [Preserving npm](#preserving-npm)
+- `N_PRESERVE_COREPACK`: see [Preserving npm](#preserving-npm)
+- `N_ARCH`: see [Custom Architecture](#custom-architecture)
 
 ## How It Works
 
