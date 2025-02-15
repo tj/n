@@ -72,7 +72,7 @@ If you don't need support for updates to `n` itself you can just save the downlo
 
 ### Third Party Installers
 
-On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n/n.rb).
+On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://formulae.brew.sh/formula/n).
 
     brew install n
 
