@@ -1,4 +1,4 @@
-# `n` – Interactively Manage Your Node.js Versions
+# `n` – Interactively Manage Your Node.js Versions:
 
 [![npm](https://img.shields.io/npm/dt/n.svg?style=flat-square)](https://www.npmjs.com/package/n)
 [![npm](https://img.shields.io/npm/dm/n.svg?style=flat-square)](https://www.npmjs.com/package/n)
@@ -24,14 +24,14 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Optional Environment Variables](#optional-environment-variables)
     - [How It Works](#how-it-works)
 
-## Supported Platforms
+## Supported Platforms:
 
 `n` is supported on macOS, Linux, including with Windows Subsystem for Linux, and various other unix-like systems.
 It is written as a BASH script but does not require you to use BASH as your command shell.
 
 `n` does not work in native shells on Microsoft Windows (like PowerShell), or Git for Windows BASH, or with the Cygwin DLL.
 
-## Installation
+## Installation:
 
 If you already have Node.js installed, an easy way to install `n` is using `npm`:
 
@@ -65,7 +65,7 @@ Alternatively, you can clone this repo and
 
 to install `n` to `bin/n` of the directory specified in the environment variable `$PREFIX`, which defaults to `/usr/local` (note that you will likely need to use `sudo`). To install `n` in a custom location (such as `$CUSTOM_LOCATION/bin/n`), run `PREFIX=$CUSTOM_LOCATION make install`.
 
-### Third Party Installers
+### Third Party Installers:
 
 On macOS with [Homebrew](https://brew.sh/) you can install the [n formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/n.rb).
 
@@ -104,7 +104,7 @@ Execute `n` on its own to view your downloaded versions, and install the selecte
 
 If the active node version does not change after install, try opening a new shell in case seeing a stale version.
 
-## Specifying Node.js Versions
+## Specifying Node.js Versions:
 
 There are a variety of ways of specifying the target Node.js version for `n` commands. Most commands use the latest matching version, and  `n ls-remote` lists multiple matching versions.
 
@@ -177,7 +177,7 @@ Or execute a command with `PATH` modified so `node` and `npm` will be from the d
     n exec 10 my-script --fast test
     n exec lts zsh
 
-## Preserving npm
+## Preserving npm:
 
 A Node.js install normally includes `npm` as well, but you may wish to preserve an updated `npm` and `npx` leaving them out of the install using `--preserve`:
 
@@ -199,7 +199,7 @@ You can be explicit to get the desired behaviour whatever the environment variab
     n --preserve nightly
     n --no-preserve latest
 
-## Miscellaneous
+## Miscellaneous:
 
 Command line help can be obtained from `n --help`.
 
@@ -218,7 +218,7 @@ Display diagnostics to help resolve problems:
 
     n doctor
 
-## Custom Source
+## Custom Source:
 
 If you would like to use a different Node.js mirror which has the same layout as the default <https://nodejs.org/dist/>, you can define `N_NODE_MIRROR`.
 The most common example is from users in China who can define:
@@ -247,7 +247,7 @@ e.g. reinstall latest version of Node.js with x64 binaries:
     n rm current
     n --arch x64 current
 
-## Optional Environment Variables
+## Optional Environment Variables:
 
 The `n` command downloads and installs to `/usr/local` by default, but you may override this location by defining `N_PREFIX`.
 To change the location to say `$HOME/.n`, add lines like the following to your shell initialization file:
