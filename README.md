@@ -31,7 +31,7 @@ It is written as a BASH script but does not require you to use BASH as your comm
 
 `n` does not work in native shells on Microsoft Windows (like PowerShell), or Git for Windows BASH, or with the Cygwin DLL.
 
-## Installation:
+## Installation: test
 
 If you already have Node.js installed, an easy way to install `n` is using `npm`:
 
