@@ -24,7 +24,7 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
     - [Optional Environment Variables](#optional-environment-variables)
     - [How It Works](#how-it-works)
 
-## Supported Platforms: test
+## Supported Platforms:
 
 `n` is supported on macOS, Linux, including with Windows Subsystem for Linux, and various other unix-like systems.
 It is written as a BASH script but does not require you to use BASH as your command shell.
