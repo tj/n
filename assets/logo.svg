@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
+  <rect width="32" height="32" fill="#1e1e1e" stroke="#fff" rx="5"/>
+  <circle cx="5" cy="5" r="2" fill="#ff5f56"/>
+  <circle cx="10" cy="5" r="2" fill="#ffbd2e"/>
+  <circle cx="15" cy="5" r="2" fill="#27c93f"/>
+  <text x="6" y="24" fontFamily="monospace" fontSize="14" fill="#0f0">
+    $n
+  </text>
+</svg>
