@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [10.2.0] (2025-05-21)
+
+### Added
+
+- environment variable `N_ARCH` to set architecture for download, like using `--arch` ([#832])
+
 ## [10.1.0] (2024-11-09)
 
 ### Added
@@ -536,10 +542,12 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#818]: https://github.com/tj/n/pull/818
 [#820]: https://github.com/tj/n/pull/820
 [#821]: https://github.com/tj/n/pull/821
+[#832]: https://github.com/tj/n/pull/832
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[10.2.0]: https://github.com/tj/n/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/tj/n/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/tj/n/compare/v9.2.3...v10.0.0
 [9.2.3]: https://github.com/tj/n/compare/v9.2.2...v9.2.3
