@@ -698,13 +698,13 @@ activate() {
   mkdir -p "$N_PREFIX/lib"
   # Copy everything except node_modules.
   find "$dir/lib" -mindepth 1 -maxdepth 1 \! -name node_modules -exec cp -fR "{}" "$N_PREFIX/lib" \;
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
+  if [[ -z "${N_PRESERVE_NPM}" || ! -e "$N_PREFIX/lib/node_modules/npm" ]]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     # Copy just npm, skipping possible added global modules after download. Clean copy to avoid version change problems.
     clean_copy_folder "$dir/lib/node_modules/npm" "$N_PREFIX/lib/node_modules/npm"
   fi
   # Takes same steps for corepack (experimental in node 16.9.0) as for npm, to avoid version problems.
-  if [[ -e "$dir/lib/node_modules/corepack" && -z "${N_PRESERVE_COREPACK}" ]]; then
+  if [[ -e "$dir/lib/node_modules/corepack" && (-z "${N_PRESERVE_COREPACK}" || ! -e "$N_PREFIX/lib/node_modules/corepack") ]]; then
     mkdir -p "$N_PREFIX/lib/node_modules"
     clean_copy_folder "$dir/lib/node_modules/corepack" "$N_PREFIX/lib/node_modules/corepack"
   fi
@@ -716,10 +716,10 @@ activate() {
   # Copy bin items by hand, in case user has installed global npm modules into cache.
   cp -f "$dir/bin/node" "$N_PREFIX/bin"
   [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
-  if [[ -z "${N_PRESERVE_COREPACK}" ]]; then
+  if [[ -z "${N_PRESERVE_COREPACK}" || ! -e "$N_PREFIX/bin/corepack" ]]; then
     [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
   fi
-  if [[ -z "${N_PRESERVE_NPM}" ]]; then
+  if [[ -z "${N_PRESERVE_NPM}" || ! -e "$N_PREFIX/bin/npm" ]]; then
     [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
     [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
   fi
