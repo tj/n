@@ -162,10 +162,29 @@ function teardown() {
   assert_equal "${output}" "v4.8.0"
 }
 
-@test "n --lazy with complex engine syntax" {
+
+@test "n --lazy with engine or" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "8 || 10"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --lazy engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+}
+
+
+@test "n --lazy with engine range" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": ">=8 <12"}}' > package.json
   
   n 8.16.0
   output="$(node --version)"

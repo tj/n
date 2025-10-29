@@ -1238,12 +1238,10 @@ function version_satisfies_target() {
     return 0
   fi
   
-  # Check for operator-based range
+  # Check for operator-based range (only supports what get_package_engine_version does)
   if [[ "${target}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
     local operator="${BASH_REMATCH[1]}"
     local version="${BASH_REMATCH[2]}"
-    verbose_log "operator" "${operator}"
-    verbose_log "version" "${version}"
 
     case "${operator}" in
       '')
