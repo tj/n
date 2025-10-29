@@ -145,7 +145,7 @@ function teardown() {
 }
 
 
-@test "n --lazy with engine range satisfied" {
+@test "n --lazy with engine range match" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": ">=4"}}' > package.json
@@ -163,7 +163,25 @@ function teardown() {
 }
 
 
-@test "n --lazy with engine or" {
+@test "n --lazy with engine range mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": ">=8 <12"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --lazy engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+}
+
+
+@test "n --lazy with engine || match" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "8 || 10"}}' > package.json
@@ -181,10 +199,10 @@ function teardown() {
 }
 
 
-@test "n --lazy with engine range" {
+@test "n --lazy with engine || mismatch" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
-  echo '{"engines": {"node": ">=8 <12"}}' > package.json
+  echo '{"engines": {"node": "10 || 12"}}' > package.json
   
   n 8.16.0
   output="$(node --version)"
@@ -192,10 +210,9 @@ function teardown() {
   
   run n --lazy engine
   assert_success
-  assert_output --partial "satisfies requirement"
   
   output="$(node --version)"
-  assert_equal "${output}" "v8.16.0"
+  assert_equal "${output}" "v12.22.12"
 }
 
 
