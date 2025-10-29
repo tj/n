@@ -789,7 +789,6 @@ install() {
   if [[ "$LAZY" == "true" ]]; then
     if [[ -n "${current_version}" ]]; then
       verbose_log "lazy" "${g_lazy_node}"
-      verbose_log "lazy2" "${g_lazy_node:=$version}"
       if version_satisfies_target "${current_version}" "${g_lazy_node}"; then
         echo "Current version ${current_version} satisfies requirement ${g_lazy_node}"
         return 0
@@ -1336,10 +1335,6 @@ function get_latest_resolved_version() {
     version="${g_target_node}"
   fi
 
-  if is_numeric_version "${version}"; then
-    g_lazy_node="${version}"
-  fi
-
   simple_version=${version#node/} # Only place supporting node/ [sic]
   if is_exact_numeric_version "${simple_version}"; then
     # Just numbers, already resolved, no need to lookup first.
@@ -1350,6 +1345,15 @@ function get_latest_resolved_version() {
   else
     # Complicated recognising exact version, KISS and lookup.
     g_target_node=$(N_MAX_REMOTE_MATCHES=1 display_remote_versions "$version")
+  fi
+
+  if [[ -z "${g_lazy_node}" ]]; then
+    if ! is_numeric_version "${version}" && [[ "${version}" != "latest" && "${version}" != "current" ]]; then
+      # Codenames (e.g. "argon") will only lazy match major rather than latest minor/patch
+      g_lazy_node=$(display_major_version "${g_target_node}")
+    else
+      g_lazy_node="${version}"
+    fi
   fi
 }
 
