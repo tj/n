@@ -15,6 +15,7 @@ function teardown() {
   rm -rf "${TMP_PREFIX_DIR}"
 }
 
+
 @test "n --lazy with exact match" {
   n 4.9.1
   output="$(node --version)"
@@ -219,5 +220,3 @@ function teardown() {
   output="$(node --version)"
   assert_equal "${output}" "v4.9.1"
 }
-
-# ToDo: --arch
