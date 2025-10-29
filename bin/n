@@ -132,8 +132,12 @@ g_active_node=
 # set by various lookups to allow mixed logging and return value from function, especially for engine and node
 g_target_node=
 
+# Like g_target_node, but retained granularity differs based on context
+g_lazy_node=
+
 DOWNLOAD=false # set to opt-out of activate (install), and opt-in to download (run, exec)
 CLEANUP=false # remove cached download after install
+LAZY=false # check if current version satisfies requirement before installing
 ARCH="${N_ARCH-}"
 SHOW_VERBOSE_LOG="true"
 OFFLINE=false
@@ -402,6 +406,7 @@ Options:
   --cleanup             Remove cached version after install
   -a, --arch            Override system architecture
   --offline             Resolve target version against cached downloads instead of internet lookup
+  --lazy                Skip install if current version already "good enough"
   --all                 ls-remote displays all matches instead of last 20
   --insecure            Turn off certificate checking for https requests (may be needed from behind a proxy server)
   --use-xz/--no-use-xz  Override automatic detection of xz support and enable/disable use of xz compressed node downloads.
@@ -778,6 +783,20 @@ install() {
   get_latest_resolved_version "$1" || return 2
   version="${g_target_node}"
   [[ -n "${version}" ]] || abort "no version found for '$1'"
+  
+  local current_version="$(node --version 2>/dev/null)"
+  verbose_log "current" "${current_version}"
+  if [[ "$LAZY" == "true" ]]; then
+    if [[ -n "${current_version}" ]]; then
+      verbose_log "lazy" "${g_lazy_node}"
+      verbose_log "lazy2" "${g_lazy_node:=$version}"
+      if version_satisfies_target "${current_version}" "${g_lazy_node}"; then
+        echo "Current version ${current_version} satisfies requirement ${g_lazy_node}"
+        return 0
+      fi
+    fi
+  fi
+  
   update_mirror_settings_for_version "$1"
   update_xz_settings_for_version "${version}"
   update_arch_settings_for_version "${version}"
@@ -1106,6 +1125,7 @@ function get_file_node_version() {
 
 function get_package_engine_version() {
   g_target_node=
+  g_lazy_node=
   local filepath="$1"
   verbose_log "found" "${filepath}"
   local range
@@ -1118,6 +1138,7 @@ function get_package_engine_version() {
   fi
   verbose_log "read" "${range}"
   [[ -n "${range}" ]] || return 2
+  g_lazy_node="${range}" # Store range before we start replacing numbers with "current"
   if [[ "*" == "${range}" ]]; then
     verbose_log "target" "current"
     g_target_node="current"
@@ -1196,6 +1217,80 @@ function get_engine_version() {
 }
 
 #
+# Synopsis: version_satisfies_target current target
+# Check if current version satisfies the given target version or range.
+#
+
+function version_satisfies_target() {
+  local current="$1"
+  local target="$2"
+  
+  # Remove 'v' prefix if present
+  current="${current#v}"
+  target="${target#v}"
+  
+  # Exact match
+  if [[ "${current}" == "${target}" ]]; then
+    return 0
+  fi
+  
+  # Wildcard
+  if [[ "*" == "${target}" ]]; then
+    return 0
+  fi
+  
+  # Check for operator-based range
+  if [[ "${target}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
+    local operator="${BASH_REMATCH[1]}"
+    local version="${BASH_REMATCH[2]}"
+    verbose_log "operator" "${operator}"
+    verbose_log "version" "${version}"
+
+    case "${operator}" in
+      '')
+        # e.g. "22" matches 22.x.x, "22.21" matches 22.21.x, etc.
+        if [[ "${version}" =~ ^[0-9]+$ ]]; then
+          local current_major="${current%%.*}"
+          [[ "${current_major}" == "${version}" ]]
+        elif [[ "${version}" =~ ^[0-9]+\.[0-9]+$ ]]; then
+          local current_major_minor="${current%.*}"
+          [[ "${current_major_minor}" == "${version}" ]]
+        else
+          [[ "${current}" == "${version}" ]]
+        fi
+        ;;
+      =)
+        [[ "${current}" == "${version}" ]]
+        ;;
+      \>) [[ "$(printf '%s\n%s' "${current}" "${version}" | sort -V | tail -n1)" == "${current}" && "${current}" != "${version}" ]] ;;
+      \>=) [[ "$(printf '%s\n%s' "${current}" "${version}" | sort -V | tail -n1)" == "${current}" ]] ;;
+      \~) 
+        # Tilde allows patch-level changes if version has patch, or minor+patch if version has no patch
+        if [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          local current_major_minor="${current%.*}"
+          local target_major_minor="${version%.*}"
+          [[ "${current_major_minor}" == "${target_major_minor}" && "$(printf '%s\n%s' "${current}" "${version}" | sort -V | tail -n1)" == "${current}" ]]
+        else
+          local current_major="${current%%.*}"
+          local target_major="${version%%.*}"
+          [[ "${current_major}" == "${target_major}" ]]
+        fi
+        ;;
+      ^)
+        # Caret allows minor and patch changes
+        local current_major="${current%%.*}"
+        local target_major="${version%%.*}"
+        [[ "${current_major}" == "${target_major}" && "$(printf '%s\n%s' "${current}" "${version}" | sort -V | tail -n1)" == "${current}" ]]
+        ;;
+    esac
+  else
+    # Complex range, use npx semver for checking
+    command -v npx &> /dev/null || return 1
+    npx --quiet semver@7 "${current}" -r "${target}" &> /dev/null
+  fi
+}
+
+#
 # Synopsis: get_auto_version
 # Sets g_target_node
 #
@@ -1239,6 +1334,10 @@ function get_latest_resolved_version() {
   elif [[ "${version}" = "engine" ]]; then
     get_engine_version || return 2
     version="${g_target_node}"
+  fi
+
+  if is_numeric_version "${version}"; then
+    g_lazy_node="${version}"
   fi
 
   simple_version=${version#node/} # Only place supporting node/ [sic]
@@ -1702,6 +1801,7 @@ while [[ $# -ne 0 ]]; do
     --no-preserve) N_PRESERVE_NPM="" N_PRESERVE_COREPACK="" ;;
     --use-xz) N_USE_XZ="true" ;;
     --no-use-xz) N_USE_XZ="false" ;;
+    --lazy) LAZY="true" ;;
     --latest) display_remote_versions latest; exit ;;
     --stable) display_remote_versions lts; exit ;; # [sic] old terminology
     --lts) display_remote_versions lts; exit ;;
