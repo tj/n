@@ -1262,8 +1262,8 @@ function version_satisfies_target() {
       =)
         [[ "${current}" == "${version}" ]]
         ;;
-    \>) [[ $(version_gte "${current}" "${version}") && "${current}" != "${version}" ]] ;;
-    \>=) [[ $(version_gte "${current}" "${version}") ]] ;;
+    \>) version_gte "${current}" "${version}" && [[ "${current}" != "${version}" ]] ;;
+    \>=) version_gte "${current}" "${version}" ;;
     esac
   else
     # Complex range, use npx semver for checking
