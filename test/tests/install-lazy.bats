@@ -215,6 +215,76 @@ function teardown() {
 }
 
 
+@test "n --lazy with engine ~ match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~8.2.0"}}' > package.json
+  
+  n 8.2.1
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+  
+  run n --lazy engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+}
+
+
+@test "n --lazy with engine ~ mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~8.2.1"}}' > package.json
+  
+  n 8.2.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.0"
+  
+  run n --lazy engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+}
+
+
+@test "n --lazy with engine ^ match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^8.1.0"}}' > package.json
+  
+  n 8.2.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.0"
+  
+  run n --lazy engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.0"
+}
+
+
+@test "n --lazy with engine ^ mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^8.3.0"}}' > package.json
+  
+  n 8.2.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.0"
+  
+  run n --lazy engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.17.0"
+}
+
+
 @test "n --lazy without existing node" {
   n --lazy 4.9.1
   output="$(node --version)"
