@@ -1233,13 +1233,8 @@ function version_satisfies_target() {
   current="${current#v}"
   target="${target#v}"
   
-  # Exact match
-  if [[ "${current}" == "${target}" ]]; then
-    return 0
-  fi
-  
-  # Wildcard
-  if [[ "*" == "${target}" ]]; then
+  # Exact match or wildcard
+  if [[ "$current" == "$target" || $target == "*" ]]; then
     return 0
   fi
   
@@ -1249,7 +1244,7 @@ function version_satisfies_target() {
     local version="${BASH_REMATCH[2]}"
 
     case "${operator}" in
-      '')
+      '' | =)
         # e.g. "22" matches 22.x.x, "22.21" matches 22.21.x, etc.
         if [[ "${version}" =~ ^[0-9]+$ ]]; then
           [[ "${current%%.*}" == "${version}" ]]
@@ -1258,9 +1253,6 @@ function version_satisfies_target() {
         else
           [[ "${current}" == "${version}" ]]
         fi
-        ;;
-      =)
-        [[ "${current}" == "${version}" ]]
         ;;
     \>) version_gte "${current}" "${version}" && [[ "${current}" != "${version}" ]] ;;
     \>=) version_gte "${current}" "${version}" ;;
