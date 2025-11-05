@@ -206,7 +206,9 @@ display_major_version() {
 # Synposis: return if a $1 >= $2, given values like x.y.z
 #
 version_gte() {
-  [[ "$(printf '%s\n%s' "$1" "$2" | sort -V | tail -n1)" == "$1" ]]
+  [[ "$(printf '%s\n%s' "$1" "$2" \
+    | sort  -k1,1n -k2,2n -k3,3n -k4,4n -t . \
+    | tail -n1)" == "$1" ]]
 }
 
 display_masked_url() {
