@@ -1241,7 +1241,7 @@ function version_satisfies_target() {
   fi
   
   # Check for operator-based range (only supports what get_package_engine_version does)
-  if [[ "${target}" =~ ^([>=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
+  if [[ "${target}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
     local operator="${BASH_REMATCH[1]}"
     local version="${BASH_REMATCH[2]}"
 
@@ -1258,6 +1258,16 @@ function version_satisfies_target() {
         ;;
     \>) version_gte "${current}" "${version}" && [[ "${current}" != "${version}" ]] ;;
     \>=) version_gte "${current}" "${version}" ;;
+    \^) version_gte "${current}" "${version}" && [[ "${current%%.*}" == "${version%%.*}" ]] ;;
+    \~)
+      if [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        version_gte "${current}" "${version}" && [[ "${current%.*}" == "${version%.*}" ]]
+      elif [[ "${version}" =~ ^[0-9]+\.[0-9]+$ ]]; then
+        version_gte "${current}" "${version}" && [[ "${current%.*}" == "${version}" ]]
+      else
+        version_gte "${current}" "${version}" && [[ "${current%%.*}" == "${version}" ]]
+      fi
+      ;;
     esac
   else
     # Complex range, use npx semver for checking

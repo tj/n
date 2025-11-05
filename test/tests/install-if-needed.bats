@@ -215,7 +215,7 @@ function teardown() {
 }
 
 
-@test "n --if-needed with engine ~ match" {
+@test "n --if-needed with engine ~x.y.z match" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "~8.2.0"}}' > package.json
@@ -233,7 +233,7 @@ function teardown() {
 }
 
 
-@test "n --if-needed with engine ~ mismatch" {
+@test "n --if-needed with engine ~x.y.z mismatch" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "~8.2.1"}}' > package.json
@@ -250,7 +250,77 @@ function teardown() {
 }
 
 
-@test "n --if-needed with engine ^ match" {
+@test "n --if-needed with engine ~x.y match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~8.2"}}' > package.json
+  
+  n 8.2.1
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+  
+  run n --if-needed engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+}
+
+
+@test "n --if-needed with engine ~x.y minor mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~8.3"}}' > package.json
+  
+  n 8.2.1
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+  
+  run n --if-needed engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.3.0"
+}
+
+
+@test "n --if-needed with engine ~x match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~8"}}' > package.json
+  
+  n 8.2.1
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+  
+  run n --if-needed engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+}
+
+
+@test "n --if-needed with engine ~x major mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "~10"}}' > package.json
+  
+  n 8.2.1
+  output="$(node --version)"
+  assert_equal "${output}" "v8.2.1"
+  
+  run n --if-needed engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v10.24.1"
+}
+
+
+@test "n --if-needed with engine ^x.y.z match" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "^8.1.0"}}' > package.json
@@ -268,7 +338,7 @@ function teardown() {
 }
 
 
-@test "n --if-needed with engine ^ mismatch" {
+@test "n --if-needed with engine ^x.y.z mismatch" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo '{"engines": {"node": "^8.3.0"}}' > package.json
@@ -282,6 +352,76 @@ function teardown() {
   
   output="$(node --version)"
   assert_equal "${output}" "v8.17.0"
+}
+
+
+@test "n --if-needed with engine ^x.y match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^8.1"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --if-needed engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+}
+
+
+@test "n --if-needed with engine ^x.y major mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^10.1"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --if-needed engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v10.24.1"
+}
+
+
+@test "n --if-needed with engine ^x match" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^8"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --if-needed engine
+  assert_success
+  assert_output --partial "satisfies requirement"
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+}
+
+
+@test "n --if-needed with engine ^x major mismatch" {
+  mkdir -p "${TMP_PREFIX_DIR}/project"
+  cd "${TMP_PREFIX_DIR}/project"
+  echo '{"engines": {"node": "^10"}}' > package.json
+  
+  n 8.16.0
+  output="$(node --version)"
+  assert_equal "${output}" "v8.16.0"
+  
+  run n --if-needed engine
+  assert_success
+  
+  output="$(node --version)"
+  assert_equal "${output}" "v10.24.1"
 }
 
 
