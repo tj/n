@@ -134,7 +134,7 @@ Numeric version numbers can be complete or incomplete, with an optional leading 
 
 There are labels for two especially useful versions:
 
-- `lts`: newest Long Term Support official release
+- `lts`, `lts_latest`: newest Long Term Support official release
 - `latest`, `current`: newest official release
   
 There is an `auto` label to read the target version from a file in the current directory, or any parent directory. `n` looks for in order:
@@ -149,10 +149,6 @@ The `engine` label looks for a `package.json` file and reads the `engines` field
 There is support for the named release streams:
 
 - `argon`, `boron`, `carbon`: codenames for LTS release streams
-
-These Node.js support aliases may be used, although simply resolve to the latest matching version:
-
-- `active`, `lts_active`, `lts_latest`, `lts`, `current`, `supported`
 
 The last version form is for specifying [other releases](https://nodejs.org/download) available using the name of the remote download folder optionally followed by the complete or incomplete version.
 
