@@ -1272,7 +1272,7 @@ function version_satisfies_target() {
   else
     # Complex range, use npx semver for checking
     command -v npx &> /dev/null || return 1
-    npx --quiet semver@7 "${current}" -r "${target}" &> /dev/null
+    npm_config_yes=true npx --quiet semver@7 "${current}" -r "${target}" &> /dev/null
   fi
 }
 
