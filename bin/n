@@ -1234,11 +1234,9 @@ function version_satisfies_target() {
   # Remove 'v' prefix if present
   current="${current#v}"
   target="${target#v}"
-  
-  # Exact match or wildcard
-  if [[ "$current" == "$target" || $target == "*" ]]; then
-    return 0
-  fi
+
+  [[ -z "${target}" ]] && return 1
+  [[ "${current}" == "${target}" || "${target}" == "*" ]] && return 0
   
   # Check for operator-based range (only supports what get_package_engine_version does)
   if [[ "${target}" =~ ^([>~^=]|\>\=)?v?([0-9]+(\.[0-9]+){0,2})(.[xX*])?$ ]]; then
@@ -1335,11 +1333,14 @@ function get_latest_resolved_version() {
   fi
 
   if [[ -z "${g_if_needed_node}" ]]; then
-    if ! is_numeric_version "${version}" && [[ "${version}" != "latest" && "${version}" != "current" ]]; then
+    if is_numeric_version "${version}"; then
+      g_if_needed_node="${version}"
+    elif is_lts_codename "${version}" || [[ "${version}" = "lts" ]]; then
       # Codenames (e.g. "argon") will only if-needed match major rather than latest minor/patch
       g_if_needed_node=$(display_major_version "${g_target_node}")
     else
-      g_if_needed_node="${version}"
+      # Other strings (e.g. latest, nightly, rc) should never skip updates
+      g_if_needed_node=""
     fi
   fi
 }

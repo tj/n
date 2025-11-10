@@ -108,7 +108,7 @@ function teardown() {
 }
 
 
-@test "n --if-needed with codename" {
+@test "n --if-needed with codename match" {
   mkdir -p "${TMP_PREFIX_DIR}/project"
   cd "${TMP_PREFIX_DIR}/project"
   echo "4" > .node-version
@@ -123,6 +123,16 @@ function teardown() {
   
   output="$(node --version)"
   assert_equal "${output}" "v4.8.0"
+}
+
+@test "n --if-needed with codename mismatch" {
+  n 4.8.0
+  output="$(node --version)"
+  assert_equal "${output}" "v4.8.0"
+  
+  n --if-needed boron
+  output="$(node --version)"
+  assert_equal "${output}" "v6.17.1"
 }
 
 
@@ -422,6 +432,39 @@ function teardown() {
   
   output="$(node --version)"
   assert_equal "${output}" "v10.24.1"
+}
+
+
+@test "n --if-needed latest always update" {
+  local latest="$(display_remote_version latest)"
+  local preinstalled="${latest%%.*}.0.0"
+  
+  n "${preinstalled}"
+  output="$(node --version)"
+  assert_equal "${output}" "v${preinstalled}"
+  
+  run n --if-needed latest
+  assert_success
+
+  output="$(node --version)"
+  assert_equal "${output}" "v${latest}"
+}
+
+
+@test "n --if-needed lts match" {
+  local latest="$(display_remote_version lts)"
+  local preinstalled="${latest%%.*}.0.0"
+  
+  n "${preinstalled}"
+  output="$(node --version)"
+  assert_equal "${output}" "v${preinstalled}"
+
+  run n --if-needed lts
+  assert_success
+  assert_output --partial "satisfies requirement"
+
+  output="$(node --version)"
+  assert_equal "${output}" "v${preinstalled}"
 }
 
 
