@@ -1335,9 +1335,11 @@ function get_latest_resolved_version() {
   if [[ -z "${g_if_needed_node}" ]]; then
     if is_numeric_version "${version}"; then
       g_if_needed_node="${version}"
-    elif is_lts_codename "${version}" || [[ "${version}" = "lts" ]]; then
+    elif is_lts_codename "${version}"; then
       # Codenames (e.g. "argon") will only if-needed match major rather than latest minor/patch
       g_if_needed_node=$(display_major_version "${g_target_node}")
+    elif [[ "${version}" = "lts" ]]; then
+      g_if_needed_node=">=$(get_latest_lts_lowest_version)"
     else
       # Other strings (e.g. latest, nightly, rc) should never skip updates
       g_if_needed_node=""
@@ -1497,6 +1499,22 @@ function display_remote_versions() {
     | n_grep -E -o '[^v].*'
   return "${PIPESTATUS[0]}"
 }
+
+
+#
+# Synposis: return earliest version of latest LTS release
+#
+get_latest_lts_lowest_version() {
+  display_remote_index | awk -F'\t' '
+      $3 != "-" {
+        if (!lts_name) lts_name = $3
+        if ($3 == lts_name) version = $1
+      }
+      END { print version }
+    ' | n_grep -E -o '[^v].*'
+  return "${PIPESTATUS[0]}"
+}
+
 
 #
 # Synopsis: delete_with_echo target

@@ -101,3 +101,31 @@ function display_remote_version() {
     | awk "NR==1" \
     | grep -E -o '[^v].*'
 }
+
+
+# get_latest_lts_lowest_version
+# Return the lowest minor version of the latest LTS major version.
+# Return version number, without leading v.
+
+function get_latest_lts_lowest_version() {
+  local fetch
+  if command -v curl &> /dev/null; then
+    fetch="curl --silent --location --fail --compressed"
+  else
+    fetch="wget -q -O- --no-check-certificate"
+  fi
+
+  local mirror="${N_NODE_MIRROR:-https://nodejs.org/dist}"
+  
+  ${fetch} "${mirror}/index.tab" \
+    | tail -n +2 \
+    | cut -f 1,10 \
+    | awk -F'\t' '
+      $2 != "-" {
+        if (!lts_name) lts_name = $2
+        if ($2 == lts_name) version = $1
+      }
+      END { print version }
+    ' \
+    | grep -E -o '[^v].*'
+}

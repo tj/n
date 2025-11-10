@@ -452,19 +452,34 @@ function teardown() {
 
 
 @test "n --if-needed lts match" {
-  local latest="$(display_remote_version lts)"
-  local preinstalled="${latest%%.*}.0.0"
+  local lts="$(get_latest_lts_lowest_version)"
   
-  n "${preinstalled}"
+  n "${lts}"
   output="$(node --version)"
-  assert_equal "${output}" "v${preinstalled}"
+  assert_equal "${output}" "v${lts}"
 
   run n --if-needed lts
   assert_success
+  assert_output --partial "if-needed : >=${lts}"
   assert_output --partial "satisfies requirement"
 
   output="$(node --version)"
-  assert_equal "${output}" "v${preinstalled}"
+  assert_equal "${output}" "v${lts}"
+}
+
+
+@test "n --if-needed lts mismatch" {
+  local lts="$(display_remote_version lts)"
+  
+  n 4.9.1
+  output="$(node --version)"
+  assert_equal "${output}" "v4.9.1"
+
+  run n --if-needed lts
+  assert_success
+
+  output="$(node --version)"
+  assert_equal "${output}" "v${lts}"
 }
 
 
