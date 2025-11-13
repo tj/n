@@ -1341,8 +1341,8 @@ function get_latest_resolved_version() {
     elif [[ "${version}" = "lts" ]]; then
       g_if_needed_node="^$(get_latest_lts_lowest_version)"
     else
-      # Other strings (e.g. latest, nightly, rc) should never skip updates
-      g_if_needed_node=""
+      # Other string targets (e.g. latest, nightly, rc)
+      g_if_needed_node="${g_target_node}"
     fi
   fi
 }
