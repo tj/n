@@ -1339,7 +1339,7 @@ function get_latest_resolved_version() {
       # Codenames (e.g. "argon") will only if-needed match major rather than latest minor/patch
       g_if_needed_node=$(display_major_version "${g_target_node}")
     elif [[ "${version}" = "lts" ]]; then
-      g_if_needed_node=">=$(get_latest_lts_lowest_version)"
+      g_if_needed_node="^$(get_latest_lts_lowest_version)"
     else
       # Other strings (e.g. latest, nightly, rc) should never skip updates
       g_if_needed_node=""
