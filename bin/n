@@ -317,7 +317,12 @@ function is_node_support_version() {
 
 #
 # Synopsis: display_latest_node_support_alias version
-# Map aliases onto existing n aliases, current and lts
+# Map aliases onto existing n aliases, current and lts.
+#
+# Since we resolve to a single version these are of limited use. Now only
+# mention lts_latest in README and help, since that one is used a bit in the wild.
+# Caveat: lts_active may be incorrect across node releases when
+# there isn't actually an active version for a brief period.
 #
 
 function display_latest_node_support_alias() {
@@ -409,10 +414,8 @@ Options:
 Aliases:
 
   install: i
-  latest: current
   ls: list
   lsr: ls-remote
-  lts: stable
   rm: -
   run: use, as
   which: bin
@@ -424,12 +427,11 @@ Versions:
   and other downloadable releases by <remote-folder>/<version>
 
     4.9.1, 8, v6.1    Numeric versions
-    lts               Newest Long Term Support official release
+    lts, lts_latest   Newest Long Term Support official release
     latest, current   Newest official release
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
     engine            Read version from package.json
     boron, carbon     Codenames for release streams
-    lts_latest        Node.js support aliases
 
     and nightly, rc/10 et al
 
@@ -1739,9 +1741,6 @@ else
     doctor) show_diagnostics; exit ;;
     rm|-) shift; remove_versions "$@"; exit ;;
     prune) prune_cache; exit ;;
-    latest) install latest; exit ;;
-    stable) install stable; exit ;;
-    lts) install lts; exit ;;
     ls|list) display_versions_paths; exit ;;
     lsr|ls-remote|list-remote) shift; display_remote_versions "$1"; exit ;;
     uninstall) uninstall_installed; exit ;;
