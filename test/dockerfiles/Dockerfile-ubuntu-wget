@@ -1,9 +1,10 @@
 FROM ubuntu:latest
 
 # wget
+# (libatomic1 currently needed for node 25)
 
 RUN apt-get update \
-&& apt-get install -y wget \
+&& apt-get install -y wget libatomic1 \
 && rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/bash"]

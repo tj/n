@@ -1,3 +1,7 @@
 FROM fedora:latest
 
+# (libatomic1 currently needed for node 25)
+RUN dnf install -y libatomic \
+&& dnf clean all
+
 CMD ["/bin/bash"]
