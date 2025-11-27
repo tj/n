@@ -1,9 +1,10 @@
 FROM ubuntu:latest
 
 # curl
+# (libatomic1 currently needed for node 25)
 
 RUN apt-get update \
-&& apt-get install -y curl \
+&& apt-get install -y curl libatomic1 \
 && rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/bash"]
