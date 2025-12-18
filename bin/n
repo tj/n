@@ -714,14 +714,14 @@ activate() {
   # Remove old node to avoid potential problems with firewall getting confused on Darwin by overwrite.
   rm -f "$N_PREFIX/bin/node"
   # Copy bin items by hand, in case user has installed global npm modules into cache.
-  cp -f "$dir/bin/node" "$N_PREFIX/bin"
+  cp -f --preserve=mode,xattr "$dir/bin/node" "$N_PREFIX/bin"
   [[ -e "$dir/bin/node-waf" ]] && cp -f "$dir/bin/node-waf" "$N_PREFIX/bin" # v0.8.x
   if [[ -z "${N_PRESERVE_COREPACK}" ]]; then
     [[ -e "$dir/bin/corepack" ]] && cp -fR "$dir/bin/corepack" "$N_PREFIX/bin" # from 16.9.0
   fi
   if [[ -z "${N_PRESERVE_NPM}" ]]; then
-    [[ -e "$dir/bin/npm" ]] && cp -fR "$dir/bin/npm" "$N_PREFIX/bin"
-    [[ -e "$dir/bin/npx" ]] && cp -fR "$dir/bin/npx" "$N_PREFIX/bin"
+    [[ -e "$dir/bin/npm" ]] && cp -fR --preserve=mode,xattr "$dir/bin/npm" "$N_PREFIX/bin"
+    [[ -e "$dir/bin/npx" ]] && cp -fR --preserve=mode,xattr "$dir/bin/npx" "$N_PREFIX/bin"
   fi
 
   # include
