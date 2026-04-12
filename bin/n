@@ -307,6 +307,16 @@ function is_exact_numeric_version() {
 }
 
 #
+# Synopsis: is_alpha_version version
+#
+
+function is_alpha_version() {
+  # e.g. 26.0.0-alpha.1
+  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]
+}
+
+
+#
 # Synopsis: is_node_support_version version
 # Reference: https://github.com/nodejs/package-maintenance/issues/236#issue-474783582
 #
@@ -319,10 +329,7 @@ function is_node_support_version() {
 # Synopsis: display_latest_node_support_alias version
 # Map aliases onto existing n aliases, current and lts.
 #
-# Since we resolve to a single version these are of limited use. Now only
-# mention lts_latest in README and help, since that one is used a bit in the wild.
-# Caveat: lts_active may be incorrect across node releases when
-# there isn't actually an active version for a brief period.
+# Deprecated since little used and Node.js changing their release policy in 2026.
 #
 
 function display_latest_node_support_alias() {
@@ -427,8 +434,9 @@ Versions:
   and other downloadable releases by <remote-folder>/<version>
 
     4.9.1, 8, v6.1    Numeric versions
-    lts, lts_latest   Newest Long Term Support official release
-    latest, current   Newest official release
+    lts               Newest Long Term Support release
+    latest            Newest release
+    current           Newest release ignoring alpha versions
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
     engine            Read version from package.json
     boron, carbon     Codenames for release streams
@@ -500,11 +508,24 @@ function set_active_node() {
 #
 
 display_versions_paths() {
+  # Example listings:
+  #   node/26.0.0
+  #   node/27.0.0-alpha.1
+  #   nightly/26.0.0-nightly20260411726b22048a
+  # Split sort keys on '.' and do numeric sorting on major, minor, patch, and prerelease number.
+  # Tricks with sed substitutions to add key separators:
+  #   k1: "node/" => "node." => "node/"
+  #   k5: "-alpha" => ".~alpha" => "-alpha"
+  #   k6: "26.0.0" => "26.0.0.~ZZZ" => "26.0.0" so release versions sort after semver prerelease
   find "$CACHE_DIR" -maxdepth 2 -type d \
     | sed 's|'"$CACHE_DIR"'/||g' \
     | n_grep -E "/[0-9]+\.[0-9]+\.[0-9]+" \
     | sed 's|/|.|' \
-    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -t . \
+    | sed 's/-/.~/' \
+    | sed '/\.~/! s/$/.~ZZZ/' \
+    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5 -k 6,6n -t . \
+    | sed 's|\.~ZZZ$||' \
+    | sed 's|\.~|-|' \
     | sed 's|\.|/|'
 }
 
@@ -1244,8 +1265,8 @@ function get_latest_resolved_version() {
   fi
 
   simple_version=${version#node/} # Only place supporting node/ [sic]
-  if is_exact_numeric_version "${simple_version}"; then
-    # Just numbers, already resolved, no need to lookup first.
+  if is_exact_numeric_version "${simple_version}" || is_alpha_version "${version}"; then
+    # Already fully resolved, no need to lookup first.
     simple_version="${simple_version#v}"
     g_target_node="${simple_version}"
   elif [[ "$OFFLINE" == "true" ]]; then
@@ -1359,9 +1380,14 @@ function display_remote_versions() {
     match_count=1
     # Codename is last field, first one with a name is newest lts
     match="${TAB_CHAR}[a-zA-Z]+\$"
-  elif [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+  elif [[ "${version}" = "latest" ]]; then
     match_count=1
     match='.'
+  elif [[ "${version}" = "current" ]]; then
+    match_count=1
+    # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.1"
+    # Expecting one or the other.
+    match='^v[0-9]+\.[0-9]+\.[0-9]+\t'
   elif is_numeric_version "${version}"; then
     version="v${version#v}"
     # Avoid restriction message if exact version
@@ -1370,6 +1396,13 @@ function display_remote_versions() {
     match="${version//\./\.}"
     # Avoid 1.2 matching 1.23
     match="^${match}[^0-9]"
+  elif is_alpha_version "${version}"; then
+    match_count=1
+    version="v${version#v}"
+    # Quote any dots in version so they are literal for expression
+    match="${version//\./\.}"
+    # Avoid -alpha.1 matching -alpha.12
+    match="^${match}\t"
   elif is_lts_codename "${version}"; then
     # Capitalise (could alternatively make grep case insensitive)
     codename="$(echo "${version:0:1}" | tr '[:lower:]' '[:upper:]')${version:1}"
@@ -1379,7 +1412,7 @@ function display_remote_versions() {
     match='.'
   elif is_download_version "${version}"; then
     version="${version#"${g_mirror_folder_name}"/}"
-    if [[ "${version}" = "latest" || "${version}" = "current" ]]; then
+    if [[ "${version}" = "latest" ]]; then
       match_count=1
       match='.'
     else

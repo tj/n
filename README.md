@@ -10,20 +10,20 @@ Node.js version management: no subshells, no profile setup, no convoluted API, j
 ![usage animation](https://nimit.io/images/n/n.gif)
 
 - [`n` – Interactively Manage Your Node.js Versions](#n--interactively-manage-your-nodejs-versions)
-    - [Supported Platforms](#supported-platforms)
-    - [Installation](#installation)
-        - [Third Party Installers](#third-party-installers)
-        - [Replacing a previous node install](#replacing-a-previous-node-install)
-    - [Installing Node.js Versions](#installing-nodejs-versions)
-    - [Specifying Node.js Versions](#specifying-nodejs-versions)
-    - [Removing Versions](#removing-versions)
-    - [Using Downloaded Node.js Versions Without Reinstalling](#using-downloaded-nodejs-versions-without-reinstalling)
-    - [Preserving npm](#preserving-npm)
-    - [Miscellaneous](#miscellaneous)
-    - [Custom Mirror](#custom-mirror)
-    - [Custom Architecture](#custom-architecture)
-    - [Optional Environment Variables](#optional-environment-variables)
-    - [How It Works](#how-it-works)
+  - [Supported Platforms](#supported-platforms)
+  - [Installation](#installation)
+    - [Third Party Installers](#third-party-installers)
+    - [Replacing a previous node install](#replacing-a-previous-node-install)
+  - [Installing Node.js Versions](#installing-nodejs-versions)
+  - [Specifying Node.js Versions](#specifying-nodejs-versions)
+  - [Removing Versions](#removing-versions)
+  - [Using Downloaded Node.js Versions Without Reinstalling](#using-downloaded-nodejs-versions-without-reinstalling)
+  - [Preserving npm](#preserving-npm)
+  - [Miscellaneous](#miscellaneous)
+  - [Custom Mirror](#custom-mirror)
+  - [Custom Architecture](#custom-architecture)
+  - [Optional Environment Variables](#optional-environment-variables)
+  - [How It Works](#how-it-works)
 
 ## Supported Platforms
 
@@ -132,11 +132,12 @@ Numeric version numbers can be complete or incomplete, with an optional leading 
 - `8`: 8.x.y versions
 - `v6.1`: 6.1.x versions
 
-There are labels for two especially useful versions:
+There are labels for three especially useful versions:
 
-- `lts`, `lts_latest`: newest Long Term Support official release
-- `latest`, `current`: newest official release
-  
+- `lts`: newest Long Term Support release
+- `latest`: newest release
+- `current`: newest release ignoring alpha versions
+
 There is an `auto` label to read the target version from a file in the current directory, or any parent directory. `n` looks for in order:
 
 - `.n-node-version`: version on single line. Custom to `n`.
@@ -288,8 +289,8 @@ You can override the default architecture by using the `-a` or `--arch` option, 
 
 e.g. reinstall latest version of Node.js with x64 binaries:
 
-    n rm current
-    n --arch x64 current
+    n rm lts
+    n --arch x64 lts
 
 ## Optional Environment Variables
 
