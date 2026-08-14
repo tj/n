@@ -308,9 +308,20 @@ function is_exact_numeric_version() {
 
 #
 # Synopsis: is_alpha_version version
+# Matching n.n.n-alpha.*
 #
 
 function is_alpha_version() {
+  # e.g. 26.0.0-alpha.1
+  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\. ]]
+}
+
+#
+# Synopsis: is_exact_alpha_version version
+# Matching n.n.n-alpha.n
+#
+
+function is_exact_alpha_version() {
   # e.g. 26.0.0-alpha.1
   [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]
 }
@@ -1265,7 +1276,7 @@ function get_latest_resolved_version() {
   fi
 
   simple_version=${version#node/} # Only place supporting node/ [sic]
-  if is_exact_numeric_version "${simple_version}" || is_alpha_version "${version}"; then
+  if is_exact_numeric_version "${simple_version}" || is_exact_alpha_version "${version}"; then
     # Already fully resolved, no need to lookup first.
     simple_version="${simple_version#v}"
     g_target_node="${simple_version}"
