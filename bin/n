@@ -308,22 +308,22 @@ function is_exact_numeric_version() {
 
 #
 # Synopsis: is_alpha_version version
-# Matching n.n.n-alpha.*
+# Matching n.n.n-alpha
 #
 
 function is_alpha_version() {
-  # e.g. 26.0.0-alpha.1
-  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\. ]]
+  # e.g. 26.0.0-alpha or 26.0.0-alpha.0
+  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha(\.|$) ]]
 }
 
 #
 # Synopsis: is_exact_alpha_version version
-# Matching n.n.n-alpha.n
+# Matching n.n.n-alpha.n.n.n
 #
 
 function is_exact_alpha_version() {
   # e.g. 26.0.0-alpha.1
-  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]
+  [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+\.[0-9]+\.[0-9]+$ ]]
 }
 
 
@@ -1396,7 +1396,7 @@ function display_remote_versions() {
     match='.'
   elif [[ "${version}" = "current" ]]; then
     match_count=1
-    # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.1"
+    # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.0.0.0"
     # Expecting one or the other.
     match='^v[0-9]+\.[0-9]+\.[0-9]+\t'
   elif is_numeric_version "${version}"; then
@@ -1408,12 +1408,13 @@ function display_remote_versions() {
     # Avoid 1.2 matching 1.23
     match="^${match}[^0-9]"
   elif is_alpha_version "${version}"; then
-    match_count=1
     version="v${version#v}"
+    # Avoid restriction message if exact version
+    is_exact_alpha_version "${version}" && match_count=1
     # Quote any dots in version so they are literal for expression
     match="${version//\./\.}"
     # Avoid -alpha.1 matching -alpha.12
-    match="^${match}\t"
+    match="^${match}[^0-9]"
   elif is_lts_codename "${version}"; then
     # Capitalise (could alternatively make grep case insensitive)
     codename="$(echo "${version:0:1}" | tr '[:lower:]' '[:upper:]')${version:1}"
