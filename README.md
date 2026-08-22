@@ -287,7 +287,7 @@ On a Mac with Apple silicon:
 
 You can override the default architecture by using the `-a` or `--arch` option, or set `N_ARCH` environment variable.
 
-e.g. reinstall latest version of Node.js with x64 binaries:
+e.g. reinstall Node.js with x64 binaries:
 
     n rm lts
     n --arch x64 lts
