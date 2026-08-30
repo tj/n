@@ -182,3 +182,36 @@ function write_engine() {
   output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
+
+@test "auto (devengines) object, 8.9.0" {
+  cd "${MY_DIR}"
+  echo '{ "devEngines" : { "runtime" : { "name": "node", "version": "8.9.0" } } }' > package.json
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  assert_equal "${output}" "8.9.0"
+}
+
+@test "auto (devengines) array, 8.9.0" {
+  cd "${MY_DIR}"
+  echo '{ "devEngines" : { "runtime" : [{ "name": "bun", "version": "1.2.3" }, { "name": "node", "version": "8.9.0" }] } }' > package.json
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  assert_equal "${output}" "8.9.0"
+}
+
+@test "engine (devengines, semver), <8.12" {
+  cd "${MY_DIR}"
+  echo '{ "devEngines" : { "runtime" : { "name": "node", "version": "<8.12" } } }' > package.json
+  # newer versions of npx not liking proxy as used in tests
+  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
+  assert_equal "${output}" "8.11.4"
+}
+
+@test "auto mismatch devengines match engines" {
+  cd "${MY_DIR}"
+  write_engine "8.9.1"
+  echo '{ "devEngines" : { "runtime" : { "name": "bun", "version": "1.2.3" } } }' >> package.json
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  assert_equal "${output}" "8.9.1"
+}
+
+# Test ideas
+# devengines wins over engines

@@ -1127,7 +1127,7 @@ function get_package_engine_version() {
         ) // .engines.node // ""
     ' "${filepath}")"
   elif command -v node &> /dev/null; then
-    # Using syntax that works back to node 0.12.18
+    # Using javascript syntax that works back to node 0.12.18
     range="$(node -e "
       const fs = require('fs');
       const package = JSON.parse(fs.readFileSync('${filepath}', 'utf8'));

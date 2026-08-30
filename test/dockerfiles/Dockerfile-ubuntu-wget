@@ -2,9 +2,10 @@ FROM ubuntu:latest
 
 # wget
 # (libatomic1 currently needed for node 25)
+# add jq so tested in one of the containers
 
 RUN apt-get update \
-&& apt-get install -y wget libatomic1 \
+&& apt-get install -y wget libatomic1 jq \
 && rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/bash"]
