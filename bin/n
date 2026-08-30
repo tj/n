@@ -322,7 +322,7 @@ function is_alpha_version() {
 #
 
 function is_exact_alpha_version() {
-  # e.g. 26.0.0-alpha.1
+  # e.g. 26.0.0-alpha.0.0.0
   [[ "$1" =~ ^[v]{0,1}[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+\.[0-9]+\.[0-9]+$ ]]
 }
 
