@@ -430,7 +430,7 @@ Versions:
     lts, lts_latest   Newest Long Term Support official release
     latest, current   Newest official release
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
-    engine            Read version from package.json
+    engine            Read version from package.json (devEngines or engines field)
     boron, carbon     Codenames for release streams
 
     and nightly, rc/10 et al
@@ -1111,10 +1111,38 @@ function get_package_engine_version() {
   local filepath="$1"
   verbose_log "found" "${filepath}"
   local range
+  # Look for a target version in devEngines.runtime for node, and engines.node.
   if command -v jq &> /dev/null; then
-    range="$(jq -r '.engines.node // ""' < "${filepath}")"
+    range="$(jq -r '
+      .devEngines.runtime as $r
+      | (
+          if $r == null then empty
+          elif ($r | type) == "array" then
+            first($r[] | select(.name == "node" and .version != null) | .version)
+          elif $r.name == "node" and $r.version != null then
+            $r.version
+          else
+            empty
+          end
+        ) // .engines.node // ""
+    ' "${filepath}")"
   elif command -v node &> /dev/null; then
-    range="$(node -e "package = require('${filepath}'); if (package && package.engines && package.engines.node) console.log(package.engines.node)")"
+    # Using javascript syntax that works back to node 0.12.18
+    range="$(node -e "
+      const fs = require('fs');
+      const package = JSON.parse(fs.readFileSync('${filepath}', 'utf8'));
+      const runtime = package.devEngines && package.devEngines.runtime;
+      const runtimes = Array.isArray(runtime) ? runtime : runtime ? [runtime] : [];
+      var found;
+      for (var i = 0; i < runtimes.length; i++) {
+        if (runtimes[i].name === 'node' && runtimes[i].version != null) {
+          found = runtimes[i];
+          break;
+        }
+      }
+      const range = (found && found.version) || (package.engines && package.engines.node);
+      if (range) console.log(range);
+    ")"
   else
     abort "either jq or an active version of node is required to read 'engines' from package.json"
   fi
@@ -1144,8 +1172,9 @@ function get_package_engine_version() {
     local version_per_line="$(n lsr --all)"
     local versions_one_line=$(echo "${version_per_line}" | tr '\n' ' ')
     # Using semver@7 so works with older versions of node.
+    # The "env -C /" is to avoid npx being restricted by devEngines, assume no package.json in root.
     # shellcheck disable=SC2086
-    version=$(npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
+    version=$(env -C / npm_config_yes=true npx --quiet semver@7 -r "${range}" ${versions_one_line} | tail -n 1)
   fi
   g_target_node="${version}"
 }
@@ -1194,7 +1223,7 @@ function get_engine_version() {
     break
   done
   [[ -n "${parent}" ]] || abort "${error_message}"
-  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in 'engines' field of package.json"
+  [[ -n "${g_target_node}" ]] || abort "did not find supported version of node in package.json"
 }
 
 #
