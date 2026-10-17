@@ -18,10 +18,10 @@ function teardown() {
 
 # Testing version permutations in lsr tests
 
-@test "n 4.9.1" {
-  n 4.9.1
+@test "n 18.16.1" {
+  n 18.16.1
   output="$(node --version)"
-  assert_equal "${output}" "v4.9.1"
+  assert_equal "${output}" "v18.16.1"
 }
 
 

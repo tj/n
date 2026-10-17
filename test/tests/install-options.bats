@@ -16,10 +16,10 @@ function teardown() {
 }
 
 
-@test "n --download 4.9.1" {
+@test "n --download 18.16.1" {
   # deprecated use of --download, replaced by download command
-  n --download 4.9.1
-  [ -d "${N_PREFIX}/n/versions/node/4.9.1" ]
+  n --download 18.16.1
+  [ -d "${N_PREFIX}/n/versions/node/18.16.1" ]
   [ ! -f "${N_PREFIX}/bin/node" ]
   [ ! -f "${N_PREFIX}/bin/npm" ]
   [ ! -d "${N_PREFIX}/include" ]
@@ -28,10 +28,10 @@ function teardown() {
 }
 
 
-@test "n download 4.9.1" {
+@test "n download 18.16.1" {
   # not an option, but keep with --download so stays in sync
-  n download 4.9.1
-  [ -d "${N_PREFIX}/n/versions/node/4.9.1" ]
+  n download 18.16.1
+  [ -d "${N_PREFIX}/n/versions/node/18.16.1" ]
   [ ! -f "${N_PREFIX}/bin/node" ]
   [ ! -f "${N_PREFIX}/bin/npm" ]
   [ ! -d "${N_PREFIX}/include" ]
@@ -40,47 +40,47 @@ function teardown() {
 }
 
 
-@test "n --quiet 4.9.1" {
+@test "n --quiet 18.16.1" {
   # just checking option is allowed, not testing functionality
-  n --quiet 4.9.1
+  n --quiet 18.16.1
   output="$(node --version)"
-  assert_equal "${output}" "v4.9.1"
+  assert_equal "${output}" "v18.16.1"
 }
 
 
-@test "n --cleanup 4.9.1" {
-  n install --cleanup 4.9.1
+@test "n --cleanup 18.16.1" {
+  n install --cleanup 18.16.1
   output="$(node --version)"
-  assert_equal "${output}" "v4.9.1"
-  [ ! -d "${N_PREFIX}/n/versions/node/4.9.1" ]
+  assert_equal "${output}" "v18.16.1"
+  [ ! -d "${N_PREFIX}/n/versions/node/18.16.1" ]
 }
 
 
 # mostly --preserve, but also variations with i/install and lts/numeric
 @test "--preserve variations # (4 installs)" {
-  local ARGON_VERSION="v4.9.1"
-  local ARGON_NPM_VERSION="2.15.11"
+  local IRON_VERSION="v20.20.2"
+  local IRON_NPM_VERSION="10.8.2"
   local LTS_VERSION="$(display_remote_version lts)"
 
-  n ${ARGON_VERSION}
+  n ${IRON_VERSION}
   output="$("${N_PREFIX}/bin/node" --version)"
-  assert_equal "$output" "${ARGON_VERSION}"
+  assert_equal "$output" "${IRON_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  assert_equal "$output" "${ARGON_NPM_VERSION}"
+  assert_equal "$output" "${IRON_NPM_VERSION}"
 
   n --preserve "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/node" --version)"
   assert_equal "$output" "v${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  assert_equal "$output" "${ARGON_NPM_VERSION}"
+  assert_equal "$output" "${IRON_NPM_VERSION}"
 
   N_PRESERVE_NPM=1 n "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  assert_equal "$output" "${ARGON_NPM_VERSION}"
+  assert_equal "$output" "${IRON_NPM_VERSION}"
 
   N_PRESERVE_NPM=1 n --no-preserve "${LTS_VERSION}"
   output="$("${N_PREFIX}/bin/npm" --version)"
-  assert [ "$output" != "${ARGON_NPM_VERSION}" ]
+  assert [ "$output" != "${IRON_NPM_VERSION}" ]
 }
 
 

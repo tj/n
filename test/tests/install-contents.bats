@@ -14,7 +14,7 @@ function setup() {
 # https://github.com/tj/n/issues/246
 
 @test "install: contents" {
-  readonly TARGET_VERSION="4.9.1"
+  readonly TARGET_VERSION="18.16.1"
   setup_tmp_prefix
 
   [ ! -d "${N_PREFIX}/n/versions" ]
@@ -45,7 +45,7 @@ function setup() {
 
 @test "install: cache prefix" {
   readonly N_CACHE_PREFIX="$(mktemp -d)"
-  readonly TARGET_VERSION="4.9.1"
+  readonly TARGET_VERSION="18.16.1"
   setup_tmp_prefix
   export N_CACHE_PREFIX
 
