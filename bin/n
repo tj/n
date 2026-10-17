@@ -532,15 +532,15 @@ display_versions_paths() {
   # Tricks with sed substitutions to add key separators:
   #   k1: "node/" => "node." => "node/"
   #   k5: "-alpha" => ".~alpha" => "-alpha"
-  #   k6: "26.0.0" => "26.0.0.~ZZZ" => "26.0.0" so release versions sort after semver prerelease
+  #   k6: "26.0.0" => "26.0.0.~zzz" => "26.0.0" so release versions sort after semver prerelease
   find "$CACHE_DIR" -maxdepth 2 -type d \
     | sed 's|'"$CACHE_DIR"'/||g' \
     | n_grep -E "/[0-9]+\.[0-9]+\.[0-9]+" \
     | sed 's|/|.|' \
     | sed 's/-/.~/' \
-    | sed '/\.~/! s/$/.~ZZZ/' \
+    | sed '/\.~/! s/$/.~zzz/' \
     | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5 -k 6,6n -k 7,7n -k 8,8n -t . \
-    | sed 's|\.~ZZZ$||' \
+    | sed 's|\.~zzz$||' \
     | sed 's|\.~|-|' \
     | sed 's|\.|/|'
 }
