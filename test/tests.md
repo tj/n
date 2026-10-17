@@ -2,14 +2,6 @@
 
 Automated tests for `n`.
 
-## Setup
-
-Optional proxy using mitmproxy:
-
-    # using homebrew (Mac) to install mitmproxy
-    brew install mitmproxy
-
-
 ## Running Tests
 
 Run all the tests across a range of containers and on the host system:
