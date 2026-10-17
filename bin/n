@@ -97,6 +97,9 @@ N_MAX_REMOTE_MATCHES=${N_MAX_REMOTE_MATCHES:-20}
 g_mirror_url=${N_NODE_MIRROR}
 g_mirror_folder_name="node"
 
+# grep -E does not portably understand \t, so define a literal tab.
+TAB_CHAR=$'\t'
+
 # Options for curl and wget.
 # Defining commands in variables is fraught (https://mywiki.wooledge.org/BashFAQ/050)
 # but we can follow the simple case and store arguments in an array.
@@ -331,6 +334,8 @@ function is_exact_alpha_version() {
 # Synopsis: is_node_support_version version
 # Reference: https://github.com/nodejs/package-maintenance/issues/236#issue-474783582
 #
+# Deprecated since little used and Node.js changing their release policy in 2026.
+#
 
 function is_node_support_version() {
   [[ "$1" =~ ^(active|lts_active|lts_latest|lts|current|supported)$ ]]
@@ -521,7 +526,7 @@ function set_active_node() {
 display_versions_paths() {
   # Example listings:
   #   node/26.0.0
-  #   node/27.0.0-alpha.1
+  #   node/27.0.0-alpha.0.0.0
   #   nightly/26.0.0-nightly20260411726b22048a
   # Split sort keys on '.' and do numeric sorting on major, minor, patch, and prerelease number.
   # Tricks with sed substitutions to add key separators:
@@ -534,7 +539,7 @@ display_versions_paths() {
     | sed 's|/|.|' \
     | sed 's/-/.~/' \
     | sed '/\.~/! s/$/.~ZZZ/' \
-    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5 -k 6,6n -t . \
+    | sort -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5 -k 6,6n -k 7,7n -k 8,8n -t . \
     | sed 's|\.~ZZZ$||' \
     | sed 's|\.~|-|' \
     | sed 's|\.|/|'
@@ -1398,7 +1403,7 @@ function display_remote_versions() {
     match_count=1
     # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.0.0.0"
     # Expecting one or the other.
-    match='^v[0-9]+\.[0-9]+\.[0-9]+\t'
+    match="^v[0-9]+\.[0-9]+\.[0-9]+${TAB_CHAR}"
   elif is_numeric_version "${version}"; then
     version="v${version#v}"
     # Avoid restriction message if exact version
