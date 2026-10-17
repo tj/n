@@ -1345,7 +1345,7 @@ function display_local_versions() {
     match='^node/.'
   elif [[ "${version}" = "current" ]]; then
     match_count=1
-    # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.0.0.0"
+    # Use simple numeric match to match "node/26.0.0" and not alphas like "node/27.0.0-alpha.0.0.0"
     # Expecting one or the other.
     match="^node/[0-9]+\.[0-9]+\.[0-9]+$"
   elif is_exact_numeric_version "${version}"; then
