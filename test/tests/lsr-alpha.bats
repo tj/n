@@ -12,9 +12,9 @@ function setup() {
   if ! command -v curl >/dev/null 2>&1; then
     skip 'curl is not available'
   fi
-  # if ! curl --version | grep -E '^Protocols:.*\bfile\b' >/dev/null 2>&1; then
-  #   skip 'curl does not support the file protocol'
-  # fi
+  if ! curl --version | grep -E '^Protocols:.*\bfile\b' >/dev/null 2>&1; then
+    skip 'curl does not support the file protocol'
+  fi
 
   unset_n_env
   export N_NODE_MIRROR="file://${BATS_TEST_DIRNAME}/fixtures/alpha"
