@@ -37,7 +37,8 @@ function setup() {
 }
 
 @test "auto .nvmrc, node" {
-  local TARGET_VERSION="$(display_remote_version latest)"
+  local TARGET_VERSION
+  TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   printf "node\n" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
@@ -45,7 +46,8 @@ function setup() {
 }
 
 @test "auto .nvmrc, lts/*" {
-  local TARGET_VERSION="$(display_remote_version lts)"
+  local TARGET_VERSION
+  TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/*\n" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
@@ -53,7 +55,8 @@ function setup() {
 }
 
 @test "auto .nvmrc, lts/argon" {
-  local TARGET_VERSION="$(display_remote_version lts)"
+  local TARGET_VERSION
+  TARGET_VERSION="$(display_remote_version lts)"
   cd "${MY_DIR}"
   printf "lts/argon\n" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
@@ -72,7 +75,7 @@ function setup() {
 @test "auto .nvmrc, trailing comment" {
   local TARGET_VERSION="8.10.0"
   cd "${MY_DIR}"
-  printf "${TARGET_VERSION} # comment" > .nvmrc
+  printf "%s # comment" "${TARGET_VERSION}" > .nvmrc
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "${TARGET_VERSION}"
 }
