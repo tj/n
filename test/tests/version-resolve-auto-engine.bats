@@ -209,7 +209,8 @@ function write_engines() {
 @test "engine mismatch devEngines match engines" {
   cd "${MY_DIR}"
   write_engines "8.9.1"
-  echo '{ "devEngines" : { "runtime" : { "name": "bun", "version": "1.2.3" } } }' >> package.json
+  echo '{ "engines" : { "node" : "8.9.1" },' > package.json
+  echo '  "devEngines" : { "runtime" : { "name": "bun", "version": "1.2.3" } } }' >> package.json
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
   assert_equal "${output}" "8.9.1"
 }
