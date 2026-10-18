@@ -165,7 +165,6 @@ function write_engines() {
 @test "auto engine (semver), <8.12" {
   cd "${MY_DIR}"
   write_engines "<8.12"
-  # newer versions of npx not liking proxy as used in tests
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
@@ -173,7 +172,6 @@ function write_engines() {
 @test "auto engine (semver), 8.11.1 - 8.11.3" {
   cd "${MY_DIR}"
   write_engines "8.11.1 - 8.11.3"
-  # newer versions of npx not liking proxy as used in tests
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.3"
 }
@@ -181,7 +179,6 @@ function write_engines() {
 @test "auto engine (semver), >8.1 <8.12 || >2.1 <3.4" {
   cd "${MY_DIR}"
   write_engines ">8.1 <8.12 || >2.1 <3.4"
-  # newer versions of npx not liking proxy as used in tests
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
@@ -203,7 +200,6 @@ function write_engines() {
 @test "engine (devEngines, semver), <8.12" {
   cd "${MY_DIR}"
   echo '{ "devEngines" : { "runtime" : { "name": "node", "version": "<8.12" } } }' > package.json
-  # newer versions of npx not liking proxy as used in tests
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
   assert_equal "${output}" "8.11.4"
 }
