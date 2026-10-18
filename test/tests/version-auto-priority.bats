@@ -88,10 +88,10 @@ function setup() {
 }
 
 @test ".package.json last, after parent scanning" {
-  cd "${MY_DIR}"
+  cd "${MY_DIR}" || false
   echo "8.2.0" > .node-version
   mkdir package
-  cd package
+  cd package || false
   echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"

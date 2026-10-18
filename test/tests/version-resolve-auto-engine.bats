@@ -34,7 +34,7 @@ function write_engines() {
 }
 
 @test "setupAll for auto-engine # (1 install)" {
-  # Dummy test so setupAll displayed while running first setup
+  true # Dummy test so setupAll displayed while running first setup
 }
 
 @test "auto engine, 8.9.0" {
@@ -73,7 +73,8 @@ function write_engines() {
 }
 
 @test "auto engine, >1" {
-  local TARGET_VERSION="$(display_remote_version latest)"
+  local TARGET_VERSION
+  TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   write_engines ">1"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
@@ -81,7 +82,8 @@ function write_engines() {
 }
 
 @test "auto engine, >=2" {
-  local TARGET_VERSION="$(display_remote_version latest)"
+  local TARGET_VERSION
+  TARGET_VERSION="$(display_remote_version latest)"
   cd "${MY_DIR}"
   write_engines ">=2"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
@@ -164,7 +166,7 @@ function write_engines() {
   cd "${MY_DIR}"
   write_engines "<8.12"
   # newer versions of npx not liking proxy as used in tests
-  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(https_proxy='' n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
 
@@ -172,7 +174,7 @@ function write_engines() {
   cd "${MY_DIR}"
   write_engines "8.11.1 - 8.11.3"
   # newer versions of npx not liking proxy as used in tests
-  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(https_proxy='' n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.3"
 }
 
@@ -180,7 +182,7 @@ function write_engines() {
   cd "${MY_DIR}"
   write_engines ">8.1 <8.12 || >2.1 <3.4"
   # newer versions of npx not liking proxy as used in tests
-  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  output="$(https_proxy='' n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
   assert_equal "${output}" "8.11.4"
 }
 
@@ -202,7 +204,7 @@ function write_engines() {
   cd "${MY_DIR}"
   echo '{ "devEngines" : { "runtime" : { "name": "node", "version": "<8.12" } } }' > package.json
   # newer versions of npx not liking proxy as used in tests
-  output="$(https_proxy= n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
+  output="$(https_proxy='' n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
   assert_equal "${output}" "8.11.4"
 }
 

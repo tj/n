@@ -60,7 +60,8 @@ function teardown() {
 @test "--preserve variations # (4 installs)" {
   local IRON_VERSION="v20.20.2"
   local IRON_NPM_VERSION="10.8.2"
-  local LTS_VERSION="$(display_remote_version lts)"
+  local LTS_VERSION
+  LTS_VERSION="$(display_remote_version lts)"
 
   n ${IRON_VERSION}
   output="$("${N_PREFIX}/bin/node" --version)"
