@@ -61,7 +61,25 @@ function setup() {
   assert_equal "${output}" "8.3.0"
 }
 
-@test ".package.json last" {
+@test ".package.json devengine fourth with auto" {
+  cd "${MY_DIR}"
+  echo '{ "devEngines" : { "runtime" : { "name": "node", "version": "8.4.0" } },' > package.json
+  echo '  "engines" : { "node" : "v8.2.0" } }' >> package.json
+
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"
+  assert_equal "${output}" "8.4.0"
+}
+
+@test ".package.json devengine first with engine" {
+  cd "${MY_DIR}"
+  echo '{ "engines" : { "node" : "v8.2.0" },' > package.json
+  echo '  "devEngines" : { "runtime" : { "name": "node", "version": "8.4.0" } } }' >> package.json
+
+  output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
+  assert_equal "${output}" "8.4.0"
+}
+
+@test ".package.json engines last " {
   cd "${MY_DIR}"
   echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
@@ -70,10 +88,10 @@ function setup() {
 }
 
 @test ".package.json last, after parent scanning" {
-  cd "${MY_DIR}"
+  cd "${MY_DIR}" || false
   echo "8.2.0" > .node-version
   mkdir package
-  cd package
+  cd package || false
   echo '{ "engines" : { "node" : "v8.4.0" } }' > package.json
 
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION auto)"

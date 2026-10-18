@@ -50,7 +50,8 @@ function teardown_file() {
 
 @test "n which lts" {
   output="$(n which lts)"
-  local LTS_VERSION="$(display_remote_version lts)"
+  local LTS_VERSION
+  LTS_VERSION="$(display_remote_version lts)"
   assert_equal "$output" "${N_PREFIX}/n/versions/node/${LTS_VERSION}/bin/node"
 }
 
@@ -64,7 +65,8 @@ function teardown_file() {
 
 @test "n run lts" {
   output="$(n run lts --version)"
-  local LTS_VERSION="$(display_remote_version lts)"
+  local LTS_VERSION
+  LTS_VERSION="$(display_remote_version lts)"
   assert_equal "$output" "v${LTS_VERSION}"
 }
 
@@ -82,7 +84,8 @@ function teardown_file() {
   n rm latest || true
   n run --download latest --version
   output="$(n run latest --version)"
-  local LATEST_VERSION="$(display_remote_version latest)"
+  local LATEST_VERSION
+  LATEST_VERSION="$(display_remote_version latest)"
   assert_equal "$output" "v${LATEST_VERSION}"
 }
 
@@ -101,7 +104,8 @@ function teardown_file() {
 
 @test "n exec lts" {
   output="$(n exec lts node --version)"
-  local LTS_VERSION="$(display_remote_version lts)"
+  local LTS_VERSION
+  LTS_VERSION="$(display_remote_version lts)"
   assert_equal "$output" "v${LTS_VERSION}"
 }
 
@@ -109,6 +113,7 @@ function teardown_file() {
   n rm latest || true
   n exec -d latest node --version
   output="$(n exec latest node --version)"
-  local LATEST_VERSION="$(display_remote_version latest)"
+  local LATEST_VERSION
+  LATEST_VERSION="$(display_remote_version latest)"
   assert_equal "$output" "v${LATEST_VERSION}"
 }
