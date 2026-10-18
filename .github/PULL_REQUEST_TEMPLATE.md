@@ -1,5 +1,3 @@
-# Pull Request
-
 <!--
 The text in these markdown comments is instructions that will not appear in the displayed pull request.
 -->
