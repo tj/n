@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (date goes here)
 
+## [11.0.0] (2026-10-18)
+
+### Added
+
+- support for reading `devEngines.runtime` in package.json, with fallback to `engines.node` ([#851])
+- support for alpha versions of node ([#850])
+
+### Changed
+
+- the `current` label ignores alpha versions (the `latest` label includes alpha versions)
+
+### Deprecated
+
+- Node.js support aliases ([#843])
+
 ## [10.2.0] (2025-05-21)
 
 ### Added
@@ -543,10 +558,14 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#820]: https://github.com/tj/n/pull/820
 [#821]: https://github.com/tj/n/pull/821
 [#832]: https://github.com/tj/n/pull/832
+[#843]: https://github.com/tj/n/pull/843
+[#850]: https://github.com/tj/n/pull/850
+[#851]: https://github.com/tj/n/pull/851
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[11.0.0]: https://github.com/tj/n/compare/v10.2.0...v11.0.0
 [10.2.0]: https://github.com/tj/n/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/tj/n/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/tj/n/compare/v9.2.3...v10.0.0
