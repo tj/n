@@ -346,16 +346,17 @@ function is_node_support_version() {
 # Map aliases onto existing n aliases, current and lts.
 #
 # Deprecated since little used and Node.js changing their release policy in 2026.
+# NB: this is providing the legacy support for "current" label.
 #
 
 function display_latest_node_support_alias() {
   case "$1" in
-    "active") printf "current" ;;
+    "active") printf "latest" ;;
     "lts_active") printf "lts" ;;
     "lts_latest") printf "lts" ;;
     "lts") printf "lts" ;;
-    "current") printf "current" ;;
-    "supported") printf "current" ;;
+    "current") printf "latest" ;;
+    "supported") printf "latest" ;;
     *) printf "unexpected-version"
   esac
 }
@@ -451,8 +452,8 @@ Versions:
 
     4.9.1, 8, v6.1    Numeric versions
     lts               Newest Long Term Support release
-    latest            Newest release
-    current           Newest release ignoring alpha versions
+    latest            Newest release excluding alphas
+    latest-any        Newest release including alphas
     auto              Read version from file: .n-node-version, .node-version, .nvmrc, or package.json
     engine            Read version from package.json (devEngines or engines field)
     boron, carbon     Codenames for release streams
@@ -1186,8 +1187,8 @@ function get_package_engine_version() {
   verbose_log "read" "${range}"
   [[ -n "${range}" ]] || return 2
   if [[ "*" == "${range}" ]]; then
-    verbose_log "target" "current"
-    g_target_node="current"
+    verbose_log "target" "latest"
+    g_target_node="latest"
     return
   fi
 
@@ -1197,7 +1198,7 @@ function get_package_engine_version() {
     version="${BASH_REMATCH[2]}"
     case "${operator}" in
       '' | =) ;;
-      \> | \>=) version="current" ;;
+      \> | \>=) version="latest" ;;
       \~) [[ "${version}" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]] && version="${BASH_REMATCH[1]}" ;;
       ^) [[ "${version}" =~ ^([0-9]+) ]] && version="${BASH_REMATCH[1]}" ;;
     esac
@@ -1234,7 +1235,7 @@ function get_nvmrc_version() {
   case "${version}" in
     lts/\*) version="lts" ;;
     lts/*) version="${version:4}" ;;
-    node) version="current" ;;
+    node) version="latest" ;;
     *) ;;
   esac
   g_target_node="${version}"
@@ -1370,9 +1371,9 @@ function display_local_versions() {
     version="${g_target_node}"
   fi
 
-  if [[ "${version}" = "latest" ]]; then
+  if [[ "${version}" = "latest-any" ]]; then
     match='^node/.'
-  elif [[ "${version}" = "current" ]]; then
+  elif [[ "${version}" = "latest" ]]; then
     match_count=1
     # Use simple numeric match to match "node/26.0.0" and not alphas like "node/27.0.0-alpha.0.0.0"
     # Expecting one or the other.
@@ -1430,10 +1431,10 @@ function display_remote_versions() {
     match_count=1
     # Codename is last field, first one with a name is newest lts
     match="${TAB_CHAR}[a-zA-Z]+\$"
-  elif [[ "${version}" = "latest" ]]; then
+  elif [[ "${version}" = "latest-any" ]]; then
     match_count=1
     match='.'
-  elif [[ "${version}" = "current" ]]; then
+  elif [[ "${version}" = "latest" ]]; then
     match_count=1
     # Use simple numeric match to match "v26.0.0" and not alphas like "v27.0.0-alpha.0.0.0"
     # Expecting one or the other.
@@ -1463,7 +1464,7 @@ function display_remote_versions() {
     match='.'
   elif is_download_version "${version}"; then
     version="${version#"${g_mirror_folder_name}"/}"
-    if [[ "${version}" = "latest" ]]; then
+    if [[ "${version}" = "latest" || "${version}" = "latest-any" ]]; then
       match_count=1
       match='.'
     else

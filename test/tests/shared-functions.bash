@@ -72,7 +72,7 @@ function display_compatible_file_field() {
 function display_remote_version() {
   # ToDo: support NODE_MIRROR
 
-  local fetch
+  local fetchdisplay_remote_version
   if command -v curl &> /dev/null; then
     fetch="curl --silent --location --fail --compressed"
   else
@@ -83,10 +83,13 @@ function display_remote_version() {
   local TAB_CHAR=$'\t'
   local match='xxx'
   local mirror="${N_NODE_MIRROR:-https://nodejs.org/dist}"
-  if [[ "$1" = "lts" || "$1" = "stable" ]]; then
+  if [[ "$1" = "lts" ]]; then
     match="^([^${TAB_CHAR}]+${TAB_CHAR}){9}[^-]"
   elif [[ "$1" = "latest" ]]; then
-    match='.'
+    # Alphas have -alpha in the version string, so exclude hyphen.
+    match="^v[^-${TAB_CHAR}]+${TAB_CHAR}"
+  elif [[ "$1" = "latest-any" ]]; then
+    match=''
   elif [[ "$1" = "nightly" ]]; then
     match='.'
     mirror="${N_NODE_DOWNLOAD_MIRROR:-https://nodejs.org/download}/nightly"

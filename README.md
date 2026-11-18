@@ -135,8 +135,8 @@ Numeric version numbers can be complete or incomplete, with an optional leading 
 There are labels for three especially useful versions:
 
 - `lts`: newest Long Term Support release
-- `latest`: newest release
-- `current`: newest release ignoring alpha versions
+- `latest`: newest release ignoring alpha versions
+- `latest-any`: newest release including alpha versions
 
 There is an `auto` label to read the target version from a file in the current directory, or any parent directory. `n` looks for in order:
 
