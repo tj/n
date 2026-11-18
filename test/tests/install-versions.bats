@@ -37,3 +37,9 @@ function teardown() {
   output="$(node --version)"
   assert_equal "${output}" "v$(display_remote_version latest)"
 }
+
+@test "n latest-any" {
+  n latest-any
+  output="$(node --version)"
+  assert_equal "${output}" "v$(display_remote_version latest-any)"
+}

@@ -25,17 +25,18 @@ function teardown() {
 }
 
 
-@test "n lsr latest # includes alpha (fixture)" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr latest)"
+@test "n lsr latest-any # includes alpha (fixture)" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr latest-any)"
   assert_equal "${output}" "27.0.0-alpha.0.11.0"
 }
 
-@test "n lsr current # excludes alpha (fixture)" {
-  output="$(N_MAX_REMOTE_MATCHES=1 n lsr current)"
+@test "n lsr latest # excludes alpha (fixture)" {
+  output="$(N_MAX_REMOTE_MATCHES=1 n lsr latest)"
   assert_equal "${output}" "26.12.0"
 }
 
 @test "n lsr 27 # partial number in main version (fixture)" {
+  #semver style matching would be to exclude alpha, but we include it since alphas only come before any other phases and would otherwise fail to find a match.
   output="$(N_MAX_REMOTE_MATCHES=1 n lsr 27)"
   assert_equal "${output}" "27.0.0-alpha.0.11.0"
 }

@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] (date goes here)
+## [12.0.0] (2026-11-18)
+
+Preferred "phase" labels are now: `lts`, `latest`, `latest-any`.
+
+### Added
+
+- `latest-any` label for latest version including alphas
+
+### Changed
+
+- `latest` label for latest version excluding alphas
+
+### Deprecated
+
+- `current` label since no version in current phase of development for six months of year with new Node.js schedule
 
 ## [11.0.0] (2026-10-18)
 

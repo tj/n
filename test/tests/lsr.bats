@@ -32,6 +32,11 @@ function setup() {
   assert_equal "${output}" "$(display_remote_version latest)"
 }
 
+@test "n lsr latest-any" {
+  output="$(n lsr latest-any)"
+  assert_equal "${output}" "$(display_remote_version latest-any)"
+}
+
 
 # codenames
 
