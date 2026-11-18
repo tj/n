@@ -13,15 +13,20 @@ Preferred "phase" labels are now: `lts`, `latest`, `latest-any`.
 
 ### Added
 
-- `latest-any` label for latest version including alphas
+- `latest-any` label includes alphas ([#861])
+- future codenames for LTS versions ([#863])
 
 ### Changed
 
-- `latest` label for latest version excluding alphas
+- `latest` label excludes alphas ([#861])
 
 ### Deprecated
 
-- `current` label since no version in current phase of development for six months of year with new Node.js schedule
+- `current` label since no version in "current" phase of development for six months of year with new Node.js schedule. Resolves to latest excluding alphas, as in v11.0.0. ([#861])
+
+### Fixed
+
+- deleting alpha versions from version menu using `d` key ([#860])
 
 ## [11.0.0] (2026-10-18)
 
@@ -575,10 +580,14 @@ Only minor functional changes, but technically could break scripts relying on sp
 [#843]: https://github.com/tj/n/pull/843
 [#850]: https://github.com/tj/n/pull/850
 [#851]: https://github.com/tj/n/pull/851
+[#860]: https://github.com/tj/n/pull/860
+[#861]: https://github.com/tj/n/pull/861
+[#863]: https://github.com/tj/n/pull/863
 
 <!-- reference links for releases -->
 
 [Unreleased]: https://github.com/tj/n/compare/master...develop
+[12.0.0]: https://github.com/tj/n/compare/v11.0.0...v12.0.0
 [11.0.0]: https://github.com/tj/n/compare/v10.2.0...v11.0.0
 [10.2.0]: https://github.com/tj/n/compare/v10.1.0...v10.2.0
 [10.1.0]: https://github.com/tj/n/compare/v10.0.0...v10.1.0
