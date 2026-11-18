@@ -184,7 +184,7 @@ You can show the path to the downloaded `node` version:
 
 Or run a downloaded `node` version with the `n run` command:
 
-    n run 8.11.3 --debug some.js
+    n run 8.11.3 -e 'console.log(process.versions.node)' 
 
 Or execute a command with `PATH` modified so `node` and `npm` will be from the downloaded Node.js version.
 (NB: `npm` run this way will be using global node_modules from the target node version folder.)
