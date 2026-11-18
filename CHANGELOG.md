@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased] (TBA)
+
 ## [12.0.0] (2026-11-18)
 
 Preferred "phase" labels are now: `lts`, `latest`, `latest-any`.
