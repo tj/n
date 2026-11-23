@@ -1168,7 +1168,7 @@ function get_package_engine_version() {
     # Using javascript syntax that works back to node 0.12.18
     range="$(node -e "
       const fs = require('fs');
-      const package = JSON.parse(fs.readFileSync('${filepath}', 'utf8'));
+      const package = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
       const runtime = package.devEngines && package.devEngines.runtime;
       const runtimes = Array.isArray(runtime) ? runtime : runtime ? [runtime] : [];
       var found;
@@ -1180,7 +1180,7 @@ function get_package_engine_version() {
       }
       const range = (found && found.version) || (package.engines && package.engines.node);
       if (range) console.log(range);
-    ")"
+    " "${filepath}")"
   else
     abort "either jq or an active version of node is required to read 'engines' from package.json"
   fi

@@ -33,6 +33,15 @@ function write_engines() {
   echo '{ "engines" : { "node" : "'"$1"'" } }' > package.json
 }
 
+function run_with_node() {
+  # Exercise the node fallback even on systems with jq installed.
+  local node_path="${MY_DIR}/node-only-bin"
+  mkdir -p "${node_path}"
+  ln -sf "$(command -v bash)" "${node_path}/bash"
+  ln -sf "$(command -v node)" "${node_path}/node"
+  run env PATH="${node_path}" "$(command -v n)" --no-use-xz --quiet run "$1" --version
+}
+
 @test "setupAll for auto-engine # (1 install)" {
   true # Dummy test so setupAll displayed while running first setup
 }
@@ -70,6 +79,28 @@ function write_engines() {
   write_engines "=v8.9.4"
   output="$(n N_TEST_DISPLAY_LATEST_RESOLVED_VERSION engine)"
   assert_equal "${output}" "8.9.4"
+}
+
+@test "engine, package.json path with an apostrophe (node)" {
+  mkdir -p "${MY_DIR}/developer's project"
+  cd "${MY_DIR}/developer's project"
+  local node_version
+  node_version="$(node --version)"
+  write_engines "${node_version}"
+  run_with_node engine
+  assert_success
+  assert_output "${node_version}"
+}
+
+@test "auto devEngines, package.json path with a backslash (node)" {
+  mkdir -p "${MY_DIR}/project\\name"
+  cd "${MY_DIR}/project\\name"
+  local node_version
+  node_version="$(node --version)"
+  printf '{ "devEngines" : { "runtime" : { "name": "node", "version": "%s" } } }\n' "${node_version}" > package.json
+  run_with_node auto
+  assert_success
+  assert_output "${node_version}"
 }
 
 @test "auto engine, >1" {
